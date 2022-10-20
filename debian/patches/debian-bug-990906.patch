@@ -1,0 +1,29 @@
+From 949854e9a74489d8d977aac7a8428ecadd526ff1 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ingo=20Br=C3=BCckl?= <ib@wupperonline.de>
+Date: Mon, 12 Jul 2021 16:41:35 +0200
+Subject: [PATCH] Never follow symbolic links in xa_collect_files_in_dir()
+
+When temporarily extracted files with paths are needed without path,
+symbolic links must be used as is. It must not be descended into
+directories that are symbolic links, because they could reside outside
+the archive.
+
+This fixes Debian bug #990906.
+---
+ src/string_utils.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/string_utils.c b/src/string_utils.c
+index 5881be12..a3aa49a5 100644
+--- a/src/string_utils.c
++++ b/src/string_utils.c
+@@ -408,7 +408,8 @@ GString *xa_collect_files_in_dir (const gchar *directory)
+ 		file = stack->data;
+ 		stack = g_slist_delete_link(stack, stack);
+ 
+-		if (g_file_test(file, G_FILE_TEST_IS_DIR))
++		if (g_file_test(file, G_FILE_TEST_IS_DIR) &&
++		   !g_file_test(file, G_FILE_TEST_IS_SYMLINK))
+ 		{
+ 			GDir *dir;
+ 			const gchar *name;

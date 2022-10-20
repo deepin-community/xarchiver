@@ -1,0 +1,24 @@
+#!/usr/bin/make -f
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+%:
+	dh $@
+
+override_dh_autoreconf:
+	echo > NEWS
+	echo > AUTHORS
+	dh_autoreconf
+
+override_dh_auto_configure:
+	dh_auto_configure -- --libexecdir=/usr/lib
+
+override_dh_auto_install:
+	dh_auto_install --destdir=$(CURDIR)/debian/xarchiver
+	# removing useless files
+	rm -f debian/xarchiver/usr/share/doc/xarchiver/AUTHORS
+	rm -f debian/xarchiver/usr/share/doc/xarchiver/COPYING
+	rm -f debian/xarchiver/usr/share/doc/xarchiver/NEWS
+	rm -f debian/xarchiver/usr/share/doc/xarchiver/README
+	rm -f debian/xarchiver/usr/share/doc/xarchiver/ChangeLog
+	rm -f debian/xarchiver/usr/share/doc/xarchiver/TODO
+

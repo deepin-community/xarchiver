@@ -1,0 +1,54 @@
+Source: xarchiver
+Section: x11
+Priority: optional
+Maintainer: Markus Koschany <apo@debian.org>
+Build-Depends:
+ debhelper-compat (= 13),
+ intltool,
+ libgtk-3-dev,
+ xsltproc
+Standards-Version: 4.6.0
+Homepage: https://github.com/ib/xarchiver
+Vcs-Git: https://salsa.debian.org/debian/xarchiver.git
+Vcs-Browser: https://salsa.debian.org/debian/xarchiver
+
+Package: xarchiver
+Architecture: any
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends}
+Recommends:
+ bzip2,
+ p7zip-full,
+ unzip,
+ xdg-utils,
+ xz-utils
+Suggests:
+ arj,
+ binutils,
+ cpio,
+ lbzip2,
+ lhasa,
+ liblz4-tool,
+ lrzip,
+ lzip,
+ lzop,
+ ncompress,
+ pbzip2,
+ pigz,
+ plzip,
+ rar,
+ unar,
+ zip,
+ zstd
+Description: GTK+ frontend for most used compression formats
+ Xarchiver is a lightweight desktop independent GTK+ frontend for manipulating
+ xz, 7z, lzma, arj, bzip2, gzip, rar, tar, zip, rpm, lz4, compress, zstd, lzip,
+ lrzip, lzop, lha, ar files including the deb format and self-extracting
+ exe files, if they were internally compressed with either 7zip, arj, lha, rar
+ or zip. Multi-threading tools such as lbzip2, pbzip2, pigz and plzip can be
+ used as replacements for their respective counterparts.
+ .
+ Xarchiver allows you to create archives and add, extract, and delete files
+ from them. Password protected archives in the arj, 7z, rar, zip and lrzip
+ formats are supported.

@@ -1,0 +1,559 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+                      "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY app "Xarchiver">
+<!ENTITY applower "xarchiver">
+<!ENTITY appversion "0.5.4">
+<!ENTITY appurl "https://github.com/ib/xarchiver/releases">
+<!ENTITY date "September 29, 2006">
+]>
+
+<book lang="en" id="xarchiver">
+	<bookinfo>
+		<author>
+			<firstname>Giuseppe</firstname>
+			<surname>Torelli</surname>
+			<address><email>colossus73@gmail.com</email></address>
+		</author>
+		<copyright>
+			<year>2005&ndash;2008</year>
+		</copyright>
+		<legalnotice id="legalnotice">
+			<para>
+				This document is distributed under the terms of the GNU General Public License as published by the Free
+				Software Foundation; either version 2 of the License, or (at your option) any later version.
+				A copy of this license can be found in the file COPYING included with the source code of this
+				program.
+			</para>
+			<note>
+				<title>
+					Caution!
+				</title>
+				<para>
+					This documentation is a bit outdated. It may still be useful, though.
+				</para>
+			</note>
+		</legalnotice>
+		<title>
+			&app; &appversion;
+		</title>
+	</bookinfo>
+
+	<chapter id="intro">
+		<title>
+			Introduction
+		</title>
+		<section id="intro_about">
+			<title>About &app;</title>
+			<para>
+				&app; is a small and lightweight archive manager.
+				I developed it to manage archives without depending from a special Desktop Environment
+				like KDE or GNOME, so &app; requires only the GTK+ toolkit
+				to work. The package <emphasis>xdg-utils</emphasis> is optional.
+			</para>
+			<para>
+				&app; presents the following characteristic:
+				<itemizedlist>
+					<listitem>
+						<para>
+							Archive directories can be browsed just like a file manager
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Mime icon for each of the archive entries
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							The most used archiver's command line options are supported in the Add and Extract dialogs
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Tabs Firefox style support
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Multi-extract facility
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Dump of the whole archive content as HTML or text file
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Context menu on each of the archive entries with cut/copy/paste/rename abilities
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							All archives are detected by their magic header and not by their extension
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Drag and drop from and to &app; window
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Progress window when using &app; from the command line or from a file-manager
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							ARJ, RAR and ZIP archive comment are supported
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Ability to convert the archive to self-extracting for those archive types which support it
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Smart detection of 7zip, arj, rar and zip password encrypted archives
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							All the the output of the command line archiver is displayed in the &app; window
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							All common formats are supported: 7z, a (libraries), arj, bzip2, compress, cpio, exe (self-extracting Windows archives), gzip, jsonlz4, lha, lrzip, lz4, lzip, lzma, lzop, mozlz4, rar, tar, xz, zip, zstd, tar.bz2, tar.gz, tar.lrz, tar.lz, tar.lz4, tar.lzma, tar.lzop, tar.xz, tar.Z, tar.zst, deb and rpm packages
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Debian and RPM packages are handled internally, their package managers are NOT required
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Password encrypted archives are fully supported
+						</para>
+					</listitem>
+				</itemizedlist>
+			</para>
+		</section>
+		<section id="intro_where">
+			<title>Where to get it</title>
+			<para>
+				You can obtain &app; from <ulink url="&appurl;">&appurl;</ulink>
+				or perhaps from your distributor.
+			</para>
+		</section>
+		<section id="intro_license">
+			<title>License</title>
+			<para>
+				&app; is distributed under the terms of the GNU General Public License as published
+				by the Free	Software Foundation; either version 2 of the License, or (at your option) any later version.
+				A copy of this license can be found in the file COPYING included with the source code of this
+				program.
+			</para>
+		</section>
+	</chapter>
+
+	<chapter id="installation">
+		<title>
+			Installation
+		</title>
+		<section id="inst_requirements">
+			<title>Requirements</title>
+			<para>
+				For compiling &app; yourself, you will need the GTK+ (>= 2.10.0)
+				libraries and header files. (You will also need the GLib, Pango and ATK libraries and header files
+				as well as libraries and header files needed by these).
+				All these files are available at <ulink url="http://www.gtk.org">http://www.gtk.org</ulink>.
+			</para>
+		</section>
+		<section id="inst_source_compilation">
+			<title>Source compilation</title>
+			<para>
+				Compiling &app; is quite easy. The following should do it:
+				<screen>
+					<prompt>$</prompt> <userinput><command>./configure</command> [--prefix=/usr]</userinput>
+					<prompt>$</prompt> <userinput><command>make</command></userinput>
+					<prompt>#</prompt> <userinput><command>make</command> install</userinput></screen>
+			</para>
+			<para>
+				The configure script supports several common options, for a detailed list, type:
+				<screen>
+					<userinput><command>./configure</command> --help</userinput></screen>
+			</para>
+		</section>
+	</chapter>
+	<chapter id="usage">
+		<title>Usage</title>
+		<section id="usage_getting_started">
+			<title>Getting started</title>
+			<para>
+				You can start &app; in the following ways:
+				<itemizedlist>
+						<listitem>
+						<para>
+							From the Desktop Environment menu
+						</para>
+						<para>
+							Choose in your application menu of your used Desktop Environment:
+							<menuchoice>
+							<guisubmenu>Accessories</guisubmenu>
+							<guimenuitem>&app;</guimenuitem>
+							</menuchoice>.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							From the command line
+						</para>
+						<para>
+							To start &app; from a command line, type the following
+							and press <keycap>Enter/Return</keycap>:
+							<screen>
+								<userinput><command>&applower;</command></userinput></screen>
+						</para>
+					</listitem>
+				</itemizedlist>
+			</para>
+		</section>
+		<section id="usage_options">
+			<title>Command line options</title>
+			<para>
+				<table id="table_options" frame="all">
+					<title>Command line options</title>
+					<tgroup cols="3">
+						<?dbhtml cellpadding="4" ?>
+						<?dbhtml cellspacing="0" ?>
+						<colspec colnum="1" colname="col1"/>
+						<colspec colnum="2" colname="col2"/>
+						<colspec colnum="3" colname="col3"/>
+						<thead>
+							<row>
+								<entry>Short option</entry>
+								<entry>Long option</entry>
+								<entry>Function</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry>-x destination archive</entry>
+								<entry>--extract-to=destination archive</entry>
+								<entry>Extract archive to the destination directory and quit.
+								</entry>
+							</row>
+							<row>
+								<entry>-e archive</entry>
+								<entry>--extract archive</entry>
+								<entry>Extract archive by asking the destination directory and quit.
+								</entry>
+							</row>
+							<row>
+								<entry>-d archive</entry>
+								<entry>--ensure-directory archive</entry>
+								<entry>Extract archive to a containing directory and quit.
+								</entry>
+							</row>
+							<row>
+								<entry>-m [archive1 ... archiveN]</entry>
+								<entry>--multi-extract [archive1 ... archiveN]</entry>
+								<entry>Open the Multi-Extract dialog to extract the given archives. Shell wildcards such as * are allowed.</entry>
+							</row>
+							<row>
+								<entry>-c file1 ... fileN</entry>
+								<entry>--compress=file1 ... fileN</entry>
+								<entry>Add the given files by asking the name of the archive and quit. If the archive doesn't exist it will be created. The filenames must be separated by spaces.
+								</entry>
+							</row>
+							<row>
+								<entry>-a archive</entry>
+								<entry>--add archive</entry>
+								<entry>Add to archive by asking which files and quit.
+								</entry>
+							</row>
+							<row>
+								<entry>-i</entry>
+								<entry>--info</entry>
+								<entry>Show found command line programs to be used and exit.
+								</entry>
+							</row>
+							<row>
+								<entry>-v</entry>
+								<entry>--version</entry>
+								<entry>Show version and exit.
+								</entry>
+							</row>
+							<row>
+								<entry>-?</entry>
+								<entry>--help</entry>
+								<entry>Show help information and quit.</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</table>
+				&app; supports also all generic GTK+ options, a list is available on the help screen.
+			</para>
+		</section>
+		<section id="usage_general">
+			<title>General</title>
+			<section id="general_startup">
+				<title>Startup</title>
+				<para>
+					At startup, &app; detects the available installed archivers (tar,rar,zip etc) and the script <emphasis>xdg-open</emphasis> for handling different file types. Since &app; is a front end (a graphic user interface to the command line executables) it can't create archives whose archiver is not available. For instance if you have the free edition of rar, unrar, &app; can't create rar archives since unrar allows rar archives to be opened, tested and extracted but not to be created.
+				</para>
+			</section>
+			<section id="how_it_works">
+				<title>How it works</title>
+				<para>
+					&app; will run in the background the command line executable of the archiver with the archiver's proper switches to perform the selected operation. If something goes wrong &app; reports the full output of the archiver executable in the command line output window. Starting with release 0.5 the files in the archive can be opened within &app;. The script <emphasis>xdg-open</emphasis> will detect the file type and run the proper application to handle it. If you don't have such script installed in your system (it's found in the xdg-utils package) &app; will recognize HTML, txt and images files only. The Preferences dialog will notify this to you when you click the Advanced section inside it.
+				</para>
+			</section>
+			<section id="dnd">
+				<title>Drag and Drop</title>
+				<para>
+					&app; supports drag and drop through the <ulink url="http://freedesktop.org/wiki/Specifications/XDS?action=show&amp;redirect=Standards%2FXDS"><citetitle>XDS protocol</citetitle></ulink>. As far as I know only Thunar and Nautilus file managers supports it. Files and directories can be dragged from such file manager's windows to &app; and vice versa. If its window is empty (no archives open) &app; will prompt the user with the <xref linkend="new_dialog"/> asking for the filename and the archive type to be created; after which the dragged files will be added. If the dragged file is a supported archive, &app; will open it instead of prompting the new dialog.
+				</para>
+			</section>
+		</section>
+		<section id="usage_menu">
+			<title>&app; menu</title>
+			<section id="file_menu">
+				<title>File menu</title>
+				<section id="new">
+					<title>New</title>
+						<para>
+							Creates a new archive. The new archive dialog is opened. The archive is
+							not effectively created until some content is added to it. Please note if
+							the archive already exists and you choose to overwrite it, the existing archive will be deleted.
+						</para>
+						<para>
+							<figure id="new_dialog">
+								<title>New dialog</title>
+									<graphic fileref="images/new_dialog.png"></graphic>
+							</figure>
+						</para>
+				</section>
+				<section id="open">
+					<title>Open</title>
+						<para>
+							Opens a new archive. If you force &app; to open an unsupported archive
+							type an error message will be emitted. The archive type is detected by its magic header and not by the extension. Password protected archives are supported also.
+						</para>
+				</section>
+				<section id="list_as">
+					<title>List as</title>
+						<para>
+							This facility allow you to dump the content of the whole archive as .txt or .html format.
+						</para>
+				</section>
+				<section id="save_as">
+					<title>Save as</title>
+						<para>
+							Save the current archive in a different location. This is useful when you open an archive from the Web browser and you want to save it to a different location from /tmp.
+						</para>
+				</section>
+				<section id="test">
+					<title>Test</title>
+						<para>
+							Tests the current archive. This option is disabled when
+							the current archive was produced by an archiver which doesn't support testing.
+						</para>
+				</section>
+				<section id="properties">
+					<title>Properties</title>
+						<para>
+							Shows an archive dialog with useful info about the archive.
+						</para>
+						<para>
+							<figure id="archive_properties_dialog">
+								<title>Archive properties dialog</title>
+									<graphic fileref="images/archive_properties.png"></graphic>
+							</figure>
+						</para>
+				</section>
+				<section id="close">
+					<title>Close</title>
+						<para>
+							Close the current archive and frees all the memory in use by it.
+						</para>
+				</section>
+				<section id="quit">
+					<title>Quit</title>
+						<para>
+							Frees all the memory in use and quit &app;.
+						</para>
+				</section>
+			</section>
+			<section id="action_menu">
+				<title>Action menu</title>
+				<section id="add">
+					<title>Add</title>
+						<para>
+							Shows the add dialog featuring the most used archiver command line options. The password entry is disabled when the archive doesn't support encryption.
+						</para>
+						<para>
+							<figure id="add_dialog">
+								<title>Add dialog</title>
+									<graphic fileref="images/add_dialog.png"></graphic>
+							</figure>
+						</para>
+				</section>
+				<section id="extract">
+					<title>Extract</title>
+						<para>
+							Shows the extract dialog featuring the most used archiver command line options. The password entry is disabled when the current archive is not encrypted; instead if the archive is encrypted and you don't fill this field, &app; will request you the password to extract the archive.
+						</para>
+						<para>
+							<figure id="extract_dialog">
+								<title>Extract dialog</title>
+									<graphic fileref="images/extract_dialog.png"></graphic>
+							</figure>
+						</para>
+				</section>
+				<section id="delete">
+					<title>Delete</title>
+						<para>
+							Delete the selected files from the archive. A warning dialog will be shown.
+						</para>
+				</section>
+				<section id="rename">
+					<title>Rename</title>
+						<para>
+							Allows to rename the current selected file. Renaming directories is not allowed.
+						</para>
+				</section>
+				<section id="make_sfx">
+					<title>Make SFX</title>
+						<para>
+							Convert the current archive to self-extracting. This option is disabled when the current archive doesn't support this feature (e.g. tar archives). After converting an archive to self-extracting this option will be disabled.
+						</para>
+				</section>
+				<section id="multi_extract">
+					<title>Multi-Extract</title>
+						<para>
+							Open the Multi-Extract dialog allowing you to extract archives in one shot by loading them in the window. You can choose to extract them in a specific directory or to extract each of them in a directory named with the archive name itself.
+						</para>
+						<para>
+							<figure id="multi_extract_dialog">
+								<title>Multi-Extract dialog</title>
+									<graphic fileref="images/multi_extract_dialog.png"></graphic>
+							</figure>
+						</para>
+				</section>
+				<section id="archive_comment">
+					<title>Archive comment</title>
+						<para>
+							Opens the Archive comment dialog. Here you can modify, load from a file or delete the archive comment.
+						</para>
+						<para>
+							<figure id="archive_comment_dialog">
+								<title>Archive comment dialog</title>
+									<graphic fileref="images/archive_comment_dialog.png"></graphic>
+							</figure>
+						</para>
+				</section>
+				<section id="select_all">
+					<title>Select all</title>
+						<para>
+							Select all the entries in the window.
+						</para>
+				</section>
+				<section id="deselect_all">
+					<title>Deselect all</title>
+						<para>
+							Deselect all the entries in the window.
+						</para>
+				</section>
+				<section id="select_by_pattern">
+					<title>Select by pattern</title>
+						<para>
+							Pops up the Select by Pattern dialog. Shell wildcards like * and ? are supported.
+						</para>
+				</section>
+				<section id="cmd_line_output">
+					<title>Command line output</title>
+						<para>
+							Opens a window containing the last archiver output.
+						</para>
+				</section>
+				<section id="enter_password">
+					<title>Enter password</title>
+						<para>
+							Pops up the Password dialog. This facility was introduced because of 7zip archives. If you notice that &app; freezes while extracting from such archives you can try to enter the password by means of this dialog before extracting them.
+						</para>
+						<para>
+							<figure id="password_dialog">
+								<title>Password dialog</title>
+									<graphic fileref="images/password_dialog.png"></graphic>
+							</figure>
+						</para>
+				</section>
+				<section id="preferences">
+						<title>Preferences</title>
+							<para>
+							Open the preferences dialog where you can set several options. All the options are saved to ~/.config/&applower;/&applower;rc when pressing the Ok button.
+							</para>
+							<para>
+							<figure id="preferences_dialog">
+								<title>Preferences dialog</title>
+									<graphic fileref="images/pref_dialog.png"></graphic>
+							</figure>
+						</para>
+				</section>
+			</section>
+			<section id="help_menu">
+				<title>Help Menu</title>
+					<section id="help">
+						<title>Help</title>
+							<para>
+								Show this documentation in system installed Web browser.
+							</para>
+					</section>
+					<section id="about_menu">
+						<title>About</title>
+							<para>Shows the credit dialog with the contributors to &app;</para>
+					</section>
+			</section>
+		</section>
+	</chapter>
+	<chapter id="faq">
+		<title>FAQ</title>
+		<section id="faq_1">
+			<title>Why are ace archives not supported?</title>
+			<para>Because on some strange reasons there is no support on Linux for creating archives, only extraction with unace. When they will develop full support for ace archives I will add it to &app;.
+			</para>
+		</section>
+		<section id="faq_2">
+			<title>How can I create an archive with some files password protected and others not?</title>
+			<para>First of all choose 'New' and select one of arj, 7zip, rar or zip archive formats and choose 'Add' from the Action menu. Do NOT check "Password" in the Add dialog. Add your files and then reopen the Add dialog again but this time check "Password" and
+enter your password. From now on all the files you add to the archive will be password protected.
+			</para>
+		</section>
+		<section id="faq_3">
+			<title>Why does &app; emit this error message when handling tar archives?</title>
+			<para>&app; is only a front end which runs the archiver and reports ITS error messages. Most probably you are opening an archive produced with older versions of tar than the one you are currently using or the archive is corrupted.
+			</para>
+		</section>
+		<section id="faq_4">
+			<title>Why is the option "Extract with full path" disabled when using the -e switch with tar archives?</title>
+			<para>Because GNU tar does not provide a full way to extract files without the directories in which they are contained as the other archivers do. Extraction without path when using the GUI is perfomed with a trick which is not available when using the -e switch from the command line.
+			</para>
+		</section>
+		<section id="faq_5">
+			<title>Why does &app; sometimes report errors but the Error messages window is empty?</title>
+			<para>Please remember, that &app; is only a front end. It correctly reads any output from STDOUT or STDERR. Most probably the archiver didn't write anything to those channels even though it exists with an error code.
+			</para>
+		</section>
+		<section id="faq_6">
+			<title>Why &app; doesn't allow me to choose the archive self-extracting path as it happens with zip and 7z?</title>
+			<para>Because rar and arj executable do not allow to do so. Zip and 7z convertion to self-extracting is made by appending an sfx module to the archive so it's possible to choose a different path.
+			</para>
+		</section>
+	</chapter>
+</book>
