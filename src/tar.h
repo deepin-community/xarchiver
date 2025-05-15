@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2005 Giuseppe Torelli - <colossus73@gmail.com>
+ *  Copyright (C) 2016 Ingo Brückl
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,7 +26,7 @@
 #include "archive.h"
 
 gboolean isTar(FILE *);
-void xa_tar_add(XArchive *, GSList *, gchar *);
+void xa_tar_add(XArchive *, GSList *);
 void xa_tar_ask(XArchive *);
 void xa_tar_delete(XArchive *, GSList *);
 gboolean xa_tar_extract(XArchive *, GSList *);

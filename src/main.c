@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2008 Giuseppe Torelli - <colossus73@gmail.com>
+ *  Copyright (C) 2016 Ingo Brückl
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -33,12 +34,14 @@
 #include "pref_dialog.h"
 #include "rar.h"
 #include "rpm.h"
+#include "squashfs.h"
 #include "string_utils.h"
 #include "support.h"
 #include "tar.h"
 #include "unar.h"
 #include "window.h"
 #include "zip.h"
+#include "zpaq.h"
 
 #ifdef HAVE_SOCKET
 #include "socket.h"
@@ -52,10 +55,10 @@ XArchiver archiver[XARCHIVETYPE_TYPES];
 
 gchar *xdg_open;
 
-Add_dialog_data *add_window;
-Extract_dialog_data *extract_window;
-Multi_extract_data *multi_extract_window;
-Prefs_dialog_data *prefs_window;
+AddDialog *add_window;
+ExtractDialog *extract_window;
+MultiExtractDialog *multi_extract_window;
+PrefsDialog *prefs_window;
 
 static gchar *opt_extract_path, *opt_compress;
 static gboolean opt_extract, opt_ensure_dir, opt_multi_extract, opt_add, opt_info, opt_version;
@@ -87,7 +90,7 @@ static GOptionEntry entries[] =
 		NULL
 	},
 	{	"info", 'i', G_OPTION_FLAG_IN_MAIN, G_OPTION_ARG_NONE, &opt_info,
-		N_("Show found command line programs to be\n                                     used and exit"),
+		N_("Show found command-line programs to be\n                                     used and exit"),
 		NULL
 	},
 	{	"version", 'v', G_OPTION_FLAG_IN_MAIN, G_OPTION_ARG_NONE, &opt_version,
@@ -101,9 +104,12 @@ static void xa_check_available_archivers ()
 	gchar *path, *cpio, *lbzip2, *lsar, *pbzip2, *pigz, *plzip, *sevenz, *unar, *xz, *zstd;
 	gboolean is7z = TRUE, is7za = TRUE, is7zr = TRUE, standard;
 
-	/* (un)compressors that can handle various types */
+	/* (de)compressors that can handle various types */
 
-	sevenz = g_find_program_in_path("7z");
+	sevenz = g_find_program_in_path("7zz");
+
+	if (!sevenz)
+		sevenz = g_find_program_in_path("7z");
 
 	if (!sevenz)
 	{
@@ -143,7 +149,7 @@ static void xa_check_available_archivers ()
 			/* alternative ... */
 			path = g_strdup(lsar);
 		if (unar)
-			/* ... uncompressor */
+			/* ... decompressor */
 			archiver[type].program[1] = g_strdup(unar);
 	}
 
@@ -153,8 +159,13 @@ static void xa_check_available_archivers ()
 		archiver[type].is_compressor = standard;
 		archiver[type].type = g_slist_append(archiver[type].type, "7zip");
 		archiver[type].glob = g_slist_append(archiver[type].glob, "*.7z");
+		/* comic book */
+		archiver[type].type = g_slist_append(archiver[type].type, "cb7");
+		archiver[type].glob = g_slist_append(archiver[type].glob, "*.cb7");
+		archiver[type].tags = g_slist_append(archiver[type].tags, GUINT_TO_POINTER('c'));
+		archiver[type].tags = g_slist_append(archiver[type].tags, g_slist_last(archiver[type].type)->data);
 		/* self-extracting Nullsoft Installer */
-		archiver[type].tags = g_slist_append(archiver[type].tags, GUINT_TO_POINTER('n'));
+		archiver[type].tags = g_slist_append(archiver[type].tags, GUINT_TO_POINTER(TAG('x','n')));
 		archiver[type].tags = g_slist_append(archiver[type].tags, _("Nullsoft Installer"));
 
 		archiver[type].ask = (standard ? xa_7zip_ask : xa_unar_ask);
@@ -178,11 +189,11 @@ static void xa_check_available_archivers ()
 		{
 			/* alternative ... */
 			path = g_strdup(lsar);
-			/* ... uncompressor */
+			/* ... decompressor */
 			archiver[type].program[1] = g_strdup(unar);
 		}
 		else if (is7z)
-			/* alternative uncompressor */
+			/* alternative decompressor */
 			path = g_strconcat(sevenz, " -tar", NULL);
 	}
 
@@ -217,7 +228,7 @@ static void xa_check_available_archivers ()
 	if (!standard)
 	{
 		if (is7z)
-			/* alternative uncompressor */
+			/* alternative decompressor */
 			path = g_strconcat(sevenz, " -tarj", NULL);
 		else
 		{
@@ -225,7 +236,7 @@ static void xa_check_available_archivers ()
 				/* alternative ... */
 				path = g_strdup(lsar);
 			if (unar)
-				/* ... uncompressor */
+				/* ... decompressor */
 				archiver[type].program[1] = g_strdup(unar);
 		}
 	}
@@ -242,6 +253,28 @@ static void xa_check_available_archivers ()
 		archiver[type].extract = FUNC(standard, xa_arj_extract, is7z, xa_7zip_extract, unar, xa_unar_extract);
 		archiver[type].add = FUNC(standard, xa_arj_add, is7z, NULL, lsar, NULL);
 		archiver[type].delete = FUNC(standard, xa_arj_delete, is7z, NULL, lsar, NULL);
+	}
+
+	/* bzip */
+
+	type = XARCHIVETYPE_BZIP;
+	path = g_find_program_in_path("bzip");
+
+	if (path)
+		archiver[type].is_compressor = TRUE;
+	else
+		path = g_find_program_in_path("bunzip");
+
+	if (path)
+	{
+		archiver[type].program[0] = path;
+		archiver[type].type = g_slist_append(archiver[type].type, "bzip");
+		archiver[type].glob = g_slist_append(archiver[type].glob, "*.bz");
+
+		archiver[type].ask = xa_gzip_et_al_ask;
+		archiver[type].list = xa_gzip_et_al_list;
+		archiver[type].extract = xa_gzip_et_al_extract;
+		archiver[type].add = xa_gzip_et_al_add;
 	}
 
 	/* bzip2 */
@@ -287,7 +320,7 @@ static void xa_check_available_archivers ()
 				/* alternative ... */
 				path = g_strdup(lsar);
 			if (unar)
-				/* ... uncompressor */
+				/* ... decompressor */
 				archiver[type].program[1] = g_strdup(unar);
 		}
 		else
@@ -307,6 +340,63 @@ static void xa_check_available_archivers ()
 		archiver[type].add = FUNC(standard, xa_gzip_et_al_add, is7za, xa_7zip_add, lsar, NULL);
 	}
 
+	/* bzip3 */
+
+	type = XARCHIVETYPE_BZIP3;
+	path = g_find_program_in_path("bzip3");
+
+	if (path)
+		archiver[type].is_compressor = TRUE;
+	else
+		path = g_find_program_in_path("bunzip3");
+
+	if (path)
+	{
+		archiver[type].program[0] = path;
+		archiver[type].type = g_slist_append(archiver[type].type, "bzip3");
+		archiver[type].glob = g_slist_append(archiver[type].glob, "*.bz3");
+
+		archiver[type].ask = xa_gzip_et_al_ask;
+		archiver[type].list = xa_gzip_et_al_list;
+		archiver[type].test = xa_gzip_et_al_test;
+		archiver[type].extract = xa_gzip_et_al_extract;
+		archiver[type].add = xa_gzip_et_al_add;
+	}
+
+	/* cab */
+
+	type = XARCHIVETYPE_CAB;
+	path = (is7z || is7za ? g_strconcat(sevenz, " -tcab", NULL) : NULL);
+
+	if (path)
+	{
+		archiver[type].program[0] = path;
+		archiver[type].type = g_slist_append(archiver[type].type, "cab");
+		archiver[type].glob = g_slist_append(archiver[type].glob, "*.cab");
+
+		archiver[type].ask = xa_7zip_ask;
+		archiver[type].list = xa_7zip_list;
+		archiver[type].test = xa_7zip_test;
+		archiver[type].extract = xa_7zip_extract;
+	}
+
+	/* chm */
+
+	type = XARCHIVETYPE_CHM;
+	path = (is7z ? g_strconcat(sevenz, " -tchm", NULL) : NULL);
+
+	if (path)
+	{
+		archiver[type].program[0] = path;
+		archiver[type].type = g_slist_append(archiver[type].type, "chm");
+		archiver[type].glob = g_slist_append(archiver[type].glob, "*.chm");
+
+		archiver[type].ask = xa_7zip_ask;
+		archiver[type].list = xa_7zip_list;
+		archiver[type].test = xa_7zip_test;
+		archiver[type].extract = xa_7zip_extract;
+	}
+
 	/* compress */
 
 	type = XARCHIVETYPE_COMPRESS;
@@ -322,7 +412,7 @@ static void xa_check_available_archivers ()
 	if (!standard)
 	{
 		if (is7za)
-			/* alternative uncompressor */
+			/* alternative decompressor */
 			path = g_strconcat(sevenz, " -tZ", NULL);
 		else
 		{
@@ -330,7 +420,7 @@ static void xa_check_available_archivers ()
 				/* alternative ... */
 				path = g_strdup(lsar);
 			if (unar)
-				/* ... uncompressor */
+				/* ... decompressor */
 				archiver[type].program[1] = g_strdup(unar);
 		}
 	}
@@ -353,12 +443,12 @@ static void xa_check_available_archivers ()
 	type = XARCHIVETYPE_CPIO;
 	path = cpio;
 
-	standard = (path != NULL);
+	standard = (path && xa_cpio_check_version(path));
 
 	if (!standard)
 	{
 		if (is7z)
-			/* alternative uncompressor */
+			/* alternative decompressor */
 			path = g_strconcat(sevenz, " -tcpio", NULL);
 		else
 		{
@@ -366,7 +456,7 @@ static void xa_check_available_archivers ()
 				/* alternative ... */
 				path = g_strdup(lsar);
 			if (unar)
-				/* ... uncompressor */
+				/* ... decompressor */
 				archiver[type].program[1] = g_strdup(unar);
 		}
 	}
@@ -420,7 +510,7 @@ static void xa_check_available_archivers ()
 				/* alternative ... */
 				path = g_strdup(lsar);
 			if (unar)
-				/* ... uncompressor */
+				/* ... decompressor */
 				archiver[type].program[1] = g_strdup(unar);
 		}
 		else
@@ -440,6 +530,23 @@ static void xa_check_available_archivers ()
 		archiver[type].add = FUNC(standard, xa_gzip_et_al_add, is7za, xa_7zip_add, lsar, NULL);
 	}
 
+	/* ISO */
+
+	type = XARCHIVETYPE_ISO;
+	path = (is7z ? g_strconcat(sevenz, " -tiso", NULL) : NULL);
+
+	if (path)
+	{
+		archiver[type].program[0] = path;
+		archiver[type].type = g_slist_append(archiver[type].type, "iso");
+		archiver[type].glob = g_slist_append(archiver[type].glob, "*.iso");
+
+		archiver[type].ask = xa_7zip_ask;
+		archiver[type].list = xa_7zip_list;
+		archiver[type].test = xa_7zip_test;
+		archiver[type].extract = xa_7zip_extract;
+	}
+
 	/* LHA */
 
 	type = XARCHIVETYPE_LHA;
@@ -450,7 +557,7 @@ static void xa_check_available_archivers ()
 	if (!standard)
 	{
 		if (is7z)
-			/* alternative uncompressor */
+			/* alternative decompressor */
 			path = g_strconcat(sevenz, " -tlzh", NULL);
 		else
 		{
@@ -458,7 +565,7 @@ static void xa_check_available_archivers ()
 				/* alternative ... */
 				path = g_strdup(lsar);
 			if (unar)
-				/* ... uncompressor */
+				/* ... decompressor */
 				archiver[type].program[1] = g_strdup(unar);
 		}
 	}
@@ -519,9 +626,11 @@ static void xa_check_available_archivers ()
 		archiver[type].type = g_slist_append(archiver[type].type, "lz4");
 		archiver[type].glob = g_slist_append(archiver[type].glob, "*.lz4");
 		/* Mozilla's proprietary LZ4 Frame Formats */
+		archiver[type].type = g_slist_append(archiver[type].type, "mozlz4");
+		archiver[type].glob = g_slist_append(archiver[type].glob, "*.mozlz4");
 		archiver[type].tags = g_slist_append(archiver[type].tags, GUINT_TO_POINTER('m'));
-		archiver[type].tags = g_slist_append(archiver[type].tags, "mozlz4");
-		archiver[type].tags = g_slist_append(archiver[type].tags, GUINT_TO_POINTER('m' + 0x100));
+		archiver[type].tags = g_slist_append(archiver[type].tags, g_slist_last(archiver[type].type)->data);
+		archiver[type].tags = g_slist_append(archiver[type].tags, GUINT_TO_POINTER(TAG('m','j')));
 		archiver[type].tags = g_slist_append(archiver[type].tags, "mozJSSClz4");
 
 		archiver[type].ask = xa_gzip_et_al_ask;
@@ -536,14 +645,20 @@ static void xa_check_available_archivers ()
 	type = XARCHIVETYPE_LZIP;
 	path = g_find_program_in_path("lzip");
 
-	if (!path && plzip)
+	if (path)
+		archiver[type].is_compressor = TRUE;
+	else if (plzip)
+	{
 		/* alternative compressor */
 		path = g_strdup(plzip);
+		archiver[type].is_compressor = TRUE;
+	}
+	else
+		path = g_find_program_in_path("lunzip");
 
 	if (path)
 	{
 		archiver[type].program[0] = path;
-		archiver[type].is_compressor = TRUE;
 		archiver[type].type = g_slist_append(archiver[type].type, "lzip");
 		archiver[type].glob = g_slist_append(archiver[type].glob, "*.lz");
 
@@ -573,7 +688,7 @@ static void xa_check_available_archivers ()
 	if (!standard)
 	{
 		if (is7zr)
-			/* alternative uncompressor */
+			/* alternative decompressor */
 			path = g_strconcat(sevenz, " -tlzma", NULL);
 		else
 		{
@@ -581,7 +696,7 @@ static void xa_check_available_archivers ()
 				/* alternative ... */
 				path = g_strdup(lsar);
 			if (unar)
-				/* ... uncompressor */
+				/* ... decompressor */
 				archiver[type].program[1] = g_strdup(unar);
 		}
 	}
@@ -650,7 +765,7 @@ static void xa_check_available_archivers ()
 	{
 		if (is7z)
 		{
-			/* alternative uncompressor */
+			/* alternative decompressor */
 			path = g_strconcat(sevenz, " -trar", NULL);
 			archiver[type].program[1] = g_strconcat(sevenz, " -trar5", NULL);
 		}
@@ -660,7 +775,7 @@ static void xa_check_available_archivers ()
 				/* alternative ... */
 				path = g_strdup(lsar);
 			if (unar)
-				/* ... uncompressor */
+				/* ... decompressor */
 				archiver[type].program[1] = g_strdup(unar);
 		}
 	}
@@ -668,14 +783,26 @@ static void xa_check_available_archivers ()
 	if (path)
 	{
 		archiver[type].program[0] = path;
-		archiver[type].type = g_slist_append(archiver[type].type, "rar");
-		archiver[type].glob = g_slist_append(archiver[type].glob, "*.rar");
+		archiver[type].type = g_slist_append(archiver[type].type, "rar4");
+		archiver[type].glob = g_slist_append(archiver[type].glob, " .rar");
+		archiver[type].tags = g_slist_append(archiver[type].tags, GUINT_TO_POINTER(4));
+		archiver[type].tags = g_slist_append(archiver[type].tags, g_slist_last(archiver[type].type)->data);
+		/* comic book */
+		archiver[type].type = g_slist_append(archiver[type].type, "cbr4");
+		archiver[type].glob = g_slist_append(archiver[type].glob, " .cbr");
+		archiver[type].tags = g_slist_append(archiver[type].tags, GUINT_TO_POINTER(TAG(4,'c')));
+		archiver[type].tags = g_slist_append(archiver[type].tags, g_slist_last(archiver[type].type)->data);
 
 		if (!standard || (rar_version >= 5))
 		{
-			archiver[type].type = g_slist_append(archiver[type].type, "rar5");
-			archiver[type].glob = g_slist_append(archiver[type].glob, " .rar");
+			archiver[type].type = g_slist_append(archiver[type].type, "rar");
+			archiver[type].glob = g_slist_append(archiver[type].glob, "*.rar");
 			archiver[type].tags = g_slist_append(archiver[type].tags, GUINT_TO_POINTER(5));
+			archiver[type].tags = g_slist_append(archiver[type].tags, g_slist_last(archiver[type].type)->data);
+			/* comic book */
+			archiver[type].type = g_slist_append(archiver[type].type, "cbr");
+			archiver[type].glob = g_slist_append(archiver[type].glob, "*.cbr");
+			archiver[type].tags = g_slist_append(archiver[type].tags, GUINT_TO_POINTER(TAG(5,'c')));
 			archiver[type].tags = g_slist_append(archiver[type].tags, g_slist_last(archiver[type].type)->data);
 		}
 
@@ -697,7 +824,7 @@ static void xa_check_available_archivers ()
 	if (!standard)
 	{
 		if (is7z)
-			/* alternative uncompressor */
+			/* alternative decompressor */
 			path = g_strconcat(sevenz, " -trpm", NULL);
 		else
 		{
@@ -705,7 +832,7 @@ static void xa_check_available_archivers ()
 				/* alternative ... */
 				path = g_strdup(lsar);
 			if (unar)
-				/* ... uncompressor */
+				/* ... decompressor */
 				archiver[type].program[1] = g_strdup(unar);
 		}
 	}
@@ -720,6 +847,71 @@ static void xa_check_available_archivers ()
 		archiver[type].list = FUNC(standard, xa_rpm_list, is7z, xa_7zip_list, lsar, xa_unar_list);
 		archiver[type].test = FUNC(standard, NULL, is7z, xa_7zip_test, lsar, xa_unar_test);
 		archiver[type].extract = FUNC(standard, xa_rpm_extract, is7z, xa_7zip_extract, unar, xa_unar_extract);
+	}
+
+	/* rzip */
+
+	type = XARCHIVETYPE_RZIP;
+	path = g_find_program_in_path("rzip");
+
+	if (path)
+	{
+		archiver[type].program[0] = path;
+		archiver[type].is_compressor = TRUE;
+		archiver[type].type = g_slist_append(archiver[type].type, "rzip");
+		archiver[type].glob = g_slist_append(archiver[type].glob, "*.rz");
+
+		archiver[type].ask = xa_gzip_et_al_ask;
+		archiver[type].list = xa_gzip_et_al_list;
+		archiver[type].extract = xa_gzip_et_al_extract;
+		archiver[type].add = xa_gzip_et_al_add;
+	}
+
+	/* SquashFS */
+
+	type = XARCHIVETYPE_SQUASHFS;
+	path = g_find_program_in_path("unsquashfs");
+
+	standard = (path != NULL);
+
+	if (!standard)
+	{
+		if (is7z)
+			/* alternative decompressor */
+			path = g_strconcat(sevenz, " -tsquashfs", NULL);
+	}
+	else
+	{
+		gchar *mksquashfs = g_find_program_in_path("mksquashfs");
+
+		if (mksquashfs)
+		{
+			archiver[type].program[1] = mksquashfs;
+			archiver[type].is_compressor = TRUE;
+		}
+	}
+
+	if (path)
+	{
+		archiver[type].program[0] = path;
+		archiver[type].type = g_slist_append(archiver[type].type, "squashfs");
+		archiver[type].glob = g_slist_append(archiver[type].glob, "*.squashfs");
+		archiver[type].glob = g_slist_append(archiver[type].glob, "*.sfs");
+		archiver[type].glob = g_slist_append(archiver[type].glob, "*.sqfs");
+
+		/* AppImage */
+		archiver[type].tags = g_slist_append(archiver[type].tags, GUINT_TO_POINTER('a'));
+		archiver[type].tags = g_slist_append(archiver[type].tags, "AppImage");
+		/* snap package */
+		archiver[type].type = g_slist_append(archiver[type].type, "snap");
+		archiver[type].glob = g_slist_append(archiver[type].glob, "*.snap");
+		archiver[type].tags = g_slist_append(archiver[type].tags, GUINT_TO_POINTER('s'));
+		archiver[type].tags = g_slist_append(archiver[type].tags, g_slist_last(archiver[type].type)->data);
+
+		archiver[type].ask = (standard ? xa_squashfs_ask : xa_7zip_ask);
+		archiver[type].list = (standard ? xa_squashfs_list : xa_7zip_list);
+		archiver[type].extract = (standard ? xa_squashfs_extract : xa_7zip_extract);
+		archiver[type].add = (standard ? xa_squashfs_add : NULL);
 	}
 
 	/* tape archive */
@@ -743,7 +935,7 @@ static void xa_check_available_archivers ()
 				/* alternative ... */
 				path = g_strdup(lsar);
 			if (unar)
-				/* ... uncompressor */
+				/* ... decompressor */
 				archiver[type].program[1] = g_strdup(unar);
 		}
 	}
@@ -754,6 +946,11 @@ static void xa_check_available_archivers ()
 		archiver[type].is_compressor = (standard || is7za);
 		archiver[type].type = g_slist_append(archiver[type].type, "tar");
 		archiver[type].glob = g_slist_append(archiver[type].glob, "*.tar");
+		/* comic book */
+		archiver[type].type = g_slist_append(archiver[type].type, "cbt");
+		archiver[type].glob = g_slist_append(archiver[type].glob, "*.cbt");
+		archiver[type].tags = g_slist_append(archiver[type].tags, GUINT_TO_POINTER('c'));
+		archiver[type].tags = g_slist_append(archiver[type].tags, g_slist_last(archiver[type].type)->data);
 
 		archiver[type].ask = FUNC(standard, xa_tar_ask, is7za, xa_7zip_ask, lsar, xa_unar_ask);
 		archiver[type].list = FUNC(standard, xa_tar_list, is7za, xa_7zip_list, lsar, xa_unar_list);
@@ -790,7 +987,7 @@ static void xa_check_available_archivers ()
 				/* alternative ... */
 				path = g_strdup(lsar);
 			if (unar)
-				/* ... uncompressor */
+				/* ... decompressor */
 				archiver[type].program[1] = g_strdup(unar);
 		}
 		else
@@ -850,7 +1047,7 @@ static void xa_check_available_archivers ()
 				/* alternative ... */
 				path = g_strdup(lsar);
 			if (unar)
-				/* ... uncompressor */
+				/* ... decompressor */
 				archiver[type].program[1] = g_strdup(unar);
 		}
 		else
@@ -872,25 +1069,40 @@ static void xa_check_available_archivers ()
 		archiver[type].glob = g_slist_append(archiver[type].glob, "*.cbz");
 		archiver[type].tags = g_slist_append(archiver[type].tags, GUINT_TO_POINTER('c'));
 		archiver[type].tags = g_slist_append(archiver[type].tags, g_slist_last(archiver[type].type)->data);
+		/* Office Open XML document */
+		archiver[type].type = g_slist_append(archiver[type].type, "docx");
+		archiver[type].glob = g_slist_append(archiver[type].glob, "*.docx");
+		archiver[type].tags = g_slist_append(archiver[type].tags, GUINT_TO_POINTER(TAG('w','d')));
+		archiver[type].tags = g_slist_append(archiver[type].tags, g_slist_last(archiver[type].type)->data);
 		/* electronic publication */
 		archiver[type].type = g_slist_append(archiver[type].type, "epub");
 		archiver[type].glob = g_slist_append(archiver[type].glob, "*.epub");
 		archiver[type].tags = g_slist_append(archiver[type].tags, GUINT_TO_POINTER('e'));
+		archiver[type].tags = g_slist_append(archiver[type].tags, g_slist_last(archiver[type].type)->data);
+		/* FictionBook */
+		archiver[type].type = g_slist_append(archiver[type].type, "fbz");
+		archiver[type].glob = g_slist_append(archiver[type].glob, "*.fbz");
+		archiver[type].tags = g_slist_append(archiver[type].tags, GUINT_TO_POINTER('f'));
 		archiver[type].tags = g_slist_append(archiver[type].tags, g_slist_last(archiver[type].type)->data);
 		/* java archive */
 		archiver[type].type = g_slist_append(archiver[type].type, "jar");
 		archiver[type].glob = g_slist_append(archiver[type].glob, "*.jar");
 		archiver[type].tags = g_slist_append(archiver[type].tags, GUINT_TO_POINTER('j'));
 		archiver[type].tags = g_slist_append(archiver[type].tags, g_slist_last(archiver[type].type)->data);
+		/* OpenDocument Format text */
+		archiver[type].type = g_slist_append(archiver[type].type, "odt");
+		archiver[type].glob = g_slist_append(archiver[type].glob, "*.odt");
+		archiver[type].tags = g_slist_append(archiver[type].tags, GUINT_TO_POINTER(TAG('o','t')));
+		archiver[type].tags = g_slist_append(archiver[type].tags, g_slist_last(archiver[type].type)->data);
 		/* OpenOffice.org extension */
 		archiver[type].type = g_slist_append(archiver[type].type, "oxt");
 		archiver[type].glob = g_slist_append(archiver[type].glob, "*.oxt");
-		archiver[type].tags = g_slist_append(archiver[type].tags, GUINT_TO_POINTER('o'));
+		archiver[type].tags = g_slist_append(archiver[type].tags, GUINT_TO_POINTER('t'));
 		archiver[type].tags = g_slist_append(archiver[type].tags, g_slist_last(archiver[type].type)->data);
 		/* XPInstall */
 		archiver[type].type = g_slist_append(archiver[type].type, "xpi");
 		archiver[type].glob = g_slist_append(archiver[type].glob, "*.xpi");
-		archiver[type].tags = g_slist_append(archiver[type].tags, GUINT_TO_POINTER('x'));
+		archiver[type].tags = g_slist_append(archiver[type].tags, GUINT_TO_POINTER('p'));
 		archiver[type].tags = g_slist_append(archiver[type].tags, g_slist_last(archiver[type].type)->data);
 
 		archiver[type].ask = FUNC(standard, xa_zip_ask, is7za, xa_7zip_ask, lsar, xa_unar_ask);
@@ -899,6 +1111,27 @@ static void xa_check_available_archivers ()
 		archiver[type].extract = FUNC(standard, xa_zip_extract, is7za, xa_7zip_extract, unar, xa_unar_extract);
 		archiver[type].add = FUNC(standard, xa_zip_add, is7za, xa_7zip_add, lsar, NULL);
 		archiver[type].delete = FUNC(standard, xa_zip_delete, is7za, xa_7zip_delete, lsar, NULL);
+	}
+
+	/* zpaq */
+
+	type = XARCHIVETYPE_ZPAQ;
+	path = g_find_program_in_path("zpaq");
+
+	if (path)
+	{
+		archiver[type].is_compressor = TRUE;
+
+		archiver[type].program[0] = path;
+		archiver[type].type = g_slist_append(archiver[type].type, "zpaq");
+		archiver[type].glob = g_slist_append(archiver[type].glob, "*.zpaq");
+
+		archiver[type].ask = xa_zpaq_ask;
+		archiver[type].list = xa_zpaq_list;
+		archiver[type].test = xa_zpaq_test;
+		archiver[type].extract = xa_zpaq_extract;
+		archiver[type].add = xa_zpaq_add;
+		archiver[type].delete = xa_zpaq_delete;
 	}
 
 	/* Zstandard */
@@ -930,7 +1163,9 @@ static void xa_check_available_archivers ()
 			gchar *glob[2];
 		} compressed_tar_infos[] =
 		{
+			{XARCHIVETYPE_BZIP, {"tar.bzip", NULL}, {"*.tar.bz", "*.tbz"}},
 			{XARCHIVETYPE_BZIP2, {"tar.bzip2", NULL}, {"*.tar.bz2", "*.tbz2"}},
+			{XARCHIVETYPE_BZIP3, {"tar.bzip3", NULL}, {"*.tar.bz3", "*.tbz3"}},
 			{XARCHIVETYPE_COMPRESS, {"tar.compress", NULL}, {"*.tar.Z", ""}},
 			{XARCHIVETYPE_GZIP, {"tar.gzip", NULL}, {"*.tar.gz", "*.tgz"}},
 			{XARCHIVETYPE_LRZIP, {"tar.lrzip", NULL}, {"*.tar.lrz", "*.tlrz"}},
@@ -938,6 +1173,7 @@ static void xa_check_available_archivers ()
 			{XARCHIVETYPE_LZIP, {"tar.lzip", NULL}, {"*.tar.lz", ""}},
 			{XARCHIVETYPE_LZMA, {"tar.lzma", NULL}, {"*.tar.lzma", "*.tlz"}},
 			{XARCHIVETYPE_LZOP, {"tar.lzop", NULL}, {"*.tar.lzo", "*.tzo"}},
+			{XARCHIVETYPE_RZIP, {"tar.rzip", NULL}, {"*.tar.rz", ""}},
 			{XARCHIVETYPE_XZ, {"tar.xz", NULL}, {"*.tar.xz", "*.txz"}},
 			{XARCHIVETYPE_ZSTD, {"tar.zstd", NULL}, {"*.tar.zst", "*.tzst"}},
 			{XARCHIVETYPE_UNKNOWN, {NULL, NULL}, {NULL, NULL}}
@@ -979,22 +1215,6 @@ static void xa_check_available_archivers ()
 	g_free(unar);
 }
 
-static gchar *xa_make_full_path (char *filename)
-{
-	gchar *cur_dir, *path;
-
-	if (*filename != '/')
-	{
-		cur_dir = g_get_current_dir();
-		path = g_strconcat(cur_dir, "/", filename, NULL);
-		g_free(cur_dir);
-	}
-	else
-		path = g_strdup(filename);
-
-	return path;
-}
-
 static XArchive *xa_init_structure_from_cmd_line (char *filename)
 {
 	XArchive *archive;
@@ -1008,7 +1228,13 @@ static XArchive *xa_init_structure_from_cmd_line (char *filename)
 
 	if (!archiver[xa.type].list)
 	{
-		xa_show_message_dialog(NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, _("Sorry, this archive format is not supported:"), _("The proper archiver is not installed!"));
+		gchar *name, *msg;
+
+		name = g_filename_display_basename(filename);
+		msg = g_strdup_printf(_("The proper archiver for \"%s\" is not installed!"), name);
+		xa_show_message_dialog(NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, _("Sorry, this archive format is not supported:"), msg);
+		g_free(msg);
+		g_free(name);
 		return NULL;
 	}
 
@@ -1033,9 +1259,9 @@ static XArchive *xa_init_structure_from_cmd_line (char *filename)
 static void xa_cmd_line_error (const char *argv1, const gchar *header)
 {
 	if (argv1)
-		xa_show_message_dialog(NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, header, _("Can't open the archive!\n"));
+		xa_show_message_dialog(NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, header, _("Can't open the archive!"));
 	else
-		xa_show_message_dialog(NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, header, _("You missed the archive name!\n"));
+		xa_show_message_dialog(NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, header, _("You missed the archive name!"));
 }
 
 int main (int argc, char **argv)
@@ -1043,7 +1269,7 @@ int main (int argc, char **argv)
 	GError *cli_error = NULL;
 	XArchive *archive;
 	gchar *current_dir;
-	int i, result = -1;
+	int i, result = EXIT_FAILURE;
 
 #ifdef ENABLE_NLS
 	GTK_COMPAT_PARAMETER_STRING;
@@ -1068,23 +1294,23 @@ int main (int argc, char **argv)
 
 	if ( cli_error != NULL )
 	{
-		g_print (_("xarchiver: %s\nTry xarchiver --help to see a full list of available command line options.\n"),cli_error->message);
+		g_print (_("xarchiver: %s\nTry xarchiver --help to see a full list of available command-line options.\n"),cli_error->message);
 		g_error_free (cli_error);
-		return 0;
+		goto quit;
 	}
-    /* print version information */
-    if (opt_version)
-    {
-        g_print("%s %s \n\n", PACKAGE_NAME, PACKAGE_VERSION);
-        g_print (_("Maintained by "));
-        g_print (MAINTAINER ".\n\n");
-        g_print ("%s\n", "Copyright (c) " COPYRIGHT_YEAR);
-        g_print ("\t%s\n\n", COPYRIGHT_HOLDER " - Colossus <colossus73@gmail.com>");
-        g_print (_("Please report bugs to <%s>."), PACKAGE_BUGREPORT);
-        g_print ("\n");
 
-        return EXIT_SUCCESS;
-    }
+	/* print version information */
+	if (opt_version)
+	{
+		g_print("%s %s\n\n", PACKAGE_NAME, PACKAGE_VERSION);
+		g_print (_("Maintained by "));
+		g_print (MAINTAINER ".\n\n");
+		g_print (_("Please report bugs to <%s>."), PACKAGE_BUGREPORT);
+		g_print ("\n");
+
+		result = EXIT_SUCCESS;
+		goto quit;
+	}
 
 	xdg_open = g_find_program_in_path("xdg-open");
 
@@ -1100,8 +1326,7 @@ int main (int argc, char **argv)
 	if (opt_extract || opt_extract_path || opt_ensure_dir || opt_multi_extract || opt_add || opt_compress || opt_info)
 	{
 		archive = xa_init_structure_from_cmd_line (argv[1]);
-		g_print(PACKAGE_NAME " 0.5.4 \xC2\xA9  " COPYRIGHT_YEAR " " COPYRIGHT_HOLDER "\n");
-		g_print(PACKAGE_NAME " %-8s " MAINTAINER "\n", VERSION);
+		g_print(PACKAGE_NAME " %s\n", VERSION);
 
 		/* Switches -d and -x */
 		if (opt_ensure_dir || opt_extract_path)
@@ -1125,11 +1350,8 @@ int main (int argc, char **argv)
 			if (archive->status == XARCHIVESTATUS_ERROR)
 				goto leave;
 
-			if (archive->has_password)
-			{
-				if (!xa_check_password(archive))
-					goto leave;
-			}
+			if (archive->has_password && !xa_check_password(archive))
+				goto leave;
 
 			if (opt_ensure_dir)
 			{
@@ -1155,8 +1377,9 @@ int main (int argc, char **argv)
 
 			archive->do_full_path = TRUE;
 			archive->do_overwrite = TRUE;
+			archive->do_touch = FALSE;
 			archive->extraction_dir = xa_escape_bad_chars(opt_extract_path, ESCAPES);
-			g_free(extraction_dir);
+			g_free(opt_extract_path);
 
 			archive->status = XARCHIVESTATUS_EXTRACT;
 			(*archive->archiver->extract)(archive, NULL);
@@ -1181,29 +1404,28 @@ int main (int argc, char **argv)
 			if (archive->status == XARCHIVESTATUS_ERROR)
 				goto leave;
 
-			if (archive->has_password)
-			{
-				if (!xa_check_password(archive))
-					goto leave;
-			}
+			if (archive->has_password && !xa_check_password(archive))
+				goto leave;
 
 			xa_set_extract_dialog_options(extract_window,0,archive);
 			xa_parse_extract_dialog_options (archive,extract_window,NULL);
-			gtk_widget_destroy (extract_window->dialog1);
-			g_free (extract_window);
 		}
 		/* Switch -m */
 		else if (opt_multi_extract)
 		{
-			Multi_extract_data *multi_extract = NULL;
-			multi_extract = xa_create_multi_extract_dialog();
-			for (i = 1; i < argc; i++)
-				if (!g_file_test(argv[i], G_FILE_TEST_IS_DIR))
-					xa_multi_extract_dialog_add_file(argv[i], multi_extract);
+			gchar *arg;
 
-			xa_multi_extract_dialog(multi_extract);
-			gtk_widget_destroy (multi_extract->multi_extract);
-			g_free(multi_extract);
+			for (i = 1; i < argc; i++)
+			{
+				arg = xa_make_full_path(argv[i]);
+
+				if (!g_file_test(arg, G_FILE_TEST_IS_DIR))
+					xa_multi_extract_dialog_add_file(arg, multi_extract_window);
+
+				g_free(arg);
+			}
+
+			xa_multi_extract_dialog(multi_extract_window);
 		}
 		/* Switch -c */
 		else if (opt_compress)
@@ -1215,7 +1437,7 @@ int main (int argc, char **argv)
 				goto leave;
 			}
 
-			archive = xa_new_archive_dialog(opt_compress, NULL);
+			archive = xa_new_archive_dialog(argc == 1 ? opt_compress : NULL, NULL);
 
 			if (archive == NULL)
 			{
@@ -1227,6 +1449,7 @@ int main (int argc, char **argv)
 			{
 				gchar *fname;
 				gboolean is_dir;
+				GSList *files = NULL;
 
 				fname = xa_make_full_path(opt_compress);
 				is_dir = g_file_test(fname, G_FILE_TEST_IS_DIR);
@@ -1240,21 +1463,20 @@ int main (int argc, char **argv)
 				}
 
 				xa_create_working_directory(archive);
-				current_dir = g_path_get_dirname(opt_compress);
-				chdir(current_dir);
-				g_free(current_dir);
-				GSList *files = NULL;
-				current_dir = g_path_get_basename(opt_compress);
-				files = g_slist_append(files, g_strdup(current_dir));
-				g_free(current_dir);
-				g_free(opt_compress);
+
+				files = g_slist_append(files, opt_compress);
+
 				for (i = 1; i < argc; i++)
-				{
-					current_dir = g_path_get_basename(argv[i]);
-					files = g_slist_append(files, g_strdup(current_dir));
-					g_free(current_dir);
-				}
-				xa_execute_add_commands(archive, files, TRUE, NULL);
+					files = g_slist_append(files, g_strdup(argv[i]));
+
+				prefs_window->add_win_size[0] = -1;
+				xa_set_add_dialog_options(add_window, archive);
+				gtk_widget_hide(gtk_notebook_get_nth_page(GTK_NOTEBOOK(add_window->notebook), 0));
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(add_window->update), FALSE);
+				gtk_widget_hide(add_window->update);
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(add_window->freshen), FALSE);
+				gtk_widget_hide(add_window->freshen);
+				xa_parse_add_dialog_options(archive, add_window, files);
 			}
 		}
 		/* Switch -a */
@@ -1276,16 +1498,11 @@ int main (int argc, char **argv)
 			if (archive->status == XARCHIVESTATUS_ERROR)
 				goto leave;
 
-			if (archive->has_password)
-			{
-				if (!xa_check_password(archive))
-					goto leave;
-			}
+			if (archive->has_password && !xa_check_password(archive))
+				goto leave;
 
 			xa_set_add_dialog_options(add_window, archive);
-			xa_parse_add_dialog_options(archive, add_window);
-			gtk_widget_destroy(add_window->dialog1);
-			g_free(add_window);
+			xa_parse_add_dialog_options(archive, add_window, NULL);
 		}
 		/* Switch -i */
 		else if (opt_info)
@@ -1325,17 +1542,8 @@ int main (int argc, char **argv)
 
 leave:
 
-		if (progress)
-		{
-			gtk_widget_destroy(progress->window);
-			g_free(progress);
-			progress = NULL;
-		}
-		if (archive != NULL)
-			xa_clean_archive_structure (archive);
-		#ifdef HAVE_SOCKET
-			socket_finalize();
-		#endif
+		if (archive)
+			xa_clean_archive_structure(archive);
 	}
 	else
 	{
@@ -1344,15 +1552,15 @@ leave:
 												gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (prefs_window->show_sidebar)),
 												gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (prefs_window->show_toolbar)));
 
-		gtk_window_set_transient_for (GTK_WINDOW (extract_window->dialog1),GTK_WINDOW (xa_main_window));
-		gtk_window_set_transient_for (GTK_WINDOW (add_window->dialog1),GTK_WINDOW (xa_main_window));
-		gtk_window_set_transient_for (GTK_WINDOW (prefs_window->dialog1),GTK_WINDOW (xa_main_window));
-		gtk_window_set_transient_for (GTK_WINDOW (multi_extract_window->multi_extract),GTK_WINDOW (xa_main_window));
-		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(prefs_window->check_save_geometry)) && prefs_window->geometry[0] != -1)
+		gtk_window_set_transient_for(GTK_WINDOW(extract_window->dialog), GTK_WINDOW(xa_main_window));
+		gtk_window_set_transient_for(GTK_WINDOW(add_window->dialog), GTK_WINDOW(xa_main_window));
+		gtk_window_set_transient_for(GTK_WINDOW(prefs_window->dialog), GTK_WINDOW(xa_main_window));
+		gtk_window_set_transient_for(GTK_WINDOW(multi_extract_window->dialog), GTK_WINDOW(xa_main_window));
+		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(prefs_window->save_geometry)) && prefs_window->main_win_geometry[0] != -1)
 		{
-			gtk_window_move (GTK_WINDOW(xa_main_window), prefs_window->geometry[0], prefs_window->geometry[1]);
-			gtk_window_set_default_size(GTK_WINDOW(xa_main_window), prefs_window->geometry[2], prefs_window->geometry[3]);
-			gtk_paned_set_position(GTK_PANED(hpaned1), prefs_window->geometry[4]);
+			gtk_window_move(GTK_WINDOW(xa_main_window), prefs_window->main_win_geometry[0], prefs_window->main_win_geometry[1]);
+			gtk_window_set_default_size(GTK_WINDOW(xa_main_window), prefs_window->main_win_geometry[2], prefs_window->main_win_geometry[3]);
+			gtk_paned_set_position(GTK_PANED(hpaned1), prefs_window->main_win_geometry[4]);
 		}
 		else
 		{
@@ -1392,6 +1600,26 @@ leave:
 		result = EXIT_SUCCESS;
 	}
 
+	if (progress)
+	{
+		gtk_widget_destroy(progress->window);
+		g_free(progress);
+	}
+
+	gtk_widget_destroy(prefs_window->dialog);
+	g_free(prefs_window);
+	g_free(config_file);
+	g_free(xdg_open);
+
+	gtk_widget_destroy(extract_window->dialog);
+	g_free(extract_window);
+
+	gtk_widget_destroy(add_window->dialog);
+	g_free(add_window);
+
+	gtk_widget_destroy(multi_extract_window->dialog);
+	g_free(multi_extract_window);
+
 	for (i = XARCHIVETYPE_FIRST; i < XARCHIVETYPE_TYPES; i++)
 	{
 		g_free(archiver[i].program[0]);
@@ -1401,7 +1629,11 @@ leave:
 		g_slist_free(archiver[i].tags);
 	}
 
-	g_free(xdg_open);
+quit:
+
+#ifdef HAVE_SOCKET
+	socket_finalize();
+#endif
 
 	return result;
 }

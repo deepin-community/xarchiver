@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2008 Giuseppe Torelli <colossus73@gmail.com>
+ *  Copyright (C) 2017 Ingo Brückl
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,7 +24,9 @@
 #include <glib.h>
 #include "archive.h"
 
-#define SINGLE_FILE_COMPRESSOR(archive) (archive->type == XARCHIVETYPE_BZIP2    || \
+#define SINGLE_FILE_COMPRESSOR(archive) (archive->type == XARCHIVETYPE_BZIP     || \
+                                         archive->type == XARCHIVETYPE_BZIP2    || \
+                                         archive->type == XARCHIVETYPE_BZIP3    || \
                                          archive->type == XARCHIVETYPE_COMPRESS || \
                                          archive->type == XARCHIVETYPE_GZIP     || \
                                          archive->type == XARCHIVETYPE_LRZIP    || \
@@ -31,11 +34,14 @@
                                          archive->type == XARCHIVETYPE_LZIP     || \
                                          archive->type == XARCHIVETYPE_LZMA     || \
                                          archive->type == XARCHIVETYPE_LZOP     || \
-                                         archive->type == XARCHIVETYPE_XZ)
+                                         archive->type == XARCHIVETYPE_RZIP     || \
+                                         archive->type == XARCHIVETYPE_XZ       || \
+                                         archive->type == XARCHIVETYPE_ZSTD)
 
 #define LZ4_MAGIC "\x04\x22\x4d\x18"
+#define MOZLZ4_MAGIC "mozLz40\x00"
 
-void xa_gzip_et_al_add(XArchive *, GSList *, gchar *);
+void xa_gzip_et_al_add(XArchive *, GSList *);
 void xa_gzip_et_al_ask(XArchive *);
 void xa_gzip_et_al_check_lrzip(const gchar *);
 gchar *xa_gzip_et_al_check_zstd(const gchar *, const gchar *, gboolean *);

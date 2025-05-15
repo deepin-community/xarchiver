@@ -1,5 +1,6 @@
 /*
  *  Copyright (c) 2008 Giuseppe Torelli <colossus73@gmail.com>
+ *  Copyright (C) 2016 Ingo Brückl
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,6 +24,12 @@
 #include <gtk/gtk.h>
 #include "archive.h"
 
+enum
+{
+  TARGET_TYPE_DIRECT_SAVE,
+  TARGET_TYPE_URI_LIST
+};
+
 typedef struct
 {
 	GtkWidget *window;
@@ -44,6 +51,7 @@ extern GtkWidget *cut;
 extern GtkWidget *ddelete;
 extern GtkWidget *delete_menu;
 extern GtkWidget *deselect_all;
+extern GtkWidget *edit;
 extern GtkWidget *eextract;
 extern GtkWidget *encrypted_data;
 extern GtkWidget *home_button;
@@ -58,6 +66,7 @@ extern GtkWidget *password_entry_menu;
 extern GtkWidget *paste;
 extern GtkWidget *path_data;
 extern GtkWidget *rename_menu;
+extern GtkWidget *replace;
 extern GtkWidget *rrename;
 extern GtkWidget *scrolledwindow2;
 extern GtkWidget *selected_frame;
@@ -79,6 +88,7 @@ extern GtkNotebook *notebook;
 extern GtkTreeStore *archive_dir_treestore;
 extern Progress *progress;
 
+void process_gtk_events();
 gboolean select_matched_rows(GtkTreeModel *, GtkTreePath *, GtkTreeIter *, gpointer);
 void xa_add_page(XArchive *);
 void xa_block_signal_dir_treeview_selection(gboolean);
@@ -92,6 +102,7 @@ gboolean xa_flash_led_indicator(XArchive *);
 void xa_increase_progress_bar(Progress *, gchar *, double);
 gboolean xa_pulse_progress_bar(XArchive *);
 void xa_set_button_state(gboolean, gboolean, gboolean, gboolean, gboolean, gboolean, gboolean, gboolean, gboolean, gboolean, gboolean, GSList *, gboolean);
+void xa_set_location_entry(XArchive *);
 void xa_show_progress_bar(XArchive *);
 
 #endif

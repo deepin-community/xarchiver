@@ -1,6 +1,7 @@
 /*
  *  Copyright (C) 2008 Giuseppe Torelli - <colossus73@gmail.com>
  *  Copyright (C) 2006 Lukasz 'Sil2100' Zemczak - <sil2100@vexillium.org>
+ *  Copyright (C) 2016 Ingo Brückl
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,6 +23,7 @@
 #include "lha.h"
 #include "date_utils.h"
 #include "main.h"
+#include "parser.h"
 #include "string_utils.h"
 #include "support.h"
 #include "window.h"
@@ -30,12 +32,11 @@ static gboolean data_line, last_line;
 
 gboolean xa_lha_check_program (gchar *path)
 {
-	gchar *output, *discard;
+	gchar *output = NULL;
 	gboolean full_lha;
 
-	g_spawn_command_line_sync(path, &output, &discard, NULL, NULL);
-	full_lha = (g_ascii_strncasecmp("Lhasa ", output, 6) != 0);
-	g_free(discard);
+	g_spawn_command_line_sync(path, &output, NULL, NULL, NULL);
+	full_lha = (output && (g_ascii_strncasecmp("Lhasa ", output, 6) != 0));
 	g_free(output);
 
 	return full_lha;
@@ -43,15 +44,25 @@ gboolean xa_lha_check_program (gchar *path)
 
 void xa_lha_ask (XArchive *archive)
 {
+	gboolean read_only;
+	compressor_t lha_compressor = {FALSE, 5, 5, 7, 1};
+
+	read_only = (archive->tag == 'x');   // exe
+
 	archive->can_test = TRUE;
 	archive->can_extract = TRUE;
-	archive->can_add = archiver[archive->type].is_compressor;
-	archive->can_delete = archiver[archive->type].is_compressor;
+	archive->can_add = (archiver[archive->type].is_compressor && !read_only);
+	archive->can_delete = (archiver[archive->type].is_compressor && !read_only);
 	archive->can_full_path[0] = TRUE;
 	archive->can_full_path[1] = archiver[archive->type].is_compressor;   // n.b.: adds leading slash
 	archive->can_overwrite = TRUE;
 	archive->can_update[1] = archiver[archive->type].is_compressor;
-	archive->can_move = archiver[archive->type].is_compressor;
+	archive->can_recurse[0] = TRUE;
+	archive->can_recurse[1] = (archiver[archive->type].is_compressor ? FORCED : FALSE);
+	archive->can_remove = archiver[archive->type].is_compressor;
+	archive->can_compress = archiver[archive->type].is_compressor;
+	archive->compressor = lha_compressor;
+	archive->compression = archive->compressor.preset;
 }
 
 static void xa_lha_parse_output (gchar *line, XArchive *archive)
@@ -59,11 +70,13 @@ static void xa_lha_parse_output (gchar *line, XArchive *archive)
 	XEntry *entry;
 	gpointer item[7];
 	gchar *filename, time[6];
-	unsigned int linesize,n,a;
-	gboolean dir;
+	gboolean dir, link;
+
+	USE_PARSER;
 
 	if (last_line)
 		return;
+
 	if (!data_line)
 	{
 		if (line[0] == '-')
@@ -71,48 +84,38 @@ static void xa_lha_parse_output (gchar *line, XArchive *archive)
 			data_line = TRUE;
 			return;
 		}
+
 		return;
 	}
-	if (strncmp(line,"----",4) == 0)
+
+	if (strncmp(line, "---------- -", 12) == 0)
 	{
 		last_line = TRUE;
 		return;
 	}
-	linesize = strlen(line);
 
-	/* Permission */
-	line[10] = '\0';
-	item[5] = line;
-	dir = (line[0] == 'd');
+	/* permissions */
+	NEXT_ITEM(item[5]);
 
-	/* UID/GID */
-	line[22] = '\0';
-	item[6] = line + 11;
+	dir = (*(char *) item[5] == 'd');
+	link = (*(char *) item[5] == 'l');
 
-	//TODO verify the len of the size column with a big archive
-	/* Size */
-	for(n = 23;n < linesize;n++)
-	if(line[n] != ' ')
-		break;
+	/* uid/gid */
+	NEXT_ITEM(item[6]);
 
-	a = n;
-	for(;n < linesize;n++)
-	if(line[n] == ' ')
-		break;
+	/* size */
+	NEXT_ITEM(item[1]);
 
-	line[a+(n-a)] = '\0';
-	item[1] = line + a;
+	/* ratio */
+	NEXT_ITEM(item[2]);
 
-    /* Ratio */
-    line[37] = '\0';
-    item[2] = line + 31;
+	LINE_PEEK(9);
 
-    /* Date and Time */
-    line[50] = '\0';
-    item[3] = line + 38;
+	/* date and time */
+	NEXT_ITEMS(3, item[3]);
 
-	/* Time */
-	if (((char *) item[3])[9] == ':')
+	/* time */
+	if (((char *) item[3])[peek] == ':' && strlen(item[3]) >= 12)
 	{
 		memcpy(time, item[3] + 7, 5);
 		time[5] = 0;
@@ -123,20 +126,21 @@ static void xa_lha_parse_output (gchar *line, XArchive *archive)
 	item[3] = date_MMM_dD_HourYear(item[3]);
 	item[4] = time;
 
-	line[(linesize- 1)] = '\0';
-	filename = line + 51;
+	/* name */
+	LAST_ITEM(filename);
 
-	/* Symbolic link */
-	gchar *temp = g_strrstr (filename,"->");
-	if (temp)
+	item[0] = NULL;
+
+	if (link)
 	{
-		gint len = strlen(filename) - strlen(temp);
-		item[0] = (filename +=3) + len;
-		filename -= 3;
-		filename[strlen(filename) - strlen(temp)-1] = '\0';
+		gchar *lnk = g_strrstr(filename, " -> ");
+
+		if (lnk)
+		{
+			item[0] = lnk + 4;
+			*lnk = 0;
+		}
 	}
-	else
-		item[0] = NULL;
 
 	entry = xa_set_archive_entries_for_each_row(archive, filename, item);
 
@@ -198,7 +202,7 @@ gboolean xa_lha_extract (XArchive *archive, GSList *file_list)
 	gchar *command;
 	gboolean result;
 
-	files = xa_quote_filenames(file_list, NULL, TRUE);
+	files = xa_quote_filenames(file_list, NULL, DIR_WITH_ASTERISK);
 	command = g_strconcat(archiver[archive->type].program[0],
 	                      archive->do_full_path ? " x" : " xi",
 	                      archive->do_overwrite ? "f" : "",
@@ -212,24 +216,21 @@ gboolean xa_lha_extract (XArchive *archive, GSList *file_list)
 	return result;
 }
 
-void xa_lha_add (XArchive *archive, GSList *file_list, gchar *compression)
+void xa_lha_add (XArchive *archive, GSList *file_list)
 {
 	GString *files;
-	gchar *command;
+	gchar *compression, *command;
 
-	if (archive->location_path != NULL)
-		archive->child_dir = g_strdup(archive->working_dir);
+	compression = g_strdup_printf("%hu", archive->compression);
 
-	if (!compression)
-		compression = "5";
-
-	files = xa_quote_filenames(file_list, NULL, TRUE);
+	files = xa_quote_filenames(file_list, NULL, DIR_WITH_SLASH);
 	command = g_strconcat(archiver[archive->type].program[0],
 	                      archive->do_update ? " u" : " a",
-	                      archive->do_move ? "d" : "",
+	                      archive->do_remove ? "d" : "",
 	                      "o", compression, " ",
 	                      archive->path[1], files->str, NULL);
 	g_string_free(files,TRUE);
+	g_free(compression);
 
 	xa_run_command(archive, command);
 	g_free(command);
@@ -240,7 +241,7 @@ void xa_lha_delete (XArchive *archive, GSList *file_list)
 	GString *files;
 	gchar *command;
 
-	files = xa_quote_filenames(file_list, NULL, TRUE);
+	files = xa_quote_filenames(file_list, NULL, DIR_WITH_ASTERISK);
 	command = g_strconcat(archiver[archive->type].program[0], " d ", archive->path[1], files->str, NULL);
 	g_string_free(files,TRUE);
 

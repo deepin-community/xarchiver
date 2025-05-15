@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2008 Giuseppe Torelli - <colossus73@gmail.com>
+ *  Copyright (C) 2016 Ingo Brückl
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -135,7 +136,7 @@ XArchive *xa_new_archive_dialog (gchar *path, XArchive *archive_open[])
 	gchar *my_path = NULL;
 	gchar *basepath, *filename;
 	gchar *current_dir = NULL;
-	gint current_page, response;
+	gint idx, response;
 	ArchiveType xa = {XARCHIVETYPE_UNKNOWN, 0};
 	gpointer suffix;
 	int i;
@@ -179,12 +180,13 @@ XArchive *xa_new_archive_dialog (gchar *path, XArchive *archive_open[])
 	gtk_box_pack_start (GTK_BOX (hbox),gtk_label_new (_("Archive type:")),FALSE,FALSE,0);
 
 	combo_box = gtk_combo_box_text_new();
+	gtk_combo_box_set_focus_on_click(GTK_COMBO_BOX(combo_box), FALSE);
 
 	gtk_widget_set_tooltip_text(combo_box, _("Choose the archive type to create"));
 	xa_combo_box_text_append_compressor_types(GTK_COMBO_BOX_TEXT(combo_box));
 
 	if (new_combo_box == -1)
-		gtk_combo_box_set_active(GTK_COMBO_BOX(combo_box),gtk_combo_box_get_active(GTK_COMBO_BOX(prefs_window->combo_prefered_format)));
+		gtk_combo_box_set_active(GTK_COMBO_BOX(combo_box), gtk_combo_box_get_active(GTK_COMBO_BOX(prefs_window->preferred_format)));
 	else
 		gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box),new_combo_box);
 
@@ -217,9 +219,11 @@ XArchive *xa_new_archive_dialog (gchar *path, XArchive *archive_open[])
 	gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(xa_file_chooser), filename);
 	g_free(filename);
 
-	gtk_window_set_modal (GTK_WINDOW (xa_file_chooser),TRUE);
 	if (current_new_directory != NULL)
+	{
 		gtk_file_chooser_set_current_folder ( GTK_FILE_CHOOSER (xa_file_chooser),current_new_directory);
+		g_free(current_new_directory);
+	}
 	response = gtk_dialog_run (GTK_DIALOG (xa_file_chooser));
 	current_new_directory = gtk_file_chooser_get_current_folder (GTK_FILE_CHOOSER (xa_file_chooser));
 
@@ -231,14 +235,14 @@ XArchive *xa_new_archive_dialog (gchar *path, XArchive *archive_open[])
 
 		if (xa_main_window)
 		{
-			int x;
+			gint n;
 
-			for (x = 0; x < gtk_notebook_get_n_pages (notebook) ; x++)
+			for (n = 0; n < gtk_notebook_get_n_pages(notebook); n++)
 			{
-				current_page = xa_find_archive_index (x);
-				if (current_page == -1)
+				idx = xa_find_archive_index(n);
+				if (idx == -1)
 					break;
-				if (strcmp(my_path, archive_open[current_page]->path[0]) == 0)
+				if (strcmp(my_path, archive_open[idx]->path[0]) == 0)
 				{
 					gchar *msg = g_strdup_printf(_("\"%s\" is already open!"),my_path);
 					xa_show_message_dialog(GTK_WINDOW(xa_main_window), GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, _("Can't create a new archive:"), msg);

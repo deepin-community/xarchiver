@@ -20,10 +20,19 @@
 #ifndef XARCHIVER_PARSER_H
 #define XARCHIVER_PARSER_H
 
+#define USE_PARSER \
+unsigned int _len; \
+unsigned int peek; \
+                   \
+(void) _len;       \
+(void) peek
+
 #define GRAB_ITEMS(parts, item, cond)                        \
 do                                                           \
 {                                                            \
   unsigned int part = 1;                                     \
+                                                             \
+  item = line;                                               \
                                                              \
   do                                                         \
   {                                                          \
@@ -37,41 +46,23 @@ do                                                           \
 }                                                            \
 while (0)
 
-#define USE_PARSER         \
-static void *_archive;     \
-static int _pos;           \
-unsigned int _len;         \
-char *_start = line;       \
-                           \
-(void) _len;               \
-                           \
-do                         \
-{                          \
-  if (_archive != archive) \
-  {                        \
-    _archive = archive;    \
-    _pos = -1;             \
-  }                        \
-}                          \
-while (0)
-
 #define NEXT_ITEMS(parts, item) GRAB_ITEMS(parts, item, *line != ' ' && *line != '\t' && *line != '\n')
 #define NEXT_ITEM(item) NEXT_ITEMS(1, item)
 #define SKIP_ITEM NEXT_ITEM(line)
-#define LAST_ITEM(item)   /* for filenames */ \
-do                                            \
-{                                             \
-  int pos;                                    \
-                                              \
-  GRAB_ITEMS(1, item, *line != '\n');         \
-  pos = item - _start;                        \
-                                              \
-  if (_pos < 0 || pos < _pos) _pos = pos;     \
-  else if (pos > _pos) item = _start + _pos;  \
-}                                             \
+
+#define LAST_ITEM(item)                    \
+do                                         \
+{                                          \
+  item = line;                             \
+  while (*line && (*line != '\n')) line++; \
+  if (*line) *line++ = 0;                  \
+}                                          \
 while (0)
 
 #define IF_ITEM_LINE(string) if ((_len = strlen(string)) && (strncmp(line, string, _len) == 0) && (line += _len))
 #define DUPE_ITEM(item) item = g_strdup(g_strstrip(line))
+
+#define LINE_PEEK(n) for (peek = 0; (peek < (n)) && line[peek]; peek++)
+#define LINE_SKIP(n) for (_len = 0; (_len < (n)) && *line; _len++, line++)
 
 #endif

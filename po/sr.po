@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: DoudouLinux\n"
 "Report-Msgid-Bugs-To: https://github.com/ib/xarchiver/issues\n"
-"POT-Creation-Date: 2021-01-21 13:49+0100\n"
+"POT-Creation-Date: 2024-09-26 11:30+0200\n"
 "PO-Revision-Date: 2019-02-26 03:12+0300\n"
 "Last-Translator: Jay Alexander Fleming <tito.nehru.naser@gmail.com>\n"
 "Language-Team: Serbian (http://www.transifex.com/jmphilippe/doudoulinux/"
@@ -60,42 +60,19 @@ msgstr[0] "%d датотека %s (%s)"
 msgstr[1] "%d датотеке %s (%s)"
 msgstr[2] "%d датотека %s (%s)"
 
-#: ../src/pref_dialog.c
-msgid "/tmp"
-msgstr "/tmp"
-
 #: ../src/add_dialog.c
-msgid "0 = no compression, 1 is default, 4 = fastest but least compression"
+#, fuzzy, c-format
+#| msgid "0 = no compression, 1 is default, 4 = fastest but least compression"
+msgid ""
+"%hu is least compression\n"
+"%hu is default compression\n"
+"%hu is best compression"
 msgstr ""
 "0 = без сажимања, 1 = подразумевано, 4 = најмање али и најбрже сажимање"
 
-#: ../src/add_dialog.c
-msgid "0 = no compression, 3 is default, 5 = best compression but slowest"
-msgstr ""
-"0 = без сажимања, 3 = подразумевано, 5 = највеће али и најспорије сажимање"
-
-#: ../src/add_dialog.c
-msgid "0 = no compression, 5 is default, 9 = best compression but slowest"
-msgstr ""
-"0 = без сажимања, 5 = подразумевано, 9 = највеће али и најспорије сажимање"
-
-#: ../src/add_dialog.c
-msgid "0 = no compression, 6 is default, 9 = best compression but slowest"
-msgstr ""
-"0 = без сажимања, 6 = подразумевано, 9 = највеће али и најспорије сажимање"
-
-#: ../src/add_dialog.c
-msgid "5 = default compression, 7 = max compression"
-msgstr "5 = подразумевано, 7 = највеће сажимање"
-
 #: ../src/pref_dialog.c
-msgid ""
-"<span color='red' style='italic'>Please install xdg-utils package so that\n"
-"Xarchiver can recognize more file types.</span>"
-msgstr ""
-"<span color='red' style='italic'>Ако инсталирајте „xdg-utils“ пакет АрХивер "
-"ће \n"
-"препознавати више датотека различитих врста.</span>"
+msgid "/tmp"
+msgstr "/tmp"
 
 #: ../src/interface.c
 msgid "<span weight='bold' size='larger'>Enter password for:</span>"
@@ -116,12 +93,6 @@ msgstr "<th>Датотеке:</th>"
 msgid "<th>Size:</th>"
 msgstr "<th>Датотеке:</th>"
 
-#: ../xarchiver.desktop.in.h
-#, fuzzy
-#| msgid "A GTK+2 only archive manager"
-msgid "A GTK+ only archive manager"
-msgstr "Управник архива изграђен само на GTK+2 библиотекама"
-
 #: ../src/window.c
 #, fuzzy
 #| msgid "A GTK+2 only archive manager"
@@ -137,8 +108,8 @@ msgid "A_dd"
 msgstr "_Додај"
 
 #: ../src/add_dialog.c
-msgid "Actions: "
-msgstr "Радње: "
+msgid "Actions"
+msgstr "Радње"
 
 #: ../src/interface.c
 #, fuzzy
@@ -166,7 +137,7 @@ msgid ""
 "                                     quit"
 msgstr "Додај датотеке у архиву захтевајући њихова имена и изађи."
 
-#: ../src/add_dialog.c
+#: ../src/window.c
 msgid "Adding files to archive, please wait..."
 msgstr "Додавање датотека у архиву. Сачекајте..."
 
@@ -178,12 +149,20 @@ msgstr "Додавање у архиву: "
 msgid "Advanced"
 msgstr "Напредно"
 
+#: ../src/pref_dialog.c
+#, fuzzy
+#| msgid "Icons size (requires restart):"
+msgid "Advanced incremental search (requires restart)"
+msgstr "Величина икона (потребан рестарт)"
+
 #: ../src/extract_dialog.c ../src/new_dialog.c ../src/window.c
 msgid "All files"
 msgstr "Све датотеке"
 
 #: ../src/pref_dialog.c
-msgid "Allow subdirs with drag and drop"
+#, fuzzy
+#| msgid "Allow subdirs with drag and drop"
+msgid "Allow subdirs with clipboard and drag-and-drop"
 msgstr "Дозволи поддиректоријуме превуци и пусти техником"
 
 #: ../src/window.c
@@ -194,13 +173,9 @@ msgstr "Јавила се грешка код приступа архиви."
 msgid "An error occurred!"
 msgstr "Јавила се некаква грешка!"
 
-#: ../src/pref_dialog.c
+#: ../src/extract_dialog.c ../src/pref_dialog.c
 msgid "Archive"
 msgstr "Архива"
-
-#: ../src/extract_dialog.c
-msgid "Archive Name"
-msgstr "Име архиве"
 
 #: ../src/interface.c
 msgid "Archive Properties"
@@ -232,6 +207,12 @@ msgstr "Управник архива"
 msgid "Archive tree"
 msgstr "Структура архиве у облику стабла"
 
+#: ../src/pref_dialog.c
+msgid ""
+"Archive tree nodes already expand when the node name is selected by mouse "
+"click or keyboard shortcut."
+msgstr ""
+
 #: ../src/new_dialog.c
 msgid "Archive type:"
 msgstr "Врста архиве: "
@@ -253,6 +234,10 @@ msgstr "Жлели те ли то заиста?"
 #: ../src/7zip.c ../src/arj.c ../src/rar.c
 msgid "Attributes"
 msgstr "Особине"
+
+#: ../src/pref_dialog.c
+msgid "Automatically expand archive tree nodes on selection"
+msgstr ""
 
 #: ../src/interface.c
 msgid "Back"
@@ -294,7 +279,7 @@ msgstr "Не могу да направим привремени директо�
 msgid "Can't create temporary directory:"
 msgstr "Не могу да направим привремени директоријум у „/tmp“: "
 
-#: ../src/extract_dialog.c ../src/main.c
+#: ../src/extract_dialog.c ../src/main.c ../src/window.c
 msgid "Can't extract files from the archive:"
 msgstr "Не могу да распакујем датотеке из архиве: "
 
@@ -312,7 +297,7 @@ msgstr "Вишеструко-распакивање архива није усп
 
 #: ../src/rpm.c
 #, c-format
-msgid "Can't open RPM file %s:"
+msgid "Can't open RPM file \"%s\":"
 msgstr "Не могу да отворим „RPM“ датотеку „%s“: "
 
 #: ../src/window.c
@@ -320,15 +305,10 @@ msgstr "Не могу да отворим „RPM“ датотеку „%s“: "
 msgid "Can't open file \"%s\":"
 msgstr "Не могу да отворим „%s“ датотеку: "
 
-#: ../src/window.c
-#, c-format
-msgid "Can't open file %s:"
-msgstr "Не могу да отворим „%s“ датотеку: "
-
 #: ../src/main.c
 #, fuzzy
 #| msgid "Can't add files to the archive:"
-msgid "Can't open the archive!\n"
+msgid "Can't open the archive!"
 msgstr "Не могу да додам датотеке у архиву: "
 
 #: ../src/extract_dialog.c ../src/window.c
@@ -348,8 +328,8 @@ msgid "Can't run the archiver executable:"
 msgstr "Не могу да покренем програм одговарајући архивер: "
 
 #: ../src/window.c
-msgid "Can't write the unzipsfx module to the archive:"
-msgstr "Не могу уписати у архиву “unzipsfx“ модул: "
+msgid "Can't write the sfx module to the archive:"
+msgstr "Не могу уписати у архиву “sfx“ модул: "
 
 #: ../src/interface.c
 msgid "Cancel current operation"
@@ -391,6 +371,12 @@ msgstr "Поруке из линије за _наредбе"
 msgid "Command"
 msgstr "Напомена"
 
+#: ../src/pref_dialog.c
+msgid ""
+"Command-line output is captured and can be reviewed, but this consumes "
+"additional memory."
+msgstr ""
+
 #: ../src/window.c
 msgid "Comment"
 msgstr "Напомена"
@@ -408,14 +394,18 @@ msgstr "Садржи напомену:\n"
 msgid "Compressed"
 msgstr "Компресовано"
 
-#: ../src/window.c
-#, c-format
-msgid "Compressed   size: "
-msgstr "Компресовано: "
-
 #: ../src/interface.c
 msgid "Compressed size:"
 msgstr "Величина са сажимањем: "
+
+#: ../src/window.c
+#, c-format
+msgid "Compressed size: "
+msgstr "Компресовано: "
+
+#: ../src/add_dialog.c
+msgid "Compression"
+msgstr "Ниво сажимања"
 
 #: ../src/gzip_et_al.c
 #, fuzzy
@@ -427,13 +417,15 @@ msgstr "Ниво сажимања: "
 msgid "Compression ratio:"
 msgstr "Ниво сажимања: "
 
-#: ../src/add_dialog.c
-msgid "Compression: "
-msgstr "Ниво сажимања: "
-
 #: ../src/pref_dialog.c
 msgid "Confirm deletion of files"
 msgstr "Тражи потврду при брисању датотека"
+
+#: ../src/window.c
+#, fuzzy
+#| msgid "Testing archive,please wait..."
+msgid "Converting archive, please wait..."
+msgstr "Проверавам исправност архиве. Сачекајте..."
 
 #: ../src/interface.c
 msgid "Copy"
@@ -451,6 +443,12 @@ msgstr "Направи нову архиву"
 msgid "Create a solid archive"
 msgstr "Направи сложену архиву"
 
+#: ../xarchiver.desktop.in.h
+#, fuzzy
+#| msgid "Create a solid archive"
+msgid "Create, extract and modify archives"
+msgstr "Направи сложену архиву"
+
 #: ../src/interface.c
 msgid "Cut"
 msgstr "Исеци"
@@ -460,8 +458,8 @@ msgid "Data Frames/Skippable Frames"
 msgstr ""
 
 #: ../src/7zip.c ../src/ar.c ../src/arj.c ../src/cpio.c ../src/gzip_et_al.c
-#: ../src/lha.c ../src/rar.c ../src/rpm.c ../src/tar.c ../src/unar.c
-#: ../src/zip.c
+#: ../src/lha.c ../src/rar.c ../src/rpm.c ../src/squashfs.c ../src/tar.c
+#: ../src/unar.c ../src/zip.c ../src/zpaq.c
 msgid "Date"
 msgstr "Датум"
 
@@ -479,17 +477,21 @@ msgstr "Обриши"
 msgid "Delete files after adding"
 msgstr "Обриши датотеке после додавања у архиву"
 
+#: ../src/window.c
+#, fuzzy
+#| msgid "Extracting files from archive,please wait..."
+msgid "Deleting files from archive, please wait..."
+msgstr "Распакивање датотеке из архиве. Сачекајте..."
+
 #: ../src/interface.c
 msgid "Dese_lect all"
 msgstr "Пони_шти избор"
 
 #: ../src/extract_dialog.c
-msgid "Destination dirs:"
-msgstr "Одредишни директоријуми: "
-
-#: ../src/add_dialog.c
-msgid "Do not store paths"
-msgstr "Не чувај путање"
+#, fuzzy
+#| msgid "destination archive"
+msgid "Destination"
+msgstr "одредишна архива"
 
 #: ../src/window.c
 msgid "Do you really want to cancel?"
@@ -504,12 +506,16 @@ msgid "Doing so will probably corrupt your archive!"
 msgstr "Чинећи ово, највероватније ћете уништити архиву!"
 
 #: ../src/interface.c
+msgid "Edit"
+msgstr ""
+
+#: ../src/interface.c
 msgid "Encrypted:"
 msgstr "Шифрована: "
 
 #: ../src/add_dialog.c
-msgid "Encryption: "
-msgstr "Шифровање: "
+msgid "Encryption"
+msgstr "Шифровање"
 
 #: ../src/extract_dialog.c
 msgid "Ensure a containing directory"
@@ -518,12 +524,18 @@ msgstr ""
 #: ../src/extract_dialog.c
 msgid ""
 "Ensure that the contents of the extracted archive is always in a containing "
-"directory"
+"directory."
 msgstr ""
 
 #: ../src/interface.c
 msgid "Enter passwo_rd"
 msgstr "Унеси_те лозинку"
+
+#: ../src/pref_dialog.c
+msgid ""
+"Even if other, perhaps more powerful programs are installed to handle zip "
+"archives, the traditional \"unzip\" and \"zip\" will still be used."
+msgstr ""
 
 #: ../src/interface.c
 msgid "Extract"
@@ -557,10 +569,6 @@ msgstr "Распакуј архиву у одредишни директориј
 msgid "Extract files"
 msgstr "Распакивање датотека"
 
-#: ../src/extract_dialog.c
-msgid "Extract files with full path"
-msgstr "Распакуј користећи пуну путању"
-
 #: ../src/main.c
 #, fuzzy
 #| msgid "Extract archive by asking the extraction directory and quits."
@@ -572,24 +580,33 @@ msgstr "Распакуј архиву захтевајући директори�
 #: ../src/extract_dialog.c
 msgid ""
 "Extract only those files that already exist on disk and that are newer than "
-"the disk copies"
+"the disk copies."
 msgstr ""
 "Распакује само оне датотеке новије од оних које већ постоје на диску са "
 "истим именом."
 
 #: ../src/extract_dialog.c
-msgid "Extract pathnames"
-msgstr "Распакуј имена путања"
-
-#: ../src/extract_dialog.c
-msgid "Extract to dir \"Archive Name\""
+#, fuzzy
+#| msgid "Extract to dir \"Archive Name\""
+msgid "Extract to directories with archive names"
 msgstr "Распакуј у „Име архиве“ директоријум"
 
 #: ../src/extract_dialog.c
 msgid "Extract to:"
 msgstr "Распакуј у: "
 
-#: ../src/extract_dialog.c ../src/window.c
+#: ../src/extract_dialog.c
+#, fuzzy
+#| msgid "Extract files with full path"
+msgid "Extract with full path"
+msgstr "Распакуј користећи пуну путању"
+
+#: ../src/interface.c
+#, c-format
+msgid "Extracting \"%s\"..."
+msgstr ""
+
+#: ../src/window.c
 #, fuzzy
 #| msgid "Extracting files from archive,please wait..."
 msgid "Extracting files from archive, please wait..."
@@ -603,66 +620,59 @@ msgstr "Распакивање из архиве: "
 msgid "Failed to launch the application!"
 msgstr "Покретање овог програма није успело!"
 
-#: ../src/add_dialog.c
-msgid "File Paths: "
-msgstr "Путање датотека: "
+#: ../src/add_dialog.c ../src/extract_dialog.c
+msgid "File Paths"
+msgstr "Путање датотека"
 
 #: ../src/window.c
 msgid "Filename"
 msgstr "Датотека"
 
 #: ../src/extract_dialog.c
-msgid "Files "
-msgstr "Датотеке "
+msgid "Files"
+msgstr "Датотеке"
 
-#: ../src/extract_dialog.c
-msgid "Files: "
-msgstr "Датотеке: "
+#: ../src/zpaq.c
+msgid "Files with absolute pathnames cannot be deleted!"
+msgstr ""
 
-#: ../src/window.c
-#, c-format
-msgid "Files:%*s%s"
-msgstr "Датотеке:%*s%s"
+#: ../src/extract_dialog.c ../src/window.c
+msgid "Files:"
+msgstr "Датотеке:"
 
 #: ../src/interface.c
 msgid "Forward"
 msgstr "Напред"
 
-#: ../src/add_dialog.c
-msgid "Freshen and replace"
-msgstr "Обнови и замени"
-
-#: ../src/extract_dialog.c
-msgid "Freshen existing files"
+#: ../src/add_dialog.c ../src/extract_dialog.c
+#, fuzzy
+#| msgid "Freshen existing files"
+msgid "Freshen existing files only"
 msgstr "Обнови постојеће датотеке"
 
 #: ../src/window.c
 msgid "From File"
 msgstr "Из датотеке"
 
-# Only the keywords after GTK and before 7-zip need to be translated.
-#: ../xarchiver.desktop.in.h
-msgid ""
-"GTK;android;archiver;archiving;comic book;compression;front end;frontend;"
-"library;7-zip;7z;7za;7zip;7zr;apk;ar;arj;bunzip2;bz2;bzip2;cbz;compress;cpio;"
-"deb;epub;exe;gtar;gunzip;gz;gzip;jar;jsonlz4;lbzip2;lha;lrz;lrzip;lsar;lz;"
-"lz4;lzh;lzip;lzma;lzo;lzop;mozlz4;oxt;pbzip2;pigz;plzip;rar;rar4;rar5;rpm;"
-"tar;unar;unarchiver;unarj;unrar;unzip;xpi;xz;zip;zst;Zstandard;zstd;"
-msgstr ""
-
 #: ../src/cpio.c ../src/rpm.c
 msgid "Group"
 msgstr "Група"
 
 #: ../src/pref_dialog.c
-msgid "Icons size (requires restart)"
-msgstr "Величина икона (потребан рестарт)"
+msgid "Icons size (requires restart):"
+msgstr "Величина икона (потребан рестарт): "
 
 #: ../src/pref_dialog.c
-msgid "If checked the archive comment is shown after the archive is loaded"
+msgid "If checked the archive comment is shown after the archive is loaded."
 msgstr ""
 "Ако је ова опција означена, напомена за архиву се приказује након отварања "
-"архиве"
+"архиве."
+
+#: ../src/pref_dialog.c
+msgid ""
+"If you install \"xdg-open\" from the \"xdg-utils\" package, each file will "
+"be opened with its default application."
+msgstr ""
 
 #: ../src/add_dialog.c
 #, fuzzy
@@ -671,8 +681,8 @@ msgstr ""
 #| "compression ratio"
 msgid ""
 "In a solid archive the files are grouped together resulting in a better "
-"compression ratio"
-msgstr "Код сложене архиве датотеке се групишу ради бољег односа сажимања"
+"compression ratio."
+msgstr "Код сложене архиве датотеке се групишу ради бољег односа сажимања."
 
 #: ../src/add_dialog.c
 msgid "Include subdirectories"
@@ -715,6 +725,12 @@ msgstr ""
 msgid "No"
 msgstr "Не"
 
+#: ../src/add_dialog.c
+#, fuzzy
+#| msgid "Compression"
+msgid "No compression"
+msgstr "Ниво сажимања"
+
 #: ../src/main.c
 msgid "Nullsoft Installer"
 msgstr ""
@@ -751,7 +767,7 @@ msgstr "Отвори помоћу"
 msgid "Open <i>%s</i> with:"
 msgstr "Отвори <i>%s</i> са:"
 
-#: ../src/interface.c ../src/open-with-dlg.c
+#: ../src/interface.c
 msgid "Open With"
 msgstr "Отвори помоћу"
 
@@ -769,6 +785,12 @@ msgstr "Отворите архиву"
 msgid "Open archive files with:"
 msgstr "Отвори слике са: "
 
+#: ../src/open-with-dlg.c
+#, fuzzy
+#| msgid "Open a text file"
+msgid "Open file"
+msgstr "Oтвaрaм текстуалну датотеку"
+
 #: ../src/pref_dialog.c
 msgid "Open image files with:"
 msgstr "Отвори слике са: "
@@ -778,7 +800,9 @@ msgid "Open text files with:"
 msgstr "Отвори текстуалне датотеке помоћу: "
 
 #: ../src/open-with-dlg.c
-msgid "Open the selected files with"
+#, fuzzy
+#| msgid "Open the selected files with"
+msgid "Open the selected files"
 msgstr "Отворите означене датотеке са "
 
 #: ../src/window.c
@@ -797,21 +821,13 @@ msgstr "Отворите архиву"
 msgid "Operation aborted!"
 msgstr ""
 
-#: ../src/add_dialog.c
+#: ../src/add_dialog.c ../src/extract_dialog.c
 msgid "Options"
 msgstr "Опције"
 
-#: ../src/extract_dialog.c
-msgid "Options "
-msgstr "Опције"
-
-#: ../src/extract_dialog.c
-msgid "Options:"
-msgstr "Опције:"
-
 #: ../src/7zip.c ../src/ar.c ../src/arj.c ../src/cpio.c ../src/gzip_et_al.c
-#: ../src/lha.c ../src/rar.c ../src/rpm.c ../src/tar.c ../src/unar.c
-#: ../src/zip.c
+#: ../src/lha.c ../src/rar.c ../src/rpm.c ../src/squashfs.c ../src/tar.c
+#: ../src/unar.c ../src/zip.c ../src/zpaq.c
 #, fuzzy
 #| msgid "Original"
 msgid "Original Size"
@@ -825,7 +841,7 @@ msgstr "Препиши преко постојећих датотека"
 msgid "Owner"
 msgstr "Власник"
 
-#: ../src/tar.c
+#: ../src/squashfs.c ../src/tar.c
 msgid "Owner/Group"
 msgstr "Власник/Група"
 
@@ -850,7 +866,7 @@ msgid "Pattern:"
 msgstr "Шаблон:"
 
 #: ../src/ar.c ../src/arj.c ../src/cpio.c ../src/lha.c ../src/rpm.c
-#: ../src/tar.c ../src/zip.c
+#: ../src/squashfs.c ../src/tar.c ../src/zip.c ../src/zpaq.c
 msgid "Permissions"
 msgstr "Дозволе"
 
@@ -897,13 +913,20 @@ msgstr "Изаберите архиве које желите да распак�
 msgid "Please select the destination directory"
 msgstr "Изаберите одредишни директоријум"
 
-#: ../src/cpio.c ../src/lha.c ../src/rpm.c ../src/tar.c ../src/unar.c
+#: ../src/window.c
+#, fuzzy
+#| msgid "Please enter it!"
+msgid "Please wait..."
+msgstr "Унесите је!"
+
+#: ../src/cpio.c ../src/lha.c ../src/rpm.c ../src/squashfs.c ../src/tar.c
+#: ../src/unar.c
 msgid "Points to"
 msgstr "Веза до"
 
 #: ../src/pref_dialog.c
 #, fuzzy
-#| msgid "Icons size (requires restart)"
+#| msgid "Icons size (requires restart):"
 msgid "Prefer unzip for zip files (requires restart)"
 msgstr "Величина икона (потребан рестарт)"
 
@@ -912,8 +935,8 @@ msgid "Preferences"
 msgstr "Поставке"
 
 #: ../src/pref_dialog.c
-msgid "Preferred archive format"
-msgstr "Жељена врста архиве"
+msgid "Preferred archive format:"
+msgstr "Жељена врста архиве: "
 
 #: ../src/pref_dialog.c
 #, fuzzy
@@ -952,6 +975,10 @@ msgstr "Отварам архиву. Сачекајте..."
 #: ../src/interface.c
 msgid "Rename"
 msgstr "Преименуј"
+
+#: ../src/interface.c
+msgid "Replace"
+msgstr ""
 
 #: ../src/interface.c
 msgid "Root"
@@ -1021,7 +1048,7 @@ msgstr "Прикажи напомену за архиву"
 
 #: ../src/main.c
 msgid ""
-"Show found command line programs to be\n"
+"Show found command-line programs to be\n"
 "                                     used and exit"
 msgstr ""
 
@@ -1037,6 +1064,12 @@ msgstr "Прикажи издање и изађи"
 
 #: ../src/extract_dialog.c
 msgid "Size"
+msgstr "Величина"
+
+#: ../src/window.c
+#, fuzzy
+#| msgid "Size"
+msgid "Size:"
 msgstr "Величина"
 
 #: ../src/extract_dialog.c
@@ -1067,10 +1100,6 @@ msgstr ""
 msgid "Store archiver output"
 msgstr "Сачувај поруке са излаза архивера"
 
-#: ../src/add_dialog.c
-msgid "Store full paths"
-msgstr "Чувај пуне путање"
-
 #: ../src/gzip_et_al.c
 msgid "Streams/Blocks/Padding"
 msgstr ""
@@ -1097,8 +1126,34 @@ msgid "The archive is okay."
 msgstr "Архива је шифрована!"
 
 #: ../src/extract_dialog.c
+#, fuzzy
+#| msgid ""
+#| "The archive's directory structure is recreated in the extraction directory"
 msgid ""
-"The archive's directory structure is recreated in the extraction directory"
+"The archive's complete directory structure is recreated in the extraction "
+"directory."
+msgstr ""
+"Структура директоријума архиве је поново направљена у директоријуму за "
+"распакивање"
+
+#: ../src/extract_dialog.c
+#, fuzzy
+#| msgid ""
+#| "The archive's directory structure is recreated in the extraction directory"
+msgid ""
+"The archive's directory structure is not recreated; all files are placed in "
+"the extraction directory."
+msgstr ""
+"Структура директоријума архиве је поново направљена у директоријуму за "
+"распакивање"
+
+#: ../src/extract_dialog.c
+#, fuzzy
+#| msgid ""
+#| "The archive's directory structure is recreated in the extraction directory"
+msgid ""
+"The archive's directory structure is recreated in the extraction directory, "
+"but with the parent directories of the selected files removed."
 msgstr ""
 "Структура директоријума архиве је поново направљена у директоријуму за "
 "распакивање"
@@ -1119,13 +1174,19 @@ msgid "The archiver lacks necessary support for password protected decryption!"
 msgstr ""
 
 #: ../src/pref_dialog.c
-msgid "The filename column is sorted after loading the archive"
-msgstr "Колона са називима датотека је сортирана после учитавања архиве"
+msgid "The filename column is sorted after loading the archive."
+msgstr "Колона са називима датотека је сортирана после учитавања архиве."
+
+#: ../src/pref_dialog.c
+msgid ""
+"The incremental search is also performed within filenames rather than just "
+"at the beginning of them."
+msgstr ""
 
 #: ../src/extract_dialog.c ../src/main.c ../src/window.c
-#, fuzzy
+#, fuzzy, c-format
 #| msgid "the proper archiver is not installed!"
-msgid "The proper archiver is not installed!"
+msgid "The proper archiver for \"%s\" is not installed!"
 msgstr "није инсталиран одговарајући архивер-програм!"
 
 #: ../src/extract_dialog.c
@@ -1140,18 +1201,12 @@ msgstr "Ово је АрХиверов показивач стања. Када �
 
 #: ../src/pref_dialog.c
 #, fuzzy
-#| msgid "This option takes more memory with large archives"
-msgid "This option consumes more memory with large archives"
-msgstr "Ова опција ће узети много меморије код рада са великим архивама"
-
-#: ../src/extract_dialog.c
+#| msgid ""
+#| "This option includes the subdirectories when you add files with drag and "
+#| "drop"
 msgid ""
-"This option extracts archives in directories named with the archive names"
-msgstr "Распакујте архиве у директоријуме чија су имена као код самих архива"
-
-#: ../src/pref_dialog.c
-msgid ""
-"This option includes the subdirectories when you add files with drag and drop"
+"This option includes the subdirectories when you add files from the "
+"clipboard or with drag-and-drop."
 msgstr ""
 "Ова опција укључује поддиректоријуме када додајете датотеке превуци и пусти "
 "техником"
@@ -1161,11 +1216,11 @@ msgstr ""
 #| msgid ""
 #| "This option performs the same function as the freshen one,extracting "
 #| "files that are newer than those with the same name on disk,and in "
-#| "addition it extracts those files that do not already exist on disk"
+#| "addition it extracts those files that do not already exist on disk."
 msgid ""
 "This option performs the same function as the freshen one, extracting files "
 "that are newer than those with the same name on disk, and in addition it "
-"extracts those files that do not already exist on disk"
+"extracts those files that do not already exist on disk."
 msgstr ""
 "Ова опција је слична опцији „обнови“. Распакује датотеке које су новије од "
 "оних са истим именом на диску али и оне датотеке које не постоје на диску."
@@ -1177,7 +1232,7 @@ msgstr ""
 #| "modified since the archive was last created/modified"
 msgid ""
 "This option will add any new files and update any files which are already in "
-"the archive but older there"
+"the archive but older there."
 msgstr ""
 "Ова опција омогућава додавање нових датотека и освежавање постојећих "
 "датотека у архиву (уколико су измењене у односу на датум прављења/измене)"
@@ -1190,15 +1245,15 @@ msgstr ""
 #| "option it will not add files that are not already in the archive"
 msgid ""
 "This option will only add files which are already in the archive but older "
-"there; unlike the update option it will not add any new files"
+"there; unlike the update option it will not add any new files."
 msgstr ""
 "Ова опција ће изменити архиву само ако је садржај скорије измењен у односу "
 "на онај који је већ у архиви .За разлику од опције „Освежи“, неће додати "
 "датотеке које већ нису у архиви."
 
 #: ../src/7zip.c ../src/ar.c ../src/arj.c ../src/cpio.c ../src/gzip_et_al.c
-#: ../src/lha.c ../src/rar.c ../src/rpm.c ../src/tar.c ../src/unar.c
-#: ../src/zip.c
+#: ../src/lha.c ../src/rar.c ../src/rpm.c ../src/squashfs.c ../src/tar.c
+#: ../src/unar.c ../src/zip.c ../src/zpaq.c
 msgid "Time"
 msgstr "Време"
 
@@ -1243,12 +1298,14 @@ msgstr ""
 msgid "Up"
 msgstr "Горе"
 
-#: ../src/add_dialog.c
-msgid "Update and add"
-msgstr "Освежи и додај"
-
 #: ../src/extract_dialog.c
 msgid "Update existing files"
+msgstr "Освежи постојеће датотеке"
+
+#: ../src/add_dialog.c
+#, fuzzy
+#| msgid "Update existing files"
+msgid "Update existing files and add new ones"
 msgstr "Освежи постојеће датотеке"
 
 #: ../src/open-with-dlg.c
@@ -1272,18 +1329,36 @@ msgstr "Користи веб прегледник: "
 #| msgid ""
 #| "When this option is used,tar leaves the data modification times of the "
 #| "files it extracts as the times when the files were extracted,instead of "
-#| "setting it to the times recorded in the archive"
+#| "setting it to the times recorded in the archive."
 msgid ""
 "When this option is used, the modification times of the files will be the "
-"times of extraction instead of the times recorded in the archive"
+"times of extraction instead of the times recorded in the archive."
 msgstr ""
 "Коришћењем ове опције, подаци о времену последње измене датотеке ће бити "
 "постављани према времену распакивања датотека из архиве, а не према времену "
 "које су датотеке имале приликом додавања у архиву"
 
+#: ../src/zpaq.c
+msgid "Will not handle files with wildcard characters!"
+msgstr ""
+
 #: ../src/pref_dialog.c
 msgid "Window"
 msgstr "Прозор"
+
+#: ../src/add_dialog.c ../src/extract_dialog.c
+#, fuzzy
+#| msgid "Store full paths"
+msgid "With full path"
+msgstr "Чувај пуне путање"
+
+#: ../src/extract_dialog.c
+msgid "Without any path"
+msgstr ""
+
+#: ../src/add_dialog.c ../src/extract_dialog.c
+msgid "Without parent path"
+msgstr ""
 
 #: ../src/window.c
 msgid "Yes"
@@ -1294,6 +1369,12 @@ msgstr "Да"
 #| msgid "Can't extract files from the archive:"
 msgid "You are about to delete entries from the archive."
 msgstr "Не могу да распакујем датотеке из архиве: "
+
+#: ../src/window.c
+msgid ""
+"You can drop either archives to open or files to add. It is not possible to "
+"do both at the same time."
+msgstr ""
 
 #: ../src/interface.c ../src/window.c
 #, fuzzy
@@ -1325,8 +1406,8 @@ msgid "You haven't selected any files to add!"
 msgstr "Нисте изабрали ни једну датотеку за додавање у архиву!"
 
 #: ../src/main.c
-msgid "You missed the archive name!\n"
-msgstr "Нисте навели име за архиву!\n"
+msgid "You missed the archive name!"
+msgstr "Нисте навели име за архиву!"
 
 #: ../src/add_dialog.c ../src/extract_dialog.c ../src/interface.c
 msgid "You missed the password!"
@@ -1406,6 +1487,14 @@ msgstr "Текстуална датотека"
 msgid "and"
 msgstr ""
 
+#: ../xarchiver.desktop.in.h
+msgid "archive;compress;decompress;extract;pack;uncompress;unpack;"
+msgstr ""
+
+#: ../src/add_dialog.c
+msgid "best"
+msgstr ""
+
 #: ../src/pref_dialog.c
 msgid "choose..."
 msgstr "изабери..."
@@ -1430,6 +1519,10 @@ msgstr "датотека1 датотека2 датотека3 ... датотек
 msgid "large"
 msgstr "велике"
 
+#: ../src/add_dialog.c
+msgid "least"
+msgstr ""
+
 #: ../src/pref_dialog.c
 msgid "medium"
 msgstr ""
@@ -1446,6 +1539,9 @@ msgstr "мале"
 msgid "small/medium"
 msgstr ""
 
+#. Do not translate this string.
+#. Instead, add your name here if you like.
+#. One translator per line!
 #: ../src/window.c
 msgid "translator-credits"
 msgstr "Превод на српски — Jay A. Fleming <tito.nehru.naser@gmail.com>"
@@ -1460,16 +1556,83 @@ msgstr "велике"
 #, c-format
 msgid ""
 "xarchiver: %s\n"
-"Try xarchiver --help to see a full list of available command line options.\n"
+"Try xarchiver --help to see a full list of available command-line options.\n"
 msgstr ""
 "xarchiver: %s\n"
 "Покушајте „xarchiver --help“ да би сте видели доступне опције.\n"
 
-#: ../src/window.c
+#, c-format
+#~ msgid "Files:%*s%s"
+#~ msgstr "Датотеке:%*s%s"
+
+#~ msgid ""
+#~ "\n"
+#~ "<span color='red' style='italic'>Please install xdg-utils package so "
+#~ "that\n"
+#~ "Xarchiver can recognize more file types.</span>"
+#~ msgstr ""
+#~ "\n"
+#~ "<span color='red' style='italic'>Ако инсталирајте „xdg-utils“ пакет "
+#~ "АрХивер ће \n"
+#~ "препознавати више датотека различитих врста.</span>"
+
 #, fuzzy
-#| msgid "Size"
-msgid "|Size\n"
-msgstr "Величина"
+#~| msgid "A GTK+2 only archive manager"
+#~ msgid "A GTK+ only archive manager"
+#~ msgstr "Управник архива изграђен само на GTK+2 библиотекама"
+
+#, fuzzy
+#~| msgid "This option takes more memory with large archives"
+#~ msgid "This option consumes more memory with large archives"
+#~ msgstr "Ова опција ће узети много меморије код рада са великим архивама"
+
+#~ msgid "0 = no compression, 3 is default, 5 = best compression but slowest"
+#~ msgstr ""
+#~ "0 = без сажимања, 3 = подразумевано, 5 = највеће али и најспорије сажимање"
+
+#~ msgid "0 = no compression, 5 is default, 9 = best compression but slowest"
+#~ msgstr ""
+#~ "0 = без сажимања, 5 = подразумевано, 9 = највеће али и најспорије сажимање"
+
+#~ msgid "0 = no compression, 6 is default, 9 = best compression but slowest"
+#~ msgstr ""
+#~ "0 = без сажимања, 6 = подразумевано, 9 = највеће али и најспорије сажимање"
+
+#~ msgid "5 = default compression, 7 = max compression"
+#~ msgstr "5 = подразумевано, 7 = највеће сажимање"
+
+#~ msgid "Archive Name"
+#~ msgstr "Име архиве"
+
+#, c-format
+#~ msgid "Can't open file %s:"
+#~ msgstr "Не могу да отворим „%s“ датотеку: "
+
+#~ msgid "Destination dirs"
+#~ msgstr "Одредишни директоријуми"
+
+#~ msgid "Do not store paths"
+#~ msgstr "Не чувај путање"
+
+#~ msgid "Extract pathnames"
+#~ msgstr "Распакуј имена путања"
+
+#~ msgid "Freshen and replace"
+#~ msgstr "Обнови и замени"
+
+#~ msgid "Options "
+#~ msgstr "Опције"
+
+#~ msgid "Options:"
+#~ msgstr "Опције:"
+
+#~ msgid ""
+#~ "This option extracts archives in directories named with the archive names"
+#~ msgstr ""
+#~ "Распакујте архиве у директоријуме чија су имена као код самих архива"
+
+#~ msgid "Update and add"
+#~ msgstr "Освежи и додај"
 
 #, fuzzy
 #~| msgid "Date modified"

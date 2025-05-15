@@ -17,6 +17,7 @@
  *  MA 02110-1301 USA.
  */
 
+#include <stdio.h>
 #include <string.h>
 #include "cpio.h"
 #include "date_utils.h"
@@ -32,6 +33,29 @@ static void relative_path (char *filename, gpointer user_data)
 		strcpy(filename, filename + 1);
 }
 
+gboolean xa_cpio_check_version (gchar *path)
+{
+	gchar *command, *output = NULL;
+	int major, minor;
+	gboolean result = FALSE;
+
+	command = g_strconcat(path, " --version", NULL);
+	g_spawn_command_line_sync(command, &output, NULL, NULL, NULL);
+	g_free(command);
+
+	if (output)
+	{
+		if (strncmp(output, "cpio (GNU cpio) ", 16) == 0)
+			if (sscanf(output + 16, "%d.%d", &major, &minor) == 2)
+				/* cpio as of version 2.13 is safe */
+				result = ((major == 2 && minor > 12) || major > 2);
+
+		g_free(output);
+	}
+
+	return result;
+}
+
 void xa_cpio_ask (XArchive *archive)
 {
 	archive->can_extract = TRUE;
@@ -40,9 +64,10 @@ void xa_cpio_ask (XArchive *archive)
 	archive->can_full_path[1] = TRUE;   // n.b.: adds leading slash
 	archive->can_touch = TRUE;
 	archive->can_overwrite = TRUE;
+	archive->can_recurse[0] = TRUE;
 }
 
-static void xa_cpio_parse_output (gchar *line, XArchive *archive)
+void xa_cpio_parse_output (gchar *line, XArchive *archive)
 {
 	XEntry *entry;
 	gpointer item[7];
@@ -77,11 +102,13 @@ static void xa_cpio_parse_output (gchar *line, XArchive *archive)
 	else
 		NEXT_ITEM(item[1]);
 
+	LINE_PEEK(9);
+
 	/* date and time */
 	NEXT_ITEMS(3, item[2]);
 
 	/* time */
-	if (((char *) item[2])[9] == ':')
+	if (((char *) item[2])[peek] == ':' && strlen(item[2]) >= 12)
 	{
 		memcpy(time, item[2] + 7, 5);
 		time[5] = 0;
@@ -99,12 +126,12 @@ static void xa_cpio_parse_output (gchar *line, XArchive *archive)
 
 	if (link)
 	{
-		char *l = strstr(filename, " -> ");
+		gchar *lnk = g_strrstr(filename, " -> ");
 
-		if (l)
+		if (lnk)
 		{
-			item[0] = l + 4;
-			*l = 0;
+			item[0] = lnk + 4;
+			*lnk = 0;
 		}
 	}
 
@@ -132,7 +159,7 @@ void xa_cpio_list (XArchive *archive)
 	archive->files = 0;
 	archive->files_size = 0;
 
-	command = g_strconcat(archiver[archive->type].program[0], " -tv -F ", archive->path[1], NULL);
+	command = g_strconcat(archiver[archive->type].program[0], " -tv -I ", archive->path[1], NULL);
 	archive->parse_output = xa_cpio_parse_output;
 	xa_spawn_async_process(archive, command);
 	g_free(command);
@@ -160,29 +187,23 @@ gboolean xa_cpio_extract (XArchive *archive, GSList *file_list)
 	gboolean result;
 
 	if (archive->do_full_path)
-		extract_to = g_strdup(archive->extraction_dir);
+		extract_to = xa_unescape_bad_chars(archive->extraction_dir, ESCAPES);
 	else
 	{
-		if (!xa_create_working_directory(archive))
-			return FALSE;
+		extract_to = xa_create_working_subdirectory(archive);
 
-		extract_to = g_strconcat(archive->working_dir, "/xa-tmp.XXXXXX", NULL);
-
-		if (!g_mkdtemp(extract_to))
-		{
-			g_free(extract_to);
+		if (!extract_to)
 			return FALSE;
-		}
 	}
 
 	g_slist_foreach(file_list, (GFunc) relative_path, NULL);
-	files = xa_quote_filenames(file_list, "*?[]\"", FALSE);
+	files = xa_quote_filenames(file_list, "*?[]\"", DIR_WITH_ASTERISK);
 	archive->child_dir = g_strdup(extract_to);
 	command = g_strconcat(archiver[archive->type].program[0], " -id",
 	                      archive->do_touch ? "" : " -m",
 	                      archive->do_overwrite ? " -u" : "",
-	                      " --no-absolute-filenames -F ", archive->path[1],
-	                      files->str, NULL);
+	                      " --no-absolute-filenames -I ", archive->path[1],
+	                      " --", files->str, NULL);
 	result = xa_run_command(archive, command);
 	g_free(command);
 
@@ -197,9 +218,10 @@ gboolean xa_cpio_extract (XArchive *archive, GSList *file_list)
 		archive->child_dir = g_strdup(extract_to);
 		command = g_strconcat("mv",
 		                      archive->do_overwrite ? " -f" : " -n",
-		                      all_files->str, " ", archive->extraction_dir, NULL);
+		                      " --", all_files->str, " ", archive->extraction_dir, NULL);
 		g_string_free(all_files, TRUE);
 
+		archive->status = XARCHIVESTATUS_EXTRACT;   // restore status
 		result = xa_run_command(archive, command);
 		g_free(command);
 
@@ -213,22 +235,17 @@ gboolean xa_cpio_extract (XArchive *archive, GSList *file_list)
 	return result;
 }
 
-void xa_cpio_add (XArchive *archive, GSList *file_list, gchar *compression)
+void xa_cpio_add (XArchive *archive, GSList *file_list)
 {
 	GString *files;
 	gchar *archive_path, *command;
 
-	if (archive->location_path != NULL)
-		archive->child_dir = g_strdup(archive->working_dir);
-
-	// no option for compression
-
-	files = xa_quote_filenames(file_list, "\"", FALSE);
+	files = xa_quote_filenames(file_list, "\"", DIR_WITH_SLASH);
 	archive_path = xa_quote_shell_command(archive->path[0], TRUE);
-	command = g_strconcat("sh -c \"", "exec ls -d", files->str, " | ",
+	command = g_strconcat("sh -c \"", "exec ls -d --", files->str, " | ",
 	                      archiver[archive->type].program[0], " -o",
 	                      g_file_test(archive->path[0], G_FILE_TEST_EXISTS) ? " -A" : "",
-	                      " -F ", archive_path, "\"", NULL);
+	                      " -O ", archive_path, "\"", NULL);
 	g_free(archive_path);
 	g_string_free(files, TRUE);
 

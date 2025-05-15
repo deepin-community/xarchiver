@@ -10,21 +10,23 @@
 # Nikita Belobrov <qvzqvz@gmail.com>, 2008.
 # Erdal Ronahi, 2008.
 # Alexey Loginov <alexl@mageia.org>, 2019.
+# Сергей Казорин <translation-team@basealt.ru>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: xarchiver 0.5.4\n"
 "Report-Msgid-Bugs-To: https://github.com/ib/xarchiver/issues\n"
-"POT-Creation-Date: 2021-01-21 13:49+0100\n"
-"PO-Revision-Date: 2021-01-21 13:49+0100\n"
-"Last-Translator: alexl <alexl@mageia.org>\n"
-"Language-Team: русский\n"
+"POT-Creation-Date: 2024-09-26 11:30+0200\n"
+"PO-Revision-Date: 2024-12-12 07:00+0000\n"
+"Last-Translator: Alexander Kurakin <kuraga333@mail.ru>\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/xarchiver/"
+"translations/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Poedit 2.0.9\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Weblate 5.9-dev\n"
 
 #: ../src/window.c
 #, c-format
@@ -64,37 +66,20 @@ msgstr[0] "%d файл %s (%s)"
 msgstr[1] "%d файла %s (%s)"
 msgstr[2] "%d файлов %s (%s)"
 
+#: ../src/add_dialog.c
+#, c-format
+msgid ""
+"%hu is least compression\n"
+"%hu is default compression\n"
+"%hu is best compression"
+msgstr ""
+"%hu - это наименьшее сжатие\n"
+"%hu - это сжатие по-умолчанию\n"
+"%hu - это наилучшее сжатие"
+
 #: ../src/pref_dialog.c
 msgid "/tmp"
 msgstr "/tmp"
-
-#: ../src/add_dialog.c
-msgid "0 = no compression, 1 is default, 4 = fastest but least compression"
-msgstr "0: без сжатия, 1: по умолчанию, 4: самое быстрое, но наихудшее сжатие"
-
-#: ../src/add_dialog.c
-msgid "0 = no compression, 3 is default, 5 = best compression but slowest"
-msgstr "0: без сжатия, 3: по умолчанию, 9: лучшее, но самое медленное сжатие"
-
-#: ../src/add_dialog.c
-msgid "0 = no compression, 5 is default, 9 = best compression but slowest"
-msgstr "0: без сжатия, 5: по умолчанию, 9: лучшее, но самое медленное сжатие"
-
-#: ../src/add_dialog.c
-msgid "0 = no compression, 6 is default, 9 = best compression but slowest"
-msgstr "0: без сжатия, 6: по умолчанию, 9: лучшее, но самое медленное сжатие"
-
-#: ../src/add_dialog.c
-msgid "5 = default compression, 7 = max compression"
-msgstr "5: по умолчанию, 7: максимальное сжатие"
-
-#: ../src/pref_dialog.c
-msgid ""
-"<span color='red' style='italic'>Please install xdg-utils package so that\n"
-"Xarchiver can recognize more file types.</span>"
-msgstr ""
-"<span color='red' style='italic'>Установите пакет xdg-utils, чтобы\n"
-"Xarchiver мог распознавать большее количество файлов.</span>"
 
 #: ../src/interface.c
 msgid "<span weight='bold' size='larger'>Enter password for:</span>"
@@ -102,7 +87,7 @@ msgstr "<span weight='bold' size='larger'>Введите пароль для:</s
 
 #: ../src/interface.c
 msgid "<span weight='bold' size='larger'>Password required for:</span>"
-msgstr "<span weight='bold' size='larger'>Необходим пароль для:</span>"
+msgstr "<span weight='bold' size='larger'>Необходимо ввести пароль для:</span>"
 
 #: ../src/window.c
 #, c-format
@@ -114,13 +99,9 @@ msgstr "<th>Файлы:</th>"
 msgid "<th>Size:</th>"
 msgstr "<th>Размер:</th>"
 
-#: ../xarchiver.desktop.in.h
-msgid "A GTK+ only archive manager"
-msgstr "Менеджер архивов только для GTK+"
-
 #: ../src/window.c
 msgid "A GTK+ only lightweight archive manager"
-msgstr "Быстрый и лёгкий менеджер архивов для GTK+"
+msgstr "Быстрый и легковесный менеджер архивов на GTK+"
 
 #: ../src/interface.c
 msgid "A_ction"
@@ -131,8 +112,8 @@ msgid "A_dd"
 msgstr "_Добавить"
 
 #: ../src/add_dialog.c
-msgid "Actions: "
-msgstr "Действия: "
+msgid "Actions"
+msgstr "Действия"
 
 #: ../src/interface.c
 msgid "Add"
@@ -148,17 +129,17 @@ msgid ""
 "                                     the archive and quit"
 msgstr ""
 "Запросить имя архива, добавить в него выбранные\n"
-"                                     файлы и завершить работу."
+"                                     файлы и завершить работу"
 
 #: ../src/main.c
 msgid ""
 "Add to archive by asking which files and\n"
 "                                     quit"
 msgstr ""
-"Добавить в архив, спросив какие файлы,\n"
-"                                     и завершить работу."
+"Запросить имена файлов, добавить их в архив\n"
+"                                     и завершить работу"
 
-#: ../src/add_dialog.c
+#: ../src/window.c
 msgid "Adding files to archive, please wait..."
 msgstr "Добавление файлов в архив, подождите..."
 
@@ -170,29 +151,30 @@ msgstr "Добавление в архив:"
 msgid "Advanced"
 msgstr "Дополнительно"
 
+#: ../src/pref_dialog.c
+msgid "Advanced incremental search (requires restart)"
+msgstr "Расширенный инкрементальный поиск (требуется перезапуск)"
+
 #: ../src/extract_dialog.c ../src/new_dialog.c ../src/window.c
 msgid "All files"
 msgstr "Все файлы"
 
 #: ../src/pref_dialog.c
-msgid "Allow subdirs with drag and drop"
-msgstr "Разрешить перетаскивание подкаталогов"
+msgid "Allow subdirs with clipboard and drag-and-drop"
+msgstr ""
+"Разрешить перетаскивание подкаталогов, а также их добавление из буфера обмена"
 
 #: ../src/window.c
 msgid "An error occurred while accessing the archive:"
-msgstr "Ошибка обработки архива:"
+msgstr "При обращении к архиву произошла ошибка:"
 
 #: ../src/add_dialog.c ../src/main.c ../src/window.c
 msgid "An error occurred!"
 msgstr "Произошла ошибка!"
 
-#: ../src/pref_dialog.c
+#: ../src/extract_dialog.c ../src/pref_dialog.c
 msgid "Archive"
 msgstr "Архив"
-
-#: ../src/extract_dialog.c
-msgid "Archive Name"
-msgstr "Имя архива"
 
 #: ../src/interface.c
 msgid "Archive Properties"
@@ -219,6 +201,14 @@ msgstr "Менеджер архивов"
 msgid "Archive tree"
 msgstr "Дерево архива"
 
+#: ../src/pref_dialog.c
+msgid ""
+"Archive tree nodes already expand when the node name is selected by mouse "
+"click or keyboard shortcut."
+msgstr ""
+"Узлы дерева архива будут автоматически раскрыты, когда выделяется имя узла "
+"(щелчком мыши или клавиатурным сокращением)."
+
 #: ../src/new_dialog.c
 msgid "Archive type:"
 msgstr "Тип архива:"
@@ -233,11 +223,15 @@ msgstr "Сообщения архиватора"
 
 #: ../src/window.c
 msgid "Are you sure you want to do this?"
-msgstr "Вы уверены, что хотите сделать это?"
+msgstr "Удалить эти элементы?"
 
 #: ../src/7zip.c ../src/arj.c ../src/rar.c
 msgid "Attributes"
 msgstr "Атрибуты"
+
+#: ../src/pref_dialog.c
+msgid "Automatically expand archive tree nodes on selection"
+msgstr "Автоматически раскрывать узлы дерева архива при выделении"
 
 #: ../src/interface.c
 msgid "Back"
@@ -249,19 +243,19 @@ msgstr "Просмотреть"
 
 #: ../src/add_dialog.c ../src/main.c
 msgid "Can't add files to the archive:"
-msgstr "Не удаётся добавить файлы в архив:"
+msgstr "Не удалось добавить файлы в архив:"
 
 #: ../src/main.c
 msgid "Can't allocate memory for the archive structure!"
-msgstr "Не удаётся выделить память для структуры архива!"
+msgstr "Не удалось выделить память для структуры архива!"
 
 #: ../src/window.c
 msgid "Can't allocate memory for the archive structure:"
-msgstr "Не удаётся выделить память для структуры архива:"
+msgstr "Не удалось выделить память для структуры архива:"
 
 #: ../src/window.c
 msgid "Can't convert the archive to self-extracting:"
-msgstr "Не удаётся сделать архив самораспаковывающимся:"
+msgstr "Не удалось преобразовать этот архив в самораспаковывающийся:"
 
 #: ../src/new_dialog.c
 msgid "Can't create a new archive:"
@@ -275,17 +269,17 @@ msgstr "Не удалось создать папку!"
 msgid "Can't create temporary directory:"
 msgstr "Не удалось создать временную папку:"
 
-#: ../src/extract_dialog.c ../src/main.c
+#: ../src/extract_dialog.c ../src/main.c ../src/window.c
 msgid "Can't extract files from the archive:"
 msgstr "Не удалось извлечь файлы из архива:"
 
 #: ../src/rpm.c
 msgid "Can't fseek in file:"
-msgstr "Не удаётся выполнить fseek в файле:"
+msgstr "Не удалось выполнить команду fseek в файле:"
 
 #: ../src/rpm.c
 msgid "Can't fseek to position 104:"
-msgstr "Не удалось перейти к данным файла:"
+msgstr "Не удалось выполнить команду fseek для перехода к позиции 104:"
 
 #: ../src/extract_dialog.c
 msgid "Can't multi-extract archives:"
@@ -293,30 +287,25 @@ msgstr "Не удалось множественное извлечение из
 
 #: ../src/rpm.c
 #, c-format
-msgid "Can't open RPM file %s:"
-msgstr "Не удалось открыть файл RPM %s:"
+msgid "Can't open RPM file \"%s\":"
+msgstr "Не удалось открыть файл RPM «%s»:"
 
 #: ../src/window.c
 #, c-format
 msgid "Can't open file \"%s\":"
 msgstr "Не удалось открыть файл «%s»:"
 
-#: ../src/window.c
-#, c-format
-msgid "Can't open file %s:"
-msgstr "Не удалось открыть файл %s:"
-
 #: ../src/main.c
-msgid "Can't open the archive!\n"
-msgstr "Не получается открыть архив!\n"
+msgid "Can't open the archive!"
+msgstr "Не удалось открыть архив!"
 
 #: ../src/extract_dialog.c ../src/window.c
 msgid "Can't perform extraction!"
-msgstr "Не удаётся выполнить извлечение!"
+msgstr "Не удалось выполнить извлечение!"
 
 #: ../src/interface.c ../src/main.c ../src/window.c
 msgid "Can't perform this action:"
-msgstr "Не удалось выполнить операцию:"
+msgstr "Не удалось выполнить указанное действие:"
 
 #: ../src/rpm.c
 msgid "Can't read data from file:"
@@ -324,11 +313,11 @@ msgstr "Не удалось прочитать данные из файла:"
 
 #: ../src/archive.c
 msgid "Can't run the archiver executable:"
-msgstr "Невозможно запустить программу-архиватор:"
+msgstr "Не удалось запустить программу-архиватор:"
 
 #: ../src/window.c
-msgid "Can't write the unzipsfx module to the archive:"
-msgstr "Не удаётся вставить модуль unzipsfx в архив:"
+msgid "Can't write the sfx module to the archive:"
+msgstr "Не удалось записать модуль sfx в архив:"
 
 #: ../src/interface.c
 msgid "Cancel current operation"
@@ -336,11 +325,11 @@ msgstr "Отменить текущую операцию"
 
 #: ../src/gzip_et_al.c
 msgid "Check Type"
-msgstr "Выберите тип"
+msgstr "Тип проверки"
 
 #: ../src/arj.c ../src/rar.c
 msgid "Checksum"
-msgstr "Checksum"
+msgstr "Контрольная сумма"
 
 #: ../src/pref_dialog.c
 msgid "Choose the application to use"
@@ -352,7 +341,7 @@ msgstr "Выберите тип создаваемого архива"
 
 #: ../src/pref_dialog.c
 msgid "Choose the directory to use"
-msgstr "Укажите каталог файлов"
+msgstr "Выберите каталог"
 
 #: ../src/interface.c
 msgid "Close archive"
@@ -365,6 +354,14 @@ msgstr "Вывод _командной строки"
 #: ../src/window.c
 msgid "Command"
 msgstr "Команда"
+
+#: ../src/pref_dialog.c
+msgid ""
+"Command-line output is captured and can be reviewed, but this consumes "
+"additional memory."
+msgstr ""
+"Вывод командной строки сохраняется и может быть просмотрен (требует "
+"дополнительной памяти)."
 
 #: ../src/window.c
 msgid "Comment"
@@ -383,14 +380,18 @@ msgstr "Комментарий:\n"
 msgid "Compressed"
 msgstr "Сжатый"
 
-#: ../src/window.c
-#, c-format
-msgid "Compressed   size: "
-msgstr "Сжатый: "
-
 #: ../src/interface.c
 msgid "Compressed size:"
 msgstr "Сжатый:"
+
+#: ../src/window.c
+#, c-format
+msgid "Compressed size: "
+msgstr "Сжатый: "
+
+#: ../src/add_dialog.c
+msgid "Compression"
+msgstr "Сжатие"
 
 #: ../src/gzip_et_al.c
 msgid "Compression ratio"
@@ -400,13 +401,13 @@ msgstr "Коэффициент сжатия"
 msgid "Compression ratio:"
 msgstr "Коэффициент сжатия:"
 
-#: ../src/add_dialog.c
-msgid "Compression: "
-msgstr "Уровень сжатия: "
-
 #: ../src/pref_dialog.c
 msgid "Confirm deletion of files"
 msgstr "Подтверждать удаление файлов"
+
+#: ../src/window.c
+msgid "Converting archive, please wait..."
+msgstr "Преобразование архива, подождите..."
 
 #: ../src/interface.c
 msgid "Copy"
@@ -422,7 +423,11 @@ msgstr "Создать новый архив"
 
 #: ../src/add_dialog.c
 msgid "Create a solid archive"
-msgstr "Создавать непрерывный архив"
+msgstr "Создать непрерывный архив"
+
+#: ../xarchiver.desktop.in.h
+msgid "Create, extract and modify archives"
+msgstr "Создаёт, извлекает и модифицирует архивы"
 
 #: ../src/interface.c
 msgid "Cut"
@@ -430,17 +435,17 @@ msgstr "Вырезать"
 
 #: ../src/gzip_et_al.c
 msgid "Data Frames/Skippable Frames"
-msgstr "Фреймы данных/пропускаемые фреймы"
+msgstr "Фреймы данных/Пропускаемые фреймы"
 
 #: ../src/7zip.c ../src/ar.c ../src/arj.c ../src/cpio.c ../src/gzip_et_al.c
-#: ../src/lha.c ../src/rar.c ../src/rpm.c ../src/tar.c ../src/unar.c
-#: ../src/zip.c
+#: ../src/lha.c ../src/rar.c ../src/rpm.c ../src/squashfs.c ../src/tar.c
+#: ../src/unar.c ../src/zip.c ../src/zpaq.c
 msgid "Date"
 msgstr "Дата"
 
 #: ../src/pref_dialog.c
 msgid "Default custom command:"
-msgstr "Указанная команда по умолчанию:"
+msgstr "Настраиваемая команда по умолчанию:"
 
 #: ../src/interface.c
 msgid "Delete"
@@ -450,17 +455,17 @@ msgstr "Удалить"
 msgid "Delete files after adding"
 msgstr "Удалить файлы после добавления"
 
+#: ../src/window.c
+msgid "Deleting files from archive, please wait..."
+msgstr "Удаление файлов из архива, подождите..."
+
 #: ../src/interface.c
 msgid "Dese_lect all"
 msgstr "О_тменить выделение"
 
 #: ../src/extract_dialog.c
-msgid "Destination dirs:"
-msgstr "Целевые каталоги:"
-
-#: ../src/add_dialog.c
-msgid "Do not store paths"
-msgstr "Не добавлять пути файлов"
+msgid "Destination"
+msgstr "Извлечь в"
 
 #: ../src/window.c
 msgid "Do you really want to cancel?"
@@ -472,31 +477,41 @@ msgstr "Перезаписать?"
 
 #: ../src/window.c
 msgid "Doing so will probably corrupt your archive!"
-msgstr "При этой операции архив может быть повреждён!"
+msgstr "При совершении этой операции архив может быть повреждён!"
+
+#: ../src/interface.c
+msgid "Edit"
+msgstr "Редактировать"
 
 #: ../src/interface.c
 msgid "Encrypted:"
 msgstr "Зашифровано:"
 
 #: ../src/add_dialog.c
-msgid "Encryption: "
-msgstr "Шифрование: "
+msgid "Encryption"
+msgstr "Шифрование"
 
 #: ../src/extract_dialog.c
 msgid "Ensure a containing directory"
-msgstr "Обеспечьте целевую директорию"
+msgstr "Извлечь архив во вложенный каталог"
 
 #: ../src/extract_dialog.c
 msgid ""
 "Ensure that the contents of the extracted archive is always in a containing "
-"directory"
-msgstr ""
-"Убедитесь, что содержимое извлечённого архива всегда находится в целевой "
-"директории"
+"directory."
+msgstr "Содержимое архива извлекается во вложенный каталог."
 
 #: ../src/interface.c
 msgid "Enter passwo_rd"
 msgstr "_Введите пароль"
+
+#: ../src/pref_dialog.c
+msgid ""
+"Even if other, perhaps more powerful programs are installed to handle zip "
+"archives, the traditional \"unzip\" and \"zip\" will still be used."
+msgstr ""
+"Даже если другая, возможно, более эффективная программа установлена для "
+"обработки zip-архивов, стандартные \"unzip\" и \"zip\" будут использованы."
 
 #: ../src/interface.c
 msgid "Extract"
@@ -507,63 +522,64 @@ msgid ""
 "Extract archive by asking the extraction\n"
 "                                     directory and quit"
 msgstr ""
-"Запросить каталог, извлечь в него содержимое\n"
-"                                     архива и завершить работу."
+"Запросить имя целевого каталога, извлечь архив\n"
+"                                     и завершить работу"
 
 #: ../src/main.c
 msgid ""
 "Extract archive to a containing directory\n"
 "                                     and quit"
 msgstr ""
-"Извлечь архив в каталог, где он находится и\n"
-"                                     завершить работу."
+"Извлечь архив во вложенный каталог\n"
+"                                     и завершить работу"
 
 #: ../src/main.c
 msgid ""
 "Extract archive to the destination\n"
 "                                     directory and quit"
 msgstr ""
-"Извлечь архив в каталог назначения и\n"
-"                                     завершить работу."
+"Извлечь архив в целевой каталог и\n"
+"                                     завершить работу"
 
 #: ../src/extract_dialog.c ../src/interface.c
 msgid "Extract files"
-msgstr "Извлечение из архива"
-
-#: ../src/extract_dialog.c
-msgid "Extract files with full path"
-msgstr "Извлечь с полным путём"
+msgstr "Извлечение файлов"
 
 #: ../src/main.c
 msgid ""
 "Extract multiple archives by asking the\n"
 "                                     extraction directory and quit"
 msgstr ""
-"Запросить каталог, извлечь в него содержимое нескольких\n"
-"                                     архивов и завершить работу."
+"Запросить имя целевого каталога, извлечь в него\n"
+"                                     содержимое нескольких архивов и "
+"завершить работу"
 
 #: ../src/extract_dialog.c
 msgid ""
 "Extract only those files that already exist on disk and that are newer than "
-"the disk copies"
-msgstr ""
-"Извлечь только файлы, существующие на диске и более свежие, чем существующие."
+"the disk copies."
+msgstr "Извлечь только более свежие версии существующих на диске файлов."
 
 #: ../src/extract_dialog.c
-msgid "Extract pathnames"
-msgstr "Извлечь каталоги"
-
-#: ../src/extract_dialog.c
-msgid "Extract to dir \"Archive Name\""
-msgstr "Извлечь в папку «Имя архива»"
+msgid "Extract to directories with archive names"
+msgstr "Извлечь в каталоги с именеми, совпадающими с именами архивов"
 
 #: ../src/extract_dialog.c
 msgid "Extract to:"
 msgstr "Извлечь в:"
 
-#: ../src/extract_dialog.c ../src/window.c
+#: ../src/extract_dialog.c
+msgid "Extract with full path"
+msgstr "Извлечь файлы, сохраняя полный путь"
+
+#: ../src/interface.c
+#, c-format
+msgid "Extracting \"%s\"..."
+msgstr "Извлекается \"%s\"..."
+
+#: ../src/window.c
 msgid "Extracting files from archive, please wait..."
-msgstr "Извлекаются файлы из архива, подождите..."
+msgstr "Извлечение файлов из архива, подождите..."
 
 #: ../src/interface.c
 msgid "Extracting from archive:"
@@ -571,80 +587,67 @@ msgstr "Извлечь файлы из архива:"
 
 #: ../src/window.c
 msgid "Failed to launch the application!"
-msgstr "Невозможно запустить внешнее приложение!"
+msgstr "Не удалось запустить внешнее приложение!"
 
-#: ../src/add_dialog.c
-msgid "File Paths: "
-msgstr "Пути файлов: "
+#: ../src/add_dialog.c ../src/extract_dialog.c
+msgid "File Paths"
+msgstr "Пути файлов"
 
 #: ../src/window.c
 msgid "Filename"
 msgstr "Имя файла"
 
 #: ../src/extract_dialog.c
-msgid "Files "
-msgstr "Файлы "
+msgid "Files"
+msgstr "Файлы"
 
-#: ../src/extract_dialog.c
-msgid "Files: "
-msgstr "Файлы: "
+#: ../src/zpaq.c
+msgid "Files with absolute pathnames cannot be deleted!"
+msgstr "Файлы с абсолютными путями не могут быть удалены!"
 
-#: ../src/window.c
-#, c-format
-msgid "Files:%*s%s"
-msgstr "Файлы:%*s%s"
+#: ../src/extract_dialog.c ../src/window.c
+msgid "Files:"
+msgstr "Файлы:"
 
 #: ../src/interface.c
 msgid "Forward"
 msgstr "Вперёд"
 
-#: ../src/add_dialog.c
-msgid "Freshen and replace"
-msgstr "Обновить и заменить"
-
-#: ../src/extract_dialog.c
-msgid "Freshen existing files"
-msgstr "Обновить существующие файлы"
+#: ../src/add_dialog.c ../src/extract_dialog.c
+msgid "Freshen existing files only"
+msgstr "Только обновить существующие файлы"
 
 #: ../src/window.c
 msgid "From File"
 msgstr "Из файла"
-
-# Only the keywords after GTK and before 7-zip need to be translated.
-#: ../xarchiver.desktop.in.h
-msgid ""
-"GTK;android;archiver;archiving;comic book;compression;front end;frontend;"
-"library;7-zip;7z;7za;7zip;7zr;apk;ar;arj;bunzip2;bz2;bzip2;cbz;compress;cpio;"
-"deb;epub;exe;gtar;gunzip;gz;gzip;jar;jsonlz4;lbzip2;lha;lrz;lrzip;lsar;lz;"
-"lz4;lzh;lzip;lzma;lzo;lzop;mozlz4;oxt;pbzip2;pigz;plzip;rar;rar4;rar5;rpm;"
-"tar;unar;unarchiver;unarj;unrar;unzip;xpi;xz;zip;zst;Zstandard;zstd;"
-msgstr ""
-"GTK;андроид;архиватор;архивирование;библиотека;comic book;сжатие;фронтэнд;7-"
-"zip;7z;7za;7zip;7zr;apk;ar;arj;bunzip2;bz2;bzip2;cbz;compress;cpio;deb;epub;"
-"exe;gtar;gunzip;gz;gzip;jar;jsonlz4;lbzip2;lha;lrz;lrzip;lsar;lz;lz4;lzh;"
-"lzip;lzma;lzo;lzop;mozlz4;oxt;pbzip2;pigz;plzip;rar;rar4;rar5;rpm;tar;unar;"
-"unarchiver;unarj;unrar;unzip;xpi;xz;zip;zst;Zstandard;zstd;"
 
 #: ../src/cpio.c ../src/rpm.c
 msgid "Group"
 msgstr "Группа"
 
 #: ../src/pref_dialog.c
-msgid "Icons size (requires restart)"
-msgstr "Размер иконок (требует перезапуск)"
+msgid "Icons size (requires restart):"
+msgstr "Размер значков (требует перезапуска):"
 
 #: ../src/pref_dialog.c
-msgid "If checked the archive comment is shown after the archive is loaded"
+msgid "If checked the archive comment is shown after the archive is loaded."
 msgstr ""
-"Если установлен, то комментарий архива будет показываться после его загрузки."
+"При установке параметра комментарий будет выводиться после загрузки архива."
+
+#: ../src/pref_dialog.c
+msgid ""
+"If you install \"xdg-open\" from the \"xdg-utils\" package, each file will "
+"be opened with its default application."
+msgstr ""
+"Если вы установите \"xdg-open\" из пакета \"xdg-utils\", то каждый файл "
+"будет открыт с помощью приложения по умолчанию."
 
 #: ../src/add_dialog.c
 msgid ""
 "In a solid archive the files are grouped together resulting in a better "
-"compression ratio"
+"compression ratio."
 msgstr ""
-"В непрерывном архиве файлы группируются вместе, что обеспечивает лучшее "
-"сжатие."
+"В непрерывном архиве файлы группируются вместе, обеспечивая лучшее сжатие."
 
 #: ../src/add_dialog.c
 msgid "Include subdirectories"
@@ -652,7 +655,7 @@ msgstr "Добавить подкаталоги"
 
 #: ../src/interface.c
 msgid "Location:"
-msgstr "Приложение:"
+msgstr "Расположение:"
 
 #: ../src/main.c
 #, c-format
@@ -687,9 +690,13 @@ msgstr "Новый"
 msgid "No"
 msgstr "Нет"
 
+#: ../src/add_dialog.c
+msgid "No compression"
+msgstr "Без сжатия"
+
 #: ../src/main.c
 msgid "Nullsoft Installer"
-msgstr "Инсталлятор Nullsoft"
+msgstr "Программа установки Nullsoft"
 
 #: ../src/interface.c
 msgid "Number of files:"
@@ -721,13 +728,13 @@ msgstr "Открыть"
 msgid "Open <i>%s</i> with:"
 msgstr "Открыть <i>%s</i> с помощью:"
 
-#: ../src/interface.c ../src/open-with-dlg.c
+#: ../src/interface.c
 msgid "Open With"
 msgstr "Открыть с помощью"
 
 #: ../src/window.c
 msgid "Open a text file"
-msgstr "Открыть как текстовый файл"
+msgstr "Открыть текстовый файл"
 
 #: ../src/interface.c ../src/window.c
 msgid "Open an archive"
@@ -736,6 +743,10 @@ msgstr "Открыть архив"
 #: ../src/pref_dialog.c
 msgid "Open archive files with:"
 msgstr "Открывать файлы архивов с помощью:"
+
+#: ../src/open-with-dlg.c
+msgid "Open file"
+msgstr "Открыть файл"
 
 #: ../src/pref_dialog.c
 msgid "Open image files with:"
@@ -746,12 +757,12 @@ msgid "Open text files with:"
 msgstr "Открывать текстовые файлы с помощью:"
 
 #: ../src/open-with-dlg.c
-msgid "Open the selected files with"
-msgstr "Открыть выбранные файлы с помощью"
+msgid "Open the selected files"
+msgstr "Открыть выбранные файлы"
 
 #: ../src/window.c
 msgid "Opening archive, please wait..."
-msgstr "Открытие архива, пожалуйста, подождите..."
+msgstr "Открытие архива, подождите..."
 
 #: ../src/interface.c
 msgid "Opening archive:"
@@ -761,21 +772,13 @@ msgstr "Открытие архива:"
 msgid "Operation aborted!"
 msgstr "Операция прервана!"
 
-#: ../src/add_dialog.c
+#: ../src/add_dialog.c ../src/extract_dialog.c
 msgid "Options"
 msgstr "Параметры"
 
-#: ../src/extract_dialog.c
-msgid "Options "
-msgstr "Параметры "
-
-#: ../src/extract_dialog.c
-msgid "Options:"
-msgstr "Параметры:"
-
 #: ../src/7zip.c ../src/ar.c ../src/arj.c ../src/cpio.c ../src/gzip_et_al.c
-#: ../src/lha.c ../src/rar.c ../src/rpm.c ../src/tar.c ../src/unar.c
-#: ../src/zip.c
+#: ../src/lha.c ../src/rar.c ../src/rpm.c ../src/squashfs.c ../src/tar.c
+#: ../src/unar.c ../src/zip.c ../src/zpaq.c
 msgid "Original Size"
 msgstr "Исходный размер"
 
@@ -787,7 +790,7 @@ msgstr "Перезаписать существующие файлы"
 msgid "Owner"
 msgstr "Владелец"
 
-#: ../src/tar.c
+#: ../src/squashfs.c ../src/tar.c
 msgid "Owner/Group"
 msgstr "Владелец/Группа"
 
@@ -812,18 +815,19 @@ msgid "Pattern:"
 msgstr "Шаблон:"
 
 #: ../src/ar.c ../src/arj.c ../src/cpio.c ../src/lha.c ../src/rpm.c
-#: ../src/tar.c ../src/zip.c
+#: ../src/squashfs.c ../src/tar.c ../src/zip.c ../src/zpaq.c
 msgid "Permissions"
-msgstr "Права"
+msgstr "Права доступа"
 
 #: ../src/window.c
 msgid "Please check the 'Store archiver output' option to see it."
 msgstr ""
-"Установите параметр «Сохранять сообщения архиватора» чтобы увидеть это."
+"Для просмотра необходимо установить параметр «Сохранять сообщения "
+"архиватора»."
 
 #: ../src/add_dialog.c ../src/interface.c
 msgid "Please enter it!"
-msgstr "Введите его!"
+msgstr "Введите пароль!"
 
 #: ../src/extract_dialog.c
 msgid "Please enter the extraction path."
@@ -835,16 +839,17 @@ msgstr "Введите пароль."
 
 #: ../src/extract_dialog.c
 msgid "Please fill the \"Extract to\" field!"
-msgstr "Пожалуйста, укажите путь для извлечения!"
+msgstr "Заполните поле «Извлечь в»!"
 
 #: ../src/window.c
 msgid "Please go to Preferences->Advanced and set it."
-msgstr "Перейдите в пункт меню Настройки->Дополнительно и установите его."
+msgstr ""
+"Перейдите в пункт меню Настройки->Дополнительно и установите этот параметр."
 
 #: ../src/main.c
 #, c-format
 msgid "Please report bugs to <%s>."
-msgstr "Сообщайте, пожалуйста, о багах на <%s>."
+msgstr "Используйте <%s> для отправки сообщений об ошибках."
 
 #: ../src/window.c
 msgid "Please select the 7zCon.sfx module"
@@ -852,13 +857,18 @@ msgstr "Выберите модуль 7zCon.sfx"
 
 #: ../src/extract_dialog.c
 msgid "Please select the archives you want to extract"
-msgstr "Выберите архивы, которые вы хотите распаковать"
+msgstr "Выберите архивы, которые необходимо распаковать"
 
 #: ../src/extract_dialog.c
 msgid "Please select the destination directory"
 msgstr "Укажите целевой каталог"
 
-#: ../src/cpio.c ../src/lha.c ../src/rpm.c ../src/tar.c ../src/unar.c
+#: ../src/window.c
+msgid "Please wait..."
+msgstr "Подождите..."
+
+#: ../src/cpio.c ../src/lha.c ../src/rpm.c ../src/squashfs.c ../src/tar.c
+#: ../src/unar.c
 msgid "Points to"
 msgstr "Указывает на"
 
@@ -871,12 +881,12 @@ msgid "Preferences"
 msgstr "Настройки"
 
 #: ../src/pref_dialog.c
-msgid "Preferred archive format"
-msgstr "Предпочитаемый формат архива"
+msgid "Preferred archive format:"
+msgstr "Предпочитаемый формат архива:"
 
 #: ../src/pref_dialog.c
 msgid "Preferred extraction directory:"
-msgstr "Каталог файлов по умолчанию:"
+msgstr "Каталог для извлечения файлов по умолчанию:"
 
 #: ../src/pref_dialog.c
 msgid "Preferred temp directory:"
@@ -884,11 +894,11 @@ msgstr "Каталог временных файлов по умолчанию:"
 
 #: ../src/window.c
 msgid "Print the archive content as HTML"
-msgstr "Напечатать содержимое архива в виде HTML"
+msgstr "Вывести содержимое архива в виде HTML"
 
 #: ../src/window.c
 msgid "Print the archive content as text"
-msgstr "Напечатать содержимое архива как текст"
+msgstr "Вывести содержимое архива в виде текста"
 
 #: ../src/arj.c ../src/gzip_et_al.c
 msgid "Ratio"
@@ -900,15 +910,19 @@ msgstr "П_ереименовать"
 
 #: ../src/window.c
 msgid "Reloading archive, please wait..."
-msgstr "Перезагружается архив, пожалуйста, подождите..."
+msgstr "Перезагрузка архива, подождите..."
 
 #: ../src/interface.c
 msgid "Rename"
 msgstr "Переименовать"
 
 #: ../src/interface.c
+msgid "Replace"
+msgstr "Заменить"
+
+#: ../src/interface.c
 msgid "Root"
-msgstr "Корень"
+msgstr "Корневая папка архива"
 
 #: ../src/window.c
 msgid "Save the archive as"
@@ -920,7 +934,7 @@ msgstr "Сохранить самораспаковывающийся архив
 
 #: ../src/pref_dialog.c
 msgid "Save window geometry"
-msgstr "Сохранять размеры окна"
+msgstr "Сохранять геометрию окна"
 
 #: ../src/gzip_et_al.c ../src/unar.c ../src/zip.c
 msgid "Saving"
@@ -929,12 +943,12 @@ msgstr "Сохранение"
 #: ../src/main.c ../src/window.c
 msgid "Select \"New\" to create or \"Open\" to open an archive"
 msgstr ""
-"Выберите «Новый», чтобы создать, или «Открыть», чтобы открыть существующий "
-"архив."
+"Выберите «Новый», чтобы создать архив, или «Открыть», чтобы открыть "
+"существующий архив"
 
 #: ../src/interface.c
 msgid "Select _all"
-msgstr "Выбрать _все"
+msgstr "Выбрать _всё"
 
 #: ../src/interface.c
 msgid "Select _by pattern"
@@ -942,11 +956,11 @@ msgstr "Выбрать по _шаблону"
 
 #: ../src/open-with-dlg.c
 msgid "Select an application"
-msgstr "Укажите приложение"
+msgstr "Выберите приложение"
 
 #: ../src/interface.c
 msgid "Select by Pattern"
-msgstr "Выбрать по шаблону"
+msgstr "Выбор по шаблону"
 
 #: ../src/extract_dialog.c
 msgid "Selected files"
@@ -958,11 +972,11 @@ msgstr "Выбор файлов"
 
 #: ../src/pref_dialog.c
 msgid "Show archive comment"
-msgstr "Показать комментарий к архиву"
+msgstr "Показывать комментарий к архиву"
 
 #: ../src/pref_dialog.c
 msgid "Show archive location bar"
-msgstr "Показывать местоположение архива"
+msgstr "Показать местоположение архива"
 
 #: ../src/pref_dialog.c
 msgid "Show archive tree sidebar"
@@ -972,9 +986,10 @@ msgstr "Показывать дерево архива"
 msgid "Show command"
 msgstr "Показать команду"
 
+# Вопрос
 #: ../src/main.c
 msgid ""
-"Show found command line programs to be\n"
+"Show found command-line programs to be\n"
 "                                     used and exit"
 msgstr ""
 "Показать найденные программы командной строки, которые\n"
@@ -982,19 +997,23 @@ msgstr ""
 
 #: ../src/pref_dialog.c
 msgid "Show toolbar"
-msgstr "Показать панель инструментов"
+msgstr "Показывать панель инструментов"
 
 #: ../src/main.c
 msgid "Show version and exit\n"
-msgstr "Показать информацию о версии и выйти\n"
+msgstr "Показать номер версии и выйти\n"
 
 #: ../src/extract_dialog.c
 msgid "Size"
 msgstr "Размер"
 
+#: ../src/window.c
+msgid "Size:"
+msgstr "Размер:"
+
 #: ../src/extract_dialog.c
 msgid "Some errors occurred:"
-msgstr "Произошла ошибка:"
+msgstr "Произошли ошибки:"
 
 #: ../src/extract_dialog.c ../src/interface.c ../src/window.c
 msgid "Sorry, I could not perform the operation!"
@@ -1016,13 +1035,9 @@ msgstr "Остановить"
 msgid "Store archiver output"
 msgstr "Сохранять сообщения архиватора"
 
-#: ../src/add_dialog.c
-msgid "Store full paths"
-msgstr "Полный путь для сохранения"
-
 #: ../src/gzip_et_al.c
 msgid "Streams/Blocks/Padding"
-msgstr "Потоки/Блоки/Padding"
+msgstr "Потоки/Блоки/Заполнение"
 
 #: ../src/window.c
 msgid "Test result:"
@@ -1030,7 +1045,7 @@ msgstr "Результат теста:"
 
 #: ../src/window.c
 msgid "Testing archive, please wait..."
-msgstr "Проверка целостности архива, подождите..."
+msgstr "Проверка архива, подождите..."
 
 #: ../src/new_dialog.c
 #, c-format
@@ -1043,8 +1058,27 @@ msgstr "Этот архив в порядке."
 
 #: ../src/extract_dialog.c
 msgid ""
-"The archive's directory structure is recreated in the extraction directory"
-msgstr "При извлечении будет воссоздана полная структура папок."
+"The archive's complete directory structure is recreated in the extraction "
+"directory."
+msgstr ""
+"При извлечении, в результирующем каталоге будет воссоздана полная структура "
+"каталогов."
+
+#: ../src/extract_dialog.c
+msgid ""
+"The archive's directory structure is not recreated; all files are placed in "
+"the extraction directory."
+msgstr ""
+"При извлечении, структура каталогов не воссоздается, все файлы будут "
+"размещены в результирующем каталоге."
+
+#: ../src/extract_dialog.c
+msgid ""
+"The archive's directory structure is recreated in the extraction directory, "
+"but with the parent directories of the selected files removed."
+msgstr ""
+"При извлечении, в результирующем каталоге будет воссоздана структура "
+"каталогов, но с удалением родительских каталогов выбранных файлов."
 
 #: ../src/add_dialog.c ../src/main.c
 msgid ""
@@ -1053,21 +1087,28 @@ msgstr "Архиватор не поддерживает сжатие катал
 
 #: ../src/extract_dialog.c
 msgid "The archiver doesn't support this feature!"
-msgstr "Архиватор не поддерживает такую возможность!"
+msgstr "Архиватор не поддерживает такую функцию!"
 
 #: ../src/gzip_et_al.c
 msgid "The archiver lacks necessary support for password protected decryption!"
-msgstr ""
-"В архиваторе отсутствует необходимая поддержка для защищенной паролем "
-"расшифровки!"
+msgstr "Архиватор не поддерживает расшифровку архивов, защищённых паролем!"
 
 #: ../src/pref_dialog.c
-msgid "The filename column is sorted after loading the archive"
-msgstr "Колонка имён файлов отсортирована после загрузки архива."
+msgid "The filename column is sorted after loading the archive."
+msgstr "Столбец имён файлов отсортирован после загрузки архива."
+
+#: ../src/pref_dialog.c
+msgid ""
+"The incremental search is also performed within filenames rather than just "
+"at the beginning of them."
+msgstr ""
+"Инкрементный поиск также выполняется внутри имен файлов, а не только в их "
+"начале."
 
 #: ../src/extract_dialog.c ../src/main.c ../src/window.c
-msgid "The proper archiver is not installed!"
-msgstr "Не установлен соответствующий архиватор!"
+#, c-format
+msgid "The proper archiver for \"%s\" is not installed!"
+msgstr "Соответствующий архиватор \"%s\" не установлен!"
 
 #: ../src/extract_dialog.c
 msgid "This archive is encrypted!"
@@ -1075,52 +1116,48 @@ msgstr "Этот архив зашифрован!"
 
 #: ../src/interface.c
 msgid "This is Xarchiver's LED status. When it's flashing Xarchiver is busy."
-msgstr "Это индикатор Xarchiver. Когда он мигает, Xarchiver занят."
-
-#: ../src/pref_dialog.c
-msgid "This option consumes more memory with large archives"
-msgstr "Эта опция требует больше памяти при работе с большими архивами"
-
-#: ../src/extract_dialog.c
-msgid ""
-"This option extracts archives in directories named with the archive names"
-msgstr "Извлечь архивы в папки с такими же именами как имена архивов."
-
-#: ../src/pref_dialog.c
-msgid ""
-"This option includes the subdirectories when you add files with drag and drop"
 msgstr ""
-"Эта опция включает подкаталоги при добавлении файлов при помощи "
-"перетаскивания"
+"Это индикатор состояния Xarchiver. Мигание индикатора означает, что "
+"Xarchiver занят."
+
+#: ../src/pref_dialog.c
+msgid ""
+"This option includes the subdirectories when you add files from the "
+"clipboard or with drag-and-drop."
+msgstr ""
+"Этот параметр позволяет включать в архив подкаталоги путём перетаскивания "
+"или из буфера обмена."
 
 #: ../src/extract_dialog.c
 msgid ""
 "This option performs the same function as the freshen one, extracting files "
 "that are newer than those with the same name on disk, and in addition it "
-"extracts those files that do not already exist on disk"
+"extracts those files that do not already exist on disk."
 msgstr ""
-"При этой операции будут извлечены файлы, существующие на диске и более "
-"свежие, чем существующие, а также файлы, отсутствующие на диске."
+"Этот параметр функционально соответствует опции «Обновить и заменить» и "
+"извлекаетболее свежие версии существующих на диске одноимённых файлов, но "
+"также извлекает и файлы, отсутствующие на диске."
 
 #: ../src/add_dialog.c
 msgid ""
 "This option will add any new files and update any files which are already in "
-"the archive but older there"
+"the archive but older there."
 msgstr ""
-"Будут добавлены новые или обновлены существующие файлы, которые уже "
-"находятся в архиве, но старее."
+"Этот параметр позволяет добавлять новые файлы и обновлять старые "
+"версиисуществующих файлов, уже находящихся в архиве."
 
 #: ../src/add_dialog.c
 msgid ""
 "This option will only add files which are already in the archive but older "
-"there; unlike the update option it will not add any new files"
+"there; unlike the update option it will not add any new files."
 msgstr ""
-"Будут добавлены файлы, которые уже находятся в архиве, но старее. В отличие "
-"от обновления, новые файлы добавлены не будут."
+"Этот параметр позволяет обновлять уже находящиеся в архиве, но более "
+"старыеверсии файлов. В отличие от параметра «Обновить и добавить», новые "
+"файлы добавлены не будут."
 
 #: ../src/7zip.c ../src/ar.c ../src/arj.c ../src/cpio.c ../src/gzip_et_al.c
-#: ../src/lha.c ../src/rar.c ../src/rpm.c ../src/tar.c ../src/unar.c
-#: ../src/zip.c
+#: ../src/lha.c ../src/rar.c ../src/rpm.c ../src/squashfs.c ../src/tar.c
+#: ../src/unar.c ../src/zip.c ../src/zpaq.c
 msgid "Time"
 msgstr "Время"
 
@@ -1130,7 +1167,7 @@ msgstr "Всего:"
 
 #: ../src/extract_dialog.c
 msgid "Touch files"
-msgstr "Установить время изменений файлов"
+msgstr "Установить текущую отметку времени изменения для файлов"
 
 #: ../src/interface.c
 msgid "Type:"
@@ -1155,7 +1192,7 @@ msgstr "Неизвестный тип сжатия!"
 
 #: ../src/interface.c
 msgid "Uns_ort"
-msgstr "Uns_ort"
+msgstr "_Отменить сортировку"
 
 #: ../src/7zip.c
 msgid "Unsupported binary format!"
@@ -1165,17 +1202,17 @@ msgstr "Неподдерживаемый двоичный формат!"
 msgid "Up"
 msgstr "Вверх"
 
-#: ../src/add_dialog.c
-msgid "Update and add"
-msgstr "Обновить и добавить"
-
 #: ../src/extract_dialog.c
 msgid "Update existing files"
-msgstr "Обновить файлы"
+msgstr "Обновить существующие файлы"
+
+#: ../src/add_dialog.c
+msgid "Update existing files and add new ones"
+msgstr "Обновить существующие файлы, добавить новые"
 
 #: ../src/open-with-dlg.c
 msgid "Use a custom command:"
-msgstr "Использовать указанную команду:"
+msgstr "Использовать настраиваемую команду:"
 
 #: ../src/gzip_et_al.c ../src/rar.c ../src/zip.c
 msgid "Version"
@@ -1187,19 +1224,37 @@ msgstr "Просмотреть"
 
 #: ../src/pref_dialog.c
 msgid "Web browser to use:"
-msgstr "Используемый Web-обозреватель:"
+msgstr "Используемый веб-браузер:"
 
 #: ../src/extract_dialog.c
 msgid ""
 "When this option is used, the modification times of the files will be the "
-"times of extraction instead of the times recorded in the archive"
+"times of extraction instead of the times recorded in the archive."
 msgstr ""
-"При извлечении из архива время изменения файлов будет установлено такое же, "
-"как время извлечения, а не время, сохранённое в архиве."
+"При использовании этого параметра время изменения извлекаемых файлов будет "
+"соответствовать времени их извлечения из архива, а не тем значениям, которые "
+"установлены у этих файлов в архиве."
+
+#: ../src/zpaq.c
+#, fuzzy
+msgid "Will not handle files with wildcard characters!"
+msgstr "Файлы с символами подстановки не обрабатываются!"
 
 #: ../src/pref_dialog.c
 msgid "Window"
 msgstr "Окно"
+
+#: ../src/add_dialog.c ../src/extract_dialog.c
+msgid "With full path"
+msgstr "С полным путём"
+
+#: ../src/extract_dialog.c
+msgid "Without any path"
+msgstr "Без пути"
+
+#: ../src/add_dialog.c ../src/extract_dialog.c
+msgid "Without parent path"
+msgstr "Без родительского пути"
 
 #: ../src/window.c
 msgid "Yes"
@@ -1207,47 +1262,54 @@ msgstr "Да"
 
 #: ../src/window.c
 msgid "You are about to delete entries from the archive."
-msgstr "Вы собираетесь удалить файлы из архива."
+msgstr "Сейчас будет выполнено удаление элементов архива."
+
+#: ../src/window.c
+msgid ""
+"You can drop either archives to open or files to add. It is not possible to "
+"do both at the same time."
+msgstr ""
+"Вы можете либо перетащить архивы, чтобы открыть их, либо файлы, чтобы "
+"добавить их. Невозможно сделать это одновременно."
 
 #: ../src/interface.c ../src/window.c
 msgid "You can't add content to this archive type!"
-msgstr "Вы не можете добавлять содержимое в этот тип архива!"
+msgstr "Нельзя добавлять содержимое в этот тип архива!"
 
 #: ../src/window.c
 msgid "You didn't set which browser to use!"
-msgstr "Необходимо указать используемый обозреватель!"
+msgstr "Не указано, какой веб-браузер следует использовать!"
 
 #: ../src/window.c
 msgid "You didn't set which program to use for opening this file!"
-msgstr ""
-"Необходимо указать программу, с помощью которой следует открывать этот файл!"
+msgstr "Не указана программа, с помощью которой следует открывать этот файл!"
 
 #: ../src/extract_dialog.c ../src/window.c
 #, c-format
 msgid ""
 "You don't have the right permissions to extract the files to the directory "
 "\"%s\"."
-msgstr "У вас не достаточно прав для извлечения в каталог«%s»."
+msgstr "Недостаточно прав для извлечения файлов в каталог «%s»."
 
 #: ../src/extract_dialog.c
 msgid "You haven't added any of them!"
-msgstr "Ни одного не добавлено!"
+msgstr "Не добавлено ни одного из этих файлов!"
 
 #: ../src/add_dialog.c ../src/main.c
 msgid "You haven't selected any files to add!"
-msgstr "Вы не выбрали ни одного файла!"
+msgstr "Не выбран ни один файл для добавления в архив!"
 
 #: ../src/main.c
-msgid "You missed the archive name!\n"
-msgstr "Вы не указали имя архива!\n"
+msgid "You missed the archive name!"
+msgstr "Не указано имя архива!"
 
 #: ../src/add_dialog.c ../src/extract_dialog.c ../src/interface.c
 msgid "You missed the password!"
-msgstr "Вы не указали пароль!"
+msgstr "Не введён пароль!"
 
 #: ../src/extract_dialog.c
 msgid "You missed where to extract the files!"
-msgstr "Вы не указали, куда извлечь файлы!"
+msgstr "Не указано, куда извлечь файлы!"
 
 #: ../src/main.c
 msgid "[ARCHIVE]"
@@ -1271,7 +1333,7 @@ msgstr "_Извлечь"
 
 #: ../src/interface.c
 msgid "_HTML file"
-msgstr "_HTML файл"
+msgstr "_Файл HTML"
 
 #: ../src/interface.c
 msgid "_Help"
@@ -1287,11 +1349,11 @@ msgstr "_Извлечь несколько архивов"
 
 #: ../src/interface.c
 msgid "_Password:"
-msgstr "Пароль:"
+msgstr "_Пароль:"
 
 #: ../src/interface.c
 msgid "_Preferences"
-msgstr "Настройки"
+msgstr "_Настройки"
 
 #: ../src/interface.c
 msgid "_Properties"
@@ -1313,17 +1375,25 @@ msgstr "_Текстовый файл"
 msgid "and"
 msgstr "и"
 
+#: ../xarchiver.desktop.in.h
+msgid "archive;compress;decompress;extract;pack;uncompress;unpack;"
+msgstr "архивировать;сжать;разжать;извлечь;упаковать;разуплотнить;распаквать;"
+
+#: ../src/add_dialog.c
+msgid "best"
+msgstr "сильно"
+
 #: ../src/pref_dialog.c
 msgid "choose..."
 msgstr "выберите..."
 
 #: ../src/main.c
 msgid "destination"
-msgstr "цель"
+msgstr "целевое местоположение"
 
 #: ../src/interface.c
 msgid "example: *.txt; ac*"
-msgstr "например: *.txt; ac*"
+msgstr "пример: *.txt; ac*"
 
 #: ../src/main.c
 msgid "file1 ... fileN"
@@ -1333,13 +1403,17 @@ msgstr "файл1 ... файлN"
 msgid "large"
 msgstr "большой"
 
+#: ../src/add_dialog.c
+msgid "least"
+msgstr "слабо"
+
 #: ../src/pref_dialog.c
 msgid "medium"
 msgstr "средний"
 
 #: ../src/window.c
 msgid "selected"
-msgstr "только выбранные"
+msgstr "выбранные"
 
 #: ../src/pref_dialog.c
 msgid "small"
@@ -1349,9 +1423,14 @@ msgstr "маленький"
 msgid "small/medium"
 msgstr "маленький/средний"
 
+#. Do not translate this string.
+#. Instead, add your name here if you like.
+#. One translator per line!
 #: ../src/window.c
 msgid "translator-credits"
-msgstr "Fedoseev Sergey <fedoseev.sergey@gmail.com>"
+msgstr ""
+"Fedoseev Sergey <fedoseev.sergey@gmail.com>\n"
+"Казорин Сергей <translation-team@basealt.ru>"
 
 #: ../src/pref_dialog.c
 msgid "very large"
@@ -1361,15 +1440,78 @@ msgstr "очень большой"
 #, c-format
 msgid ""
 "xarchiver: %s\n"
-"Try xarchiver --help to see a full list of available command line options.\n"
+"Try xarchiver --help to see a full list of available command-line options.\n"
 msgstr ""
 "xarchiver: %s\n"
-"Запустите xarchiver --help, чтобы получить список доступных параметров "
-"командной строки.\n"
+"Выполните команду xarchiver --help, чтобы получить список доступных "
+"параметров командной строки.\n"
 
-#: ../src/window.c
-msgid "|Size\n"
-msgstr "|Размер\n"
+#, c-format
+#~ msgid "Files:%*s%s"
+#~ msgstr "Файлы:%*s%s"
+
+#~ msgid ""
+#~ "\n"
+#~ "<span color='red' style='italic'>Please install xdg-utils package so "
+#~ "that\n"
+#~ "Xarchiver can recognize more file types.</span>"
+#~ msgstr ""
+#~ "\n"
+#~ "<span color='red' style='italic'>Чтобы Xarchiver мог распознавать\n"
+#~ "большее количество файлов, установите пакет xdg-utils.</span>"
+
+#~ msgid "A GTK+ only archive manager"
+#~ msgstr "Менеджер архивов только на GTK+"
+
+#~ msgid "This option consumes more memory with large archives"
+#~ msgstr "Этот параметр требует больше памяти при работе с большими архивами"
+
+#~ msgid "0 = no compression, 3 is default, 5 = best compression but slowest"
+#~ msgstr ""
+#~ "0: без сжатия, 3: по умолчанию, 9: лучшее, но самое медленное сжатие"
+
+#~ msgid "0 = no compression, 5 is default, 9 = best compression but slowest"
+#~ msgstr ""
+#~ "0: без сжатия, 5: по умолчанию, 9: лучшее, но самое медленное сжатие"
+
+#~ msgid "0 = no compression, 6 is default, 9 = best compression but slowest"
+#~ msgstr ""
+#~ "0: без сжатия, 6: по умолчанию, 9: лучшее, но самое медленное сжатие"
+
+#~ msgid "5 = default compression, 7 = max compression"
+#~ msgstr "5: по умолчанию, 7: максимальное сжатие"
+
+#~ msgid "Archive Name"
+#~ msgstr "Имя архива"
+
+#, c-format
+#~ msgid "Can't open file %s:"
+#~ msgstr "Не удалось открыть файл %s:"
+
+#~ msgid "Destination dirs"
+#~ msgstr "Целевые каталоги"
+
+#~ msgid "Do not store paths"
+#~ msgstr "Не сохранять пути файлов"
+
+#~ msgid "Extract pathnames"
+#~ msgstr "Извлечь каталоги"
+
+#~ msgid "Freshen and replace"
+#~ msgstr "Обновить и заменить"
+
+#~ msgid "Options "
+#~ msgstr "Параметры "
+
+#~ msgid "Options:"
+#~ msgstr "Параметры:"
+
+#~ msgid ""
+#~ "This option extracts archives in directories named with the archive names"
+#~ msgstr "Этот параметр позволяет извлекать архивы в одноимённые каталоги"
+
+#~ msgid "Update and add"
+#~ msgstr "Обновить и добавить"
 
 #~ msgid "Date and Time"
 #~ msgstr "Дата и время"
