@@ -7,7 +7,7 @@ dnl changed and updated by Ingo Brückl.
 dnl ***************
 dnl *** Version ***
 dnl ***************
-m4_define([xarchiver_version], [0.5.4.17])
+m4_define([xarchiver_version], [0.5.4.25])
 
 dnl ***************************
 dnl *** Initialize autoconf ***
@@ -17,18 +17,18 @@ AC_COPYRIGHT([Copyright (c) 2006
 
 Written for Xfce by Giuseppe Torelli <colossus73@gmail.com>.
 Continuation of the Xfce master branch.])
-AC_PREREQ([2.62])
+AC_PREREQ([2.65])
 AC_INIT([xarchiver], [xarchiver_version], [https://github.com/ib/xarchiver/issues])
 : ${CFLAGS="-O2"}
 AC_CONFIG_SRCDIR([src/main.c])
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CANONICAL_HOST
 
 dnl ***************************
 dnl *** Initialize automake ***
 dnl ***************************
-AM_INIT_AUTOMAKE([1.11 dist-xz])
+AM_INIT_AUTOMAKE([1.13 dist-xz])
 AM_PROG_CC_C_O
 AM_SILENT_RULES([yes])
 AM_MAINTAINER_MODE
@@ -74,11 +74,6 @@ dnl *** Work-around system-specific limitations ***
 dnl ***********************************************
 AC_SYS_LARGEFILE
 
-dnl **********************************
-dnl *** Check for standard headers ***
-dnl **********************************
-AC_HEADER_STDC
-
 dnl ************************************
 dnl *** Check for standard functions ***
 dnl ************************************
@@ -119,8 +114,8 @@ dnl *** Check for debugging support ***
 dnl ***********************************
 AC_ARG_ENABLE(
 [debug],
-AC_HELP_STRING([--enable-debug[=yes|no|full]], [build with debugging support])
-AC_HELP_STRING([--disable-debug], [no debugging support [default]]),
+AS_HELP_STRING([--enable-debug[=yes|no|full]], [build with debugging support])
+AS_HELP_STRING([--disable-debug], [no debugging support [default]]),
 [],
 [enable_debug=no]
 )
@@ -195,10 +190,11 @@ AC_SUBST([PIXMAPDIR])
 dnl **************
 dnl *** Output ***
 dnl **************
-AC_OUTPUT([
+AC_CONFIG_FILES([
 doc/Makefile
 icons/16x16/Makefile
 icons/24x24/Makefile
+icons/32x32/Makefile
 icons/48x48/Makefile
 icons/scalable/Makefile
 icons/Makefile
@@ -208,6 +204,7 @@ src/Makefile
 src/xdgmime/Makefile
 Makefile
 ])
+AC_OUTPUT
 
 echo "
 

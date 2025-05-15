@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2008 Giuseppe Torelli - <colossus73@gmail.com>
+ *  Copyright (C) 2016 Ingo Brückl
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,28 +24,50 @@
 #include <gtk/gtk.h>
 #include "archive.h"
 
-typedef struct Extract_dialog_data
+typedef struct ExtractDialog
 {
-	GtkWidget *dialog1,*dialog_vbox1,*destination_path_entry,*ensure_directory,*overwrite_check,*extract_full,*touch,*fresh,*update,*all_files_radio,*files_radio,
-	 *selected_radio,*entry2,*password_entry;
-	gchar *string;
-} Extract_dialog_data;
+	GtkWidget *dialog;
+	GtkWidget *destination_path_entry;
+	GtkWidget *ensure_directory;
+	GtkWidget *all_files;
+	GtkWidget *selected_files;
+	GtkWidget *specified_files;
+	GtkWidget *specified_files_entry;
+	GtkWidget *full_path;
+	GtkWidget *relative_path;
+	GtkWidget *without_path;
+	GtkWidget *touch;
+	GtkWidget *overwrite;
+	GtkWidget *update;
+	GtkWidget *freshen;
+	GtkWidget *label_password;
+	GtkWidget *password_entry;
+	XArchive *archive;
+} ExtractDialog;
 
-typedef struct Multi_extract_data
+typedef struct MultiExtractDialog
 {
-	GtkWidget *multi_extract, *files_treeview, *hbox2, *extract_to, *entry1, *extract_to_archive_name, *label1, *frame2, *alignment2, *vbox3, *overwrite, *full_path, *label2,
-	*extract_button,*extract_image,*extract_hbox,*extract_label,*image1;
-	GtkListStore *files_liststore;
-	gint nr;
+	GtkWidget *dialog;
+	GtkWidget *treeview;
+	GtkWidget *remove;
+	GtkWidget *extract_to;
+	GtkWidget *destination_path_entry;
+	GtkWidget *overwrite;
+	GtkWidget *full_path;
+	GtkListStore *liststore;
+	guint nr_total;
+	guint nr_no_overwrite;
+	guint nr_no_full_path;
 	gboolean stop_pressed;
 	XArchive *archive;
-} Multi_extract_data;
+} MultiExtractDialog;
 
-Extract_dialog_data *xa_create_extract_dialog();
-Multi_extract_data *xa_create_multi_extract_dialog();
-void xa_multi_extract_dialog(Multi_extract_data *);
-void xa_multi_extract_dialog_add_file(gchar *, Multi_extract_data *);
-void xa_parse_extract_dialog_options(XArchive * , Extract_dialog_data *, GtkTreeSelection *);
-void xa_set_extract_dialog_options(Extract_dialog_data *, gint, XArchive *);
+ExtractDialog *xa_create_extract_dialog();
+MultiExtractDialog *xa_create_multi_extract_dialog();
+void xa_execute_extract_commands(XArchive *, GSList *, gboolean);
+void xa_multi_extract_dialog(MultiExtractDialog *);
+void xa_multi_extract_dialog_add_file(gchar *, MultiExtractDialog *);
+void xa_parse_extract_dialog_options(XArchive * , ExtractDialog *, GtkTreeSelection *);
+void xa_set_extract_dialog_options(ExtractDialog *, gint, XArchive *);
 
 #endif

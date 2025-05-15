@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2008 Giuseppe Torelli - <colossus73@gmail.com>
+ *  Copyright (C) 2016 Ingo Brückl
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -72,7 +73,7 @@ static void xa_open_with_dialog_expander_expanded (GObject *object, GParamSpec *
 
 	if (gtk_expander_get_expanded(GTK_EXPANDER(object)))
 	{
-		cmd = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(prefs_window->combo_prefered_custom_cmd));
+		cmd = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(prefs_window->preferred_custom_cmd));
 
 		if (cmd && *cmd)
 			gtk_entry_set_text(GTK_ENTRY(data->custom_command_entry), cmd);
@@ -161,86 +162,95 @@ static void xa_open_with_dialog_browse_custom_command (GtkButton *button, Open_w
 static void xa_parse_desktop_file (const gchar *path, const gchar *name, Open_with_data *data)
 {
 	gchar *filename, *line, *key;
-	gchar *app_name = NULL, *app_exec = NULL, *app_icon = NULL;
-	GIOStatus status;
 	GIOChannel *file;
-	gboolean group_line = FALSE, app_multiple = FALSE, has_mimetype = FALSE;
 	const gchar * const *langs, * const *l;
+	gboolean group_line = FALSE, app_multiple = FALSE, has_mimetype = FALSE;
+	gchar *app_name = NULL, *app_exec = NULL, *app_icon = NULL;
 	gint size;
 
-	filename = g_strconcat(path,"/",name,NULL);
-	file = g_io_channel_new_file(filename,"r",NULL);
+	filename = g_strconcat(path, "/", name, NULL);
+	file = g_io_channel_new_file(filename, "r", NULL);
 	g_free(filename);
-	if (file == NULL)
+
+	if (!file)
 		return;
+
+	g_io_channel_set_encoding(file, NULL, NULL);
 	langs = g_get_language_names();
-	g_io_channel_set_encoding(file,NULL,NULL);
-	do
+
+	while (g_io_channel_read_line(file, &line, NULL, NULL, NULL) == G_IO_STATUS_NORMAL)
 	{
-		status = g_io_channel_read_line (file, &line, NULL, NULL, NULL);
-		if (line != NULL)
+		if (strcmp(g_strchomp(line), "[Desktop Entry]") == 0)
 		{
-			if (strcmp(g_strchomp(line), "[Desktop Entry]") == 0)
-			{
-				group_line = TRUE;
-				continue;
-			}
-			if (group_line && *line == '[')
-				break;
-			if (!group_line)
-				continue;
-			if (g_str_has_prefix(line, "Name["))
-			{
-				l = langs;
-
-				while (*l)
-				{
-					key = g_strconcat("Name[", *l, "]=", NULL);
-
-					if (g_str_has_prefix(line, key))
-					{
-						g_free(app_name);
-						app_name = g_strndup(line + strlen(key), strlen(line) - strlen(key));
-						g_free(key);
-						break;
-					}
-
-					g_free(key);
-					l++;
-				}
-			}
-			if (!app_name && g_str_has_prefix(line, "Name="))
-			{
-				app_name = g_strndup(line + 5, strlen(line) - 5);
-				continue;
-			}
-			if (g_str_has_prefix(line,"Exec="))
-			{
-				app_exec = strstr(line, " %");
-				if (app_exec)
-				{
-					app_multiple = (app_exec[2] == 'F' || app_exec[2] == 'U');
-					app_exec = g_strndup(line + 5, app_exec - (line + 5));
-				}
-				else
-					app_exec = g_strndup(line + 5, strlen(line) - 5);
-				continue;
-			}
-			if (g_str_has_prefix(line,"Icon="))
-			{
-				app_icon = strrchr(line, '.');
-				if (app_icon)
-					app_icon = g_strndup(line + 5,app_icon - (line+5));
-				else
-					app_icon = g_strndup(line + 5, strlen(line) - 5);
-				continue;
-			}
-			if (g_str_has_prefix(line,"MimeType="))
-				has_mimetype = TRUE;
-			g_free(line);
+			group_line = TRUE;
+			continue;
 		}
+
+		if (group_line && *line == '[')
+			break;
+
+		if (!group_line)
+			continue;
+
+		if (g_str_has_prefix(line, "Name["))
+		{
+			l = langs;
+
+			while (*l)
+			{
+				key = g_strconcat("Name[", *l, "]=", NULL);
+
+				if (g_str_has_prefix(line, key))
+				{
+					g_free(app_name);
+					app_name = g_strndup(line + strlen(key), strlen(line) - strlen(key));
+					g_free(key);
+					break;
+				}
+
+				g_free(key);
+				l++;
+			}
+		}
+
+		if (!app_name && g_str_has_prefix(line, "Name="))
+		{
+			app_name = g_strndup(line + 5, strlen(line) - 5);
+			continue;
+		}
+
+		if (g_str_has_prefix(line, "Exec="))
+		{
+			app_exec = strstr(line, " %");
+
+			if (app_exec)
+			{
+				app_multiple = (app_exec[2] == 'F' || app_exec[2] == 'U');
+				app_exec = g_strndup(line + 5, app_exec - (line + 5));
+			}
+			else
+				app_exec = g_strndup(line + 5, strlen(line) - 5);
+
+			continue;
+		}
+
+		if (g_str_has_prefix(line, "Icon="))
+		{
+			app_icon = strrchr(line, '.');
+
+			if (app_icon)
+				app_icon = g_strndup(line + 5, app_icon - (line+5));
+			else
+				app_icon = g_strndup(line + 5, strlen(line) - 5);
+
+			continue;
+		}
+
+		if (g_str_has_prefix(line, "MimeType="))
+			has_mimetype = TRUE;
+
+		g_free(line);
 	}
-	while (status != G_IO_STATUS_EOF);
 
 	g_io_channel_shutdown(file, FALSE, NULL);
 
@@ -266,7 +276,7 @@ static void xa_parse_desktop_file (const gchar *path, const gchar *name, Open_wi
 			app->exec = app_exec;
 			app->multiple = app_multiple;
 
-			switch (gtk_combo_box_get_active(GTK_COMBO_BOX(prefs_window->combo_icon_size)))
+			switch (gtk_combo_box_get_active(GTK_COMBO_BOX(prefs_window->icon_size)))
 			{
 				case 0:
 					size = 24;
@@ -358,9 +368,9 @@ void xa_create_open_with_dialog (const gchar *filename, gchar *filenames, gint n
 	data->files = filenames;
 	data->dialog1 = gtk_dialog_new ();
 	if (nr == 1)
-		title = _("Open With");
+		title = _("Open file");
 	else
-		title = _("Open the selected files with");
+		title = _("Open the selected files");
 
 	gtk_window_set_title (GTK_WINDOW (data->dialog1),title);
 	gtk_window_set_position (GTK_WINDOW (data->dialog1), GTK_WIN_POS_CENTER_ON_PARENT);
@@ -389,7 +399,7 @@ void xa_create_open_with_dialog (const gchar *filename, gchar *filenames, gint n
 
 		open_text = gtk_label_new("");
 		gtk_box_pack_start (GTK_BOX (hbox1),open_text,FALSE,FALSE,10);
-		text = g_strdup_printf(_("Open <i>%s</i> with:"), xa_set_max_width_chars_ellipsize(filename, 40, PANGO_ELLIPSIZE_END));
+		text = g_strdup_printf(_("Open <i>%s</i> with:"), xa_set_max_width_chars_ellipsize(filename, 38, PANGO_ELLIPSIZE_END));
 		gtk_label_set_use_markup (GTK_LABEL (open_text),TRUE);
 		gtk_label_set_markup (GTK_LABEL (open_text),text);
 		g_free(text);

@@ -1,5 +1,6 @@
 /*
  *  Copyright (c) 2008 Giuseppe Torelli <colossus73@gmail.com>
+ *  Copyright (C) 2016 Ingo Brückl
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -63,8 +64,7 @@ static gboolean xa_process_stdout (GIOChannel *ioc, GIOCondition cond, XArchive 
 
 			g_free(line);
 
-			while (gtk_events_pending())
-				gtk_main_iteration();
+			process_gtk_events();
 
 			return TRUE;
 		}
@@ -146,7 +146,12 @@ static void xa_process_exit (GPid pid, gint status, XArchive *archive)
 static void xa_delete_working_directory (XArchive *archive)
 {
 	if (xa_main_window)
-		xa_launch_external_program("rm -rf", archive->working_dir);
+	{
+		gchar *working_dir = g_shell_quote(archive->working_dir);
+
+		xa_launch_external_program("rm -rf", working_dir);
+		g_free(working_dir);
+	}
 	else
 	{
 		char *argv[4];
@@ -290,8 +295,16 @@ gboolean xa_get_compressed_tar_type (XArchiveType *type)
 {
 	switch (*type)
 	{
+		case XARCHIVETYPE_BZIP:
+			*type = XARCHIVETYPE_TAR_BZIP;
+			break;
+
 		case XARCHIVETYPE_BZIP2:
 			*type = XARCHIVETYPE_TAR_BZIP2;
+			break;
+
+		case XARCHIVETYPE_BZIP3:
+			*type = XARCHIVETYPE_TAR_BZIP3;
 			break;
 
 		case XARCHIVETYPE_COMPRESS:
@@ -320,6 +333,10 @@ gboolean xa_get_compressed_tar_type (XArchiveType *type)
 
 		case XARCHIVETYPE_LZOP:
 			*type = XARCHIVETYPE_TAR_LZOP;
+			break;
+
+		case XARCHIVETYPE_RZIP:
+			*type = XARCHIVETYPE_TAR_RZIP;
 			break;
 
 		case XARCHIVETYPE_XZ:
@@ -414,6 +431,7 @@ void xa_spawn_async_process (XArchive *archive, const gchar *command)
 	if (xa_main_window)
 	{
 		gtk_widget_set_sensitive(Stop_button, TRUE);
+		xa_show_archive_status(archive);
 
 		if (!archive->timeout)
 			archive->timeout = g_timeout_add(350, (GSourceFunc) xa_flash_led_indicator, archive);
@@ -426,11 +444,8 @@ void xa_spawn_async_process (XArchive *archive, const gchar *command)
 			archive->timeout = g_timeout_add(100, (GSourceFunc) xa_pulse_progress_bar, archive);
 	}
 
-	if (archive->output)
-	{
-		g_slist_free_full(archive->output, g_free);
-		archive->output = NULL;
-	}
+	g_slist_free_full(archive->output, g_free);
+	archive->output = NULL;
 
 	ioc = g_io_channel_unix_new(archive->child_fdout);
 	g_io_channel_set_encoding(ioc, NULL, NULL);
@@ -446,31 +461,6 @@ void xa_spawn_async_process (XArchive *archive, const gchar *command)
 		g_child_watch_add_full(G_PRIORITY_LOW, archive->child_pid, (GChildWatchFunc) xa_process_exit, archive, NULL);
 }
 
-/*	TODO: workaround for bug #3235
- *
- * gchar *xa_split_command_line(XArchive *archive,GSList *list)
-{
-	gchar *command = NULL;
-	GSList *chunks = NULL;
-	GSList *scan = NULL;
-	int length;
-
-	for (scan = list; scan != NULL;)
-	{
-		length = 0;
-		while ((scan != NULL) && (length < 5000)) //MAX_CMD_LEN
-		{
-			length += strlen (scan->data);
-			chunks = g_slist_prepend(chunks,scan->data);
-			scan = scan->next;
-		}
-		chunks = g_slist_prepend(chunks,"****** ");
-	}
-	chunks = g_slist_reverse(chunks);
-	return command;
-}
-*/
-
 void xa_clean_archive_structure (XArchive *archive)
 {
 	xa_free_entry(archive, archive->root_entry);
@@ -484,11 +474,10 @@ void xa_clean_archive_structure (XArchive *archive)
 	if (archive->comment)
 		g_string_free(archive->comment, TRUE);
 
-	if (archive->output)
-		g_slist_free_full(archive->output, g_free);
+	g_slist_free_full(archive->output, g_free);
 
-	if (archive->clipboard)
-		xa_clipboard_clear(NULL, archive);
+	if (archive == XA_Clipboard.archive)
+		 xa_clipboard_clear();
 
 	g_free(archive->column_types);
 	g_free(archive->path[0]);
@@ -506,35 +495,56 @@ void xa_clean_archive_structure (XArchive *archive)
 gboolean xa_create_working_directory (XArchive *archive)
 {
 	gchar *tmp_dir;
-	gchar *value;
+	gchar *value, *value_local = NULL;
+	const gchar *tmp;
 
-	if (archive->working_dir != NULL)
+	if (archive->working_dir)
 		return TRUE;
 
-	value = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(prefs_window->combo_prefered_temp_dir));
+	value = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(prefs_window->preferred_temp_dir));
 
 	if (value && *value)
 	{
-		gchar *value_local = g_filename_from_utf8(value, -1, NULL, NULL, NULL);
-		tmp_dir = g_strconcat(value_local, "/xa-XXXXXX", NULL);
-		g_free(value_local);
+		value_local = g_filename_from_utf8(value, -1, NULL, NULL, NULL);
+		tmp = value_local;
 	}
 	else
-		tmp_dir = g_strdup("");
+		tmp = g_get_tmp_dir();
 
+	tmp_dir = g_strconcat(tmp, "/", "xa-XXXXXX", NULL);
+
+	g_free(value_local);
 	g_free(value);
 
 	if (!g_mkdtemp(tmp_dir))
 	{
 		g_free(tmp_dir);
-		tmp_dir = NULL;
-
 		xa_show_message_dialog (GTK_WINDOW (xa_main_window),GTK_DIALOG_MODAL,GTK_MESSAGE_ERROR,GTK_BUTTONS_OK,_("Can't create temporary directory:"),g_strerror(errno));
+
 		return FALSE;
 	}
 
 	archive->working_dir = tmp_dir;
+
 	return TRUE;
+}
+
+gchar *xa_create_working_subdirectory (XArchive *archive)
+{
+	gchar *subdir;
+
+	if (!xa_create_working_directory(archive))
+		return NULL;
+
+	subdir = g_strconcat(archive->working_dir, "/", "xa-tmp.XXXXXX", NULL);
+
+	if (g_mkdtemp(subdir))
+		return subdir;
+	else
+	{
+		g_free(subdir);
+		return NULL;
+	}
 }
 
 gchar *xa_create_containing_directory (XArchive *archive, const gchar *path)
@@ -595,9 +605,7 @@ gboolean xa_run_command (XArchive *archive, const gchar *command)
 		while (pid != archive->child_pid && pid != -1)
 		{
 			pid = waitpid(archive->child_pid, &status, WNOHANG);
-
-			while (gtk_events_pending())
-				gtk_main_iteration();
+			process_gtk_events();
 		}
 
 		if (WIFEXITED(status))
@@ -644,7 +652,7 @@ gint xa_find_archive_index (gint page_num)
 	return -1;
 }
 
-gint xa_get_new_archive_idx()
+gint xa_get_new_archive_index ()
 {
 	gint i;
 
@@ -653,6 +661,7 @@ gint xa_get_new_archive_idx()
 		if (archive[i] == NULL)
 			return i;
 	}
+
 	return -1;
 }
 
@@ -755,6 +764,16 @@ XEntry* xa_find_entry_from_dirpath (XArchive *archive, const gchar *dirpath)
 
 	components = g_strsplit(dirpath, "/", -1);
 
+	if (*dirpath == '/')
+	{
+		gchar *slashdir;
+
+		n = 1;
+		slashdir = g_strconcat("/", components[n], NULL);
+		g_free(components[n]);
+		components[n] = slashdir;
+	}
+
 	while (components[n] && *components[n])
 	{
 		entry = xa_find_directory_entry(root->child, components[n]);
@@ -810,10 +829,7 @@ void xa_detect_encrypted_archive (XArchive *archive)
 	(*archive->archiver->list)(archive);
 
 	do
-	{
-		while (gtk_events_pending())
-			gtk_main_iteration();
-	}
+		process_gtk_events();
 	while (archive->child_ref);
 }
 
@@ -833,7 +849,6 @@ void xa_dir_sidebar_row_selected (GtkTreeSelection *selection, gpointer user_dat
 	XEntry *entry;
 	GtkTreeIter iter;
 	GtkTreeIter parent;
-	GtkTreePath *path;
 	GtkTreeModel *model;
 	GString *string = g_string_new("");
 	gchar *dir;
@@ -841,12 +856,20 @@ void xa_dir_sidebar_row_selected (GtkTreeSelection *selection, gpointer user_dat
 
 	idx = xa_find_archive_index(gtk_notebook_get_current_page(notebook));
 
-	if ((idx >= 0) && gtk_tree_selection_get_selected(selection, &model, &iter))
+	if ((idx != -1) && gtk_tree_selection_get_selected(selection, &model, &iter))
 	{
-		path = gtk_tree_model_get_path(model,&iter);
-		if ( ! gtk_tree_view_row_expanded(GTK_TREE_VIEW(archive_dir_treeview),path))
-			gtk_tree_view_expand_to_path(GTK_TREE_VIEW(archive_dir_treeview),path);
-		gtk_tree_path_free(path);
+		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(prefs_window->auto_expand)))
+		{
+			GtkTreePath *path;
+
+			path = gtk_tree_model_get_path(model, &iter);
+
+			if (!gtk_tree_view_row_expanded(GTK_TREE_VIEW(archive_dir_treeview), path))
+				gtk_tree_view_expand_to_path(GTK_TREE_VIEW(archive_dir_treeview), path);
+
+			gtk_tree_path_free(path);
+		}
+
 		/* Let get the last selected dir */
 		gtk_tree_model_get(model,&iter,1,&dir,-1);
 		g_string_prepend_c(string,'/');
@@ -886,6 +909,7 @@ gint xa_sort_dirs_before_files (GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter
 		else
 			return 1;
 	}
-	/* This for sorting the files */
-	return strcasecmp (entry1->filename,entry2->filename);
+
+	/* sort files */
+	return g_utf8_collate(entry1->filename, entry2->filename);
 }

@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2008 Giuseppe Torelli - <colossus73@gmail.com>
+ *  Copyright (C) 2016 Ingo Brückl
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,36 +24,30 @@
 #include <gtk/gtk.h>
 #include "archive.h"
 
-typedef struct Add_dialog_data
+typedef struct AddDialog
 {
-	GtkWidget *dialog1;
-	GtkWidget *alignment2;
-	GtkWidget *notebook1;
-	GtkWidget *filechooserwidget1;
-	GtkWidget *frame1;
-	GtkWidget *label;
-	GtkWidget *store_path;
-	GtkWidget *no_store_path;
-	GtkWidget *option_notebook_vbox;
-	GtkWidget *remove_files;
+	GtkWidget *dialog;
+	GtkWidget *notebook;
+	GtkWidget *filechooser;
+	GtkWidget *full_path;
+	GtkWidget *relative_path;
 	GtkWidget *update;
 	GtkWidget *freshen;
-	GtkWidget *solid_archive;
-	GtkWidget *compression_scale;
-	GtkWidget *add_password;
-	GtkWidget *add_password_entry;
 	GtkWidget *recurse;
-	GtkWidget *add_image;
-	GtkWidget *add_hbox;
-	GtkWidget *add_label;
-	GtkWidget *cancel_button;
-	GtkWidget *add_button;
-	GtkWidget *add_option_label;
-} Add_dialog_data;
+	GtkWidget *remove;
+	GtkWidget *solid;
+	GtkWidget *label_least;
+	GtkWidget *label_best;
+	GtkWidget *alignment;
+	GtkWidget *compression_scale;
+	GtkWidget *uncompressed;
+	GtkWidget *password;
+	GtkWidget *password_entry;
+} AddDialog;
 
-Add_dialog_data *xa_create_add_dialog();
-void xa_execute_add_commands(XArchive *, GSList *, gboolean, gchar *);
-void xa_parse_add_dialog_options(XArchive *, Add_dialog_data *);
-void xa_set_add_dialog_options(Add_dialog_data *, XArchive *);
+AddDialog *xa_create_add_dialog();
+void xa_execute_add_commands(XArchive *, GSList *, gboolean, gboolean);
+void xa_parse_add_dialog_options(XArchive *, AddDialog *, GSList *);
+void xa_set_add_dialog_options(AddDialog *, XArchive *);
 
 #endif

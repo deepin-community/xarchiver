@@ -1,6 +1,7 @@
 /*
  *  Copyright (C) 2008 Giuseppe Torelli - <colossus73@gmail.com>
  *  Copyright (C) 2006 Lukasz 'Sil2100' Zemczak - <sil2100@vexillium.org>
+ *  Copyright (C) 2016 Ingo Brückl
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,7 +25,7 @@
 #include <glib.h>
 #include "archive.h"
 
-void xa_lha_add(XArchive *, GSList *, gchar *);
+void xa_lha_add(XArchive *, GSList *);
 void xa_lha_ask(XArchive *);
 gboolean xa_lha_check_program(gchar *);
 void xa_lha_delete(XArchive *, GSList *);

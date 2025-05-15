@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2008 Giuseppe Torelli - <colossus73@gmail.com>
+ *  Copyright (C) 2016 Ingo Brückl
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,28 +23,47 @@
 
 #include <gtk/gtk.h>
 
-typedef struct Prefs_dialog_data
+typedef struct PrefsDialog
 {
-	GtkWidget *dialog1,*dialog_vbox1,*combo_prefered_format, *prefer_unzip;
-	GtkWidget *confirm_deletion, *store_output,*combo_archive_view,*combo_icon_size;
-	GtkWidget *check_show_comment, *check_sort_filename_column, *show_location_bar, *show_sidebar, *show_toolbar, *combo_prefered_viewer, *combo_prefered_archiver, *combo_prefered_custom_cmd;
-	GtkWidget *combo_prefered_web_browser, *combo_prefered_editor, *combo_prefered_temp_dir, *combo_prefered_extract_dir, *allow_sub_dir,*check_save_geometry,*prefs_notebook;
-	GtkListStore *prefs_liststore;
+	GtkWidget *dialog;
 	GtkWidget *iconview;
-	gint geometry[5];
-	gint extract_dialog[2];
-	gint add_coords[2];
+	GtkWidget *notebook;
+	GtkWidget *preferred_format;
+	GtkWidget *prefer_unzip;
+	GtkWidget *confirm_deletion;
+	GtkWidget *sort_by_filenames;
+	GtkWidget *advanced_isearch;
+	GtkWidget *auto_expand;
+	GtkWidget *store_output;
+	GtkWidget *icon_size;
+	GtkWidget *show_comment;
+	GtkWidget *show_sidebar;
+	GtkWidget *show_location_bar;
+	GtkWidget *show_toolbar;
+	GtkWidget *preferred_browser;
+	GtkWidget *preferred_editor;
+	GtkWidget *preferred_viewer;
+	GtkWidget *preferred_archiver;
+	GtkWidget *preferred_custom_cmd;
+	GtkWidget *preferred_temp_dir;
+	GtkWidget *preferred_extract_dir;
+	GtkWidget *save_geometry;
+	GtkWidget *allow_sub_dir;
+	GtkListStore *liststore;
+	gint main_win_geometry[5];
+	gint extract_win_size[2];
+	gint add_win_size[2];
 	gboolean size_changed[2];
-} Prefs_dialog_data;
+} PrefsDialog;
 
 extern gchar *config_file;
 extern GtkIconTheme *icon_theme;
 
-Prefs_dialog_data *xa_create_prefs_dialog();
-void xa_prefs_adapt_options(Prefs_dialog_data *);
-void xa_prefs_apply_options(Prefs_dialog_data *);
-void xa_prefs_iconview_changed(GtkIconView *, Prefs_dialog_data *);
-void xa_prefs_load_options(Prefs_dialog_data *);
-void xa_prefs_save_options(Prefs_dialog_data *, const char *);
+PrefsDialog *xa_create_prefs_dialog();
+void xa_prefs_adapt_options(PrefsDialog *);
+void xa_prefs_apply_options(PrefsDialog *);
+void xa_prefs_iconview_changed(GtkIconView *, PrefsDialog *);
+void xa_prefs_load_options(PrefsDialog *);
+void xa_prefs_save_options(PrefsDialog *, const char *);
 
 #endif

@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2008 Giuseppe Torelli - <colossus73@gmail.com>
+ *  Copyright (C) 2016 Ingo Brückl
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,20 +22,25 @@
 #include "zip.h"
 #include "date_utils.h"
 #include "main.h"
+#include "parser.h"
 #include "string_utils.h"
 #include "support.h"
 #include "window.h"
 
 void xa_zip_ask (XArchive *archive)
 {
+	gboolean read_only;
 	gchar *sfx;
+	compressor_t zip_compressor = {TRUE, 1, 6, 9, 1};
+
+	read_only = (archive->tag == 'a' || archive->tag == 'x');   // apk, exe
 
 	sfx = g_find_program_in_path("unzipsfx");
 
 	archive->can_test = TRUE;
 	archive->can_extract = TRUE;
-	archive->can_add = archiver[archive->type].is_compressor;
-	archive->can_delete = archiver[archive->type].is_compressor;
+	archive->can_add = (archiver[archive->type].is_compressor && !read_only);
+	archive->can_delete = (archiver[archive->type].is_compressor && !read_only);
 	archive->can_sfx = (sfx && archiver[archive->type].is_compressor);
 	archive->can_password = TRUE;
 	archive->can_full_path[0] = TRUE;
@@ -45,133 +51,93 @@ void xa_zip_ask (XArchive *archive)
 	archive->can_update[1] = archiver[archive->type].is_compressor;
 	archive->can_freshen[0] = TRUE;
 	archive->can_freshen[1] = archiver[archive->type].is_compressor;
-	archive->can_move = archiver[archive->type].is_compressor;
+	archive->can_recurse[0] = TRUE;
+	archive->can_recurse[1] = archiver[archive->type].is_compressor;
+	archive->can_remove = archiver[archive->type].is_compressor;
+	archive->can_compress = archiver[archive->type].is_compressor;
+	archive->compressor = zip_compressor;
+	archive->compression = archive->compressor.preset;
 
 	g_free(sfx);
 }
 
 static gchar *xa_zip_password_str (XArchive *archive)
 {
+	gchar *escaped, *password_str;
+
 	if (archive->password)
-		return g_strconcat(" -P", archive->password, NULL);
+	{
+		escaped = xa_escape_bad_chars(archive->password, ESCAPES);
+		password_str = g_strconcat(" -P", escaped, NULL);
+		g_free(escaped);
+
+		return password_str;
+	}
 	else
 		return g_strdup("");
 }
 
 static void xa_zip_parse_output (gchar *line, XArchive *archive)
 {
-	XEntry *entry = NULL;
-
-	gchar *filename;
+	XEntry *entry;
 	gpointer item[9];
-	unsigned int linesize,n,a;
-	gboolean encrypted,dir;
+	gchar *filename, *attr;
+	gboolean dir, encrypted;
 	guint64 size;
 
-	encrypted = dir = FALSE;
-	if ((line[0] != '-') && (line[0] != 'd') && (line[0] != 'l') && (line[0] != '?'))
+	USE_PARSER;
+
+	if (line[0] != '-' && line[0] != 'd' && line[0] != 'l' && line[0] != 'p' && line[0] != '?')
 	{
-		/* unzip can compensate a central directory length reported as too long,
-		   but then exits with status (aka error level) 2, which is why we accept
-		   this exit status as okay in this case */
-		if (strcmp(line, "  zipfile?).  Compensating...\n") == 0) archive->exitstatus_ok = 2;
+		/*
+		 * Unzip can compensate a central directory length reported as too long,
+		 * but then exits with status (aka error level) 2, which is why we accept
+		 * this exit status as okay in this case.
+		 */
+		if (strcmp(line, "  zipfile?).  Compensating...\n") == 0)
+			archive->exitstatus_ok = 2;
 
 		return;
 	}
 
-	linesize = strlen(line);
-
 	/* permissions */
-	for(n=0; n < linesize && line[n] == ' '; n++);
-	a = n;
-	for(; n < linesize && line[n] != ' '; n++);
+	NEXT_ITEM(item[5]);
 
-	line[n]='\0';
-	item[5] = line + a;
-	if ( (line+a)[0] == 'd')
-		dir = TRUE;
-	n++;
+	dir = (*(char *) item[5] == 'd');
 
 	/* version */
-	for(; n < linesize && line[n] == ' '; n++);
-	a = n;
-	for(; n < linesize && line[n] != ' '; n++);
-
-	line[n] = '\0';
-	item[8] = line + a;
-	n++;
+	NEXT_ITEM(item[8]);
 
 	/* OS */
-	for(; n < linesize && line[n] == ' '; n++);
-	a = n;
-	for(; n < linesize && line[n] != ' '; n++);
-
-	line[n]='\0';
-	item[7] = line + a;
-	n++;
+	NEXT_ITEM(item[7]);
 
 	/* size */
-	for(; n < linesize && line[n] == ' '; n++);
-	a = n;
-	for(; n < linesize && line[n] != ' '; n++);
-
-	line[n]='\0';
-	item[0] = line + a;
+	NEXT_ITEM(item[0]);
 	size = g_ascii_strtoull(item[0], NULL, 0);
-	n++;
 
-	/* text/binary */
-	for(; n < linesize && line[n] == ' '; n++);
-	a = n;
-	for(; n < linesize && line[n] != ' '; n++);
+	/* internal file attributes */
+	NEXT_ITEM(attr);
 
-	line[n]='\0';
-	if ((line+a)[0] == 'B' || (line+a)[0] == 'T')
-	{
+	encrypted = (*attr == 'B' || *attr == 'T');
+
+	if (encrypted)
 		archive->has_password = TRUE;
-		encrypted = TRUE;
-	}
-	n++;
 
 	/* compressed size */
-	for(; n < linesize && line[n] == ' '; n++);
-	a = n;
-	for(; n < linesize && line[n] != ' '; n++);
-
-	line[n]='\0';
-	item[1] = line + a;
-	n++;
+	NEXT_ITEM(item[1]);
 
 	/* method */
-	for(; n < linesize && line[n] == ' '; n++);
-	a = n;
-	for(; n < linesize && line[n] != ' '; n++);
-
-	line[n]='\0';
-	item[6] = line + a;
-	n++;
+	NEXT_ITEM(item[6]);
 
 	/* date */
-	for(; n < linesize && line[n] == ' '; n++);
-	a = n;
-	for(; n < linesize && line[n] != ' '; n++);
-
-	line[n]='\0';
-	item[3] = date_YY_MMM_DD(line + a);
-	n++;
+	NEXT_ITEM(item[3]);
+	item[3] = date_YY_MMM_DD(item[3]);
 
 	/* time */
-	for(; n < linesize && line[n] == ' '; n++);
-	a = n;
-	for(; n < linesize && line[n] != ' '; n++);
+	NEXT_ITEM(item[4]);
 
-	line[n]='\0';
-	item[4] = line + a;
-	n++;
-
-	/* filename */
-	line[linesize-1] = '\0';
-	filename = line + n;
+	/* name */
+	LAST_ITEM(filename);
 
 	/* saving */
 	if (size)
@@ -184,7 +150,7 @@ static void xa_zip_parse_output (gchar *line, XArchive *archive)
 	if (entry)
 	{
 		if (dir)
-			 entry->is_dir = TRUE;
+			entry->is_dir = TRUE;
 
 		entry->is_encrypted = encrypted;
 
@@ -238,7 +204,7 @@ gboolean xa_zip_extract (XArchive *archive, GSList *file_list)
 	gchar *password_str, *command;
 	gboolean result;
 
-	files = xa_quote_filenames(file_list, "*?[]", TRUE);
+	files = xa_quote_filenames(file_list, "*?[]", DIR_WITH_ASTERISK);
 	password_str = xa_zip_password_str(archive);
 	command = g_strconcat(archiver[archive->type].program[0],
 	                      archive->do_full_path ? "" : " -j",
@@ -256,63 +222,63 @@ gboolean xa_zip_extract (XArchive *archive, GSList *file_list)
 	return result;
 }
 
-void xa_zip_add (XArchive *archive, GSList *file_list, gchar *compression)
+void xa_zip_add (XArchive *archive, GSList *file_list)
 {
 	gboolean epub;
 	GString *files;
-	gchar *password_str, *command;
+	gchar *compression, *password_str, *command;
 
-	if (archive->location_path != NULL)
-		archive->child_dir = g_strdup(archive->working_dir);
-
-	if (!compression)
-		compression = "6";
+	compression = g_strdup_printf("%hu", archive->compression);
 
 	epub = (archive->tag == 'e');
 
-	/* epub requires mimetype to be uncompressed, unencrypted, and the first file in the archive*/
+	/* epub requires mimetype to be uncompressed, unencrypted, and the first file in the archive */
 	if (epub)
 	{
-		guint i;
-		GSList *fname;
+		GSList *flist, *fname = NULL;
 
-		for (i = 0; i < g_slist_length(file_list); i++)
+		flist = file_list;
+
+		while (flist)
 		{
-			fname = g_slist_nth(file_list, i);
-
-			if (strcmp(fname->data, "mimetype") == 0)
+			if (strcmp(flist->data, "mimetype") == 0)
+			{
+				fname = flist;
 				break;
+			}
 
-			fname = NULL;
+			flist = flist->next;
 		}
 
 		if (fname)
 		{
 			command = g_strconcat(archiver[archive->type].program[1], " -q",
-			                      archive->do_update ? " -ou" : "",
-			                      archive->do_freshen ? " -of" : "",
-			                      archive->do_move ? " -m" : "",
+			                      archive->do_update ? " -ou" : (archive->do_freshen ? " -of" : ""),
+			                      archive->do_remove ? " -m" : "",
 			                      " -0X ",
 			                      archive->path[1], " mimetype", NULL);
 			xa_run_command(archive, command);
 			g_free(command);
 
-			file_list = g_slist_remove(file_list, g_slist_nth_data(file_list, i));
+			archive->status = XARCHIVESTATUS_ADD;   // preserve status
+
+			file_list = g_slist_remove(file_list, fname);
 		}
 	}
 
-	files = xa_quote_filenames(file_list, NULL, TRUE);   // no escaping for adding!
+	files = xa_quote_filenames(file_list, NULL, DIR_WITH_SLASH);   // no escaping for adding!
 	password_str = xa_zip_password_str(archive);
 	command = g_strconcat(archiver[archive->type].program[1], " -q",
-	                      archive->do_update ? " -ou" : "",
-	                      archive->do_freshen ? " -of" : "",
-	                      archive->do_move ? " -m" : "",
+	                      archive->do_update ? " -ou" : (archive->do_freshen ? " -of" : ""),
+	                      archive->do_recurse ? " -r" : "",
+	                      archive->do_remove ? " -m" : "",
 	                      " -", compression,
 	                      epub ? "XD" : "",
 	                      password_str, " ",
-	                      archive->path[1], files->str, NULL);
+	                      archive->path[1], " --", files->str, NULL);
 	g_free(password_str);
 	g_string_free(files,TRUE);
+	g_free(compression);
 
 	xa_run_command(archive, command);
 	g_free(command);
@@ -323,8 +289,8 @@ void xa_zip_delete (XArchive *archive, GSList *file_list)
 	GString *files;
 	gchar *command;
 
-	files = xa_quote_filenames(file_list, "*?[]", TRUE);
-	command = g_strconcat(archiver[archive->type].program[1], " -d ", archive->path[1], files->str, NULL);
+	files = xa_quote_filenames(file_list, "*?[]", DIR_WITH_ASTERISK);
+	command = g_strconcat(archiver[archive->type].program[1], " -d ", archive->path[1], " --", files->str, NULL);
 	g_string_free(files,TRUE);
 
 	xa_run_command(archive, command);

@@ -1,5 +1,6 @@
 /*
  *  Copyright (c) 2008 Giuseppe Torelli <colossus73@gmail.com>
+ *  Copyright (C) 2016 Ingo Brückl
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,10 +29,15 @@ typedef enum
 	XARCHIVETYPE_7ZIP = XARCHIVETYPE_FIRST,
 	XARCHIVETYPE_AR,
 	XARCHIVETYPE_ARJ,
+	XARCHIVETYPE_BZIP,
 	XARCHIVETYPE_BZIP2,
+	XARCHIVETYPE_BZIP3,
+	XARCHIVETYPE_CAB,
+	XARCHIVETYPE_CHM,
 	XARCHIVETYPE_COMPRESS,
 	XARCHIVETYPE_CPIO,
 	XARCHIVETYPE_GZIP,
+	XARCHIVETYPE_ISO,
 	XARCHIVETYPE_LHA,
 	XARCHIVETYPE_LRZIP,
 	XARCHIVETYPE_LZ4,
@@ -40,8 +46,12 @@ typedef enum
 	XARCHIVETYPE_LZOP,
 	XARCHIVETYPE_RAR,
 	XARCHIVETYPE_RPM,
+	XARCHIVETYPE_RZIP,
+	XARCHIVETYPE_SQUASHFS,
 	XARCHIVETYPE_TAR,
+	XARCHIVETYPE_TAR_BZIP,
 	XARCHIVETYPE_TAR_BZIP2,
+	XARCHIVETYPE_TAR_BZIP3,
 	XARCHIVETYPE_TAR_COMPRESS,
 	XARCHIVETYPE_TAR_GZIP,
 	XARCHIVETYPE_TAR_LRZIP,
@@ -49,10 +59,12 @@ typedef enum
 	XARCHIVETYPE_TAR_LZIP,
 	XARCHIVETYPE_TAR_LZMA,
 	XARCHIVETYPE_TAR_LZOP,
+	XARCHIVETYPE_TAR_RZIP,
 	XARCHIVETYPE_TAR_XZ,
 	XARCHIVETYPE_TAR_ZSTD,
 	XARCHIVETYPE_XZ,
 	XARCHIVETYPE_ZIP,
+	XARCHIVETYPE_ZPAQ,
 	XARCHIVETYPE_ZSTD,
 	XARCHIVETYPE_TYPES,
 	XARCHIVETYPE_UNKNOWN,
@@ -69,6 +81,7 @@ typedef enum
 	XARCHIVESTATUS_DELETE,
 	XARCHIVESTATUS_SFX,
 	XARCHIVESTATUS_RELOAD,
+	XARCHIVESTATUS_OTHER,
 	XARCHIVESTATUS_ERROR
 } XArchiveStatus;
 
@@ -87,7 +100,7 @@ typedef void (*list_func)(XArchive *);
 typedef void (*parse_output_func)(gchar *, XArchive *);
 typedef void (*test_func)(XArchive *);
 typedef gboolean (*extract_func)(XArchive *, GSList *);
-typedef void (*add_func)(XArchive *, GSList *, gchar *);
+typedef void (*add_func)(XArchive *, GSList *);
 typedef void (*delete_func)(XArchive *, GSList *);
 
 typedef struct
@@ -111,6 +124,9 @@ typedef struct
 	gushort tag;
 } ArchiveType;
 
+#define TAG(t1,t2) ((t2 << 8) + t1)
+#define TAGTYPE(t) (t & 0xff)
+
 typedef struct _XEntry XEntry;
 
 struct _XEntry
@@ -124,7 +140,14 @@ struct _XEntry
 	XEntry *next;
 };
 
-typedef struct _XAClipboard XAClipboard;
+typedef struct
+{
+	gboolean can_uncompressed;   // has compression level 0?
+	gushort least;               // least compression level
+	gushort preset;              // default compression level
+	gushort best;                // best compression level
+	gushort steps;               // level steps (usually 1)
+} compressor_t;
 
 struct _XArchive
 {
@@ -148,7 +171,6 @@ struct _XArchive
 	GtkCellRenderer *text_renderer;
 	GSList *back;
 	GSList *forward;
-	XAClipboard *clipboard;
 	/* environment */
 	gchar *path[4];          // 0: original, 1: escaped, 2: working copy, 3: escaped working copy
 	gchar *working_dir;
@@ -162,6 +184,7 @@ struct _XArchive
 	gchar *password;
 	gboolean has_comment;
 	GString *comment;
+	compressor_t compressor;
 	gushort compression;
 	/* capabilities */           // 0: extract, 1: add
 	gboolean can_test;           // can test an archive for integrity
@@ -176,26 +199,30 @@ struct _XArchive
 	gboolean can_overwrite;      // can overwrite files on extraction
 	gboolean can_update[2];      // can limit activity to only changed or new files
 	gboolean can_freshen[2];     // can limit activity to only changed files
-	gboolean can_move;           // can delete files after adding
+	gint can_recurse[2];         // can automatically recurse through subdirectories
+	gboolean can_remove;         // can delete files after adding
 	gboolean can_solid;          // can create a solid archive
+	gboolean can_descend;        // can automatically descend to directories
+	gboolean can_compress;       // can compress at different levels
 	/* instructions */
-	gboolean do_full_path;
-	gboolean do_touch;
-	gboolean do_overwrite;
-	gboolean do_update;
-	gboolean do_freshen;
-	gboolean do_move;
-	gboolean do_solid;
+	gboolean do_full_path;   // extract_func, (xa_execute_add_commands)
+	gboolean do_touch;       // extract_func
+	gboolean do_overwrite;   // extract_func
+	gboolean do_update;      // extract_func, add_func
+	gboolean do_freshen;     // extract_func, add_func
+	gboolean do_recurse;     // extract_func, add_func
+	gboolean do_remove;      // add_func
+	gboolean do_solid;       // add_func
 	/* child process */
 	guint timeout;
-	gchar *child_dir;     // (free and set NULL after use)
+	gchar *child_dir;   // (free and set NULL after use)
 	GPid child_pid;
 	guint child_ref;
 	gint child_fdout;
 	gint child_fderr;
-	gchar *command;       // (free before use)
+	gchar *command;     // (free before use)
 	GSList *output;
-	/* (un)compressor interface */
+	/* (de)compressor interface */
 	XArchiver *archiver;
 	parse_output_func parse_output;
 	guint8 exitstatus_ok;
@@ -205,26 +232,42 @@ extern XArchive *archive[];
 
 #define can_rename(archive) ((archive)->can_extract && (archive)->can_delete && (archive)->can_add)
 
-#define XA_CLIPBOARD (gdk_atom_intern_static_string("XARCHIVER_OWN_CLIPBOARD"))
-#define XA_INFO_LIST (gdk_atom_intern_static_string("application/xarchiver-info-list"))
+/* how to specify the directory for can_recurse[0] */
+enum
+{
+	DIR_WITHOUT_SLASH,
+	DIR_WITH_SLASH,
+	DIR_WITH_ASTERISK
+};
+
+#define FORCED (TRUE + TRUE)   // third value for can_recurse[1], meaning that recursion is not optional
 
 typedef enum
 {
+	XA_CLIPBOARD_EMPTY,
+	XA_CLIPBOARD_COPY,
 	XA_CLIPBOARD_CUT,
-	XA_CLIPBOARD_COPY
+	XA_CLIPBOARD_EDIT
 } XAClipboardMode;
 
-struct _XAClipboard
+typedef struct
 {
 	XAClipboardMode mode;
+	gchar *origin;
+	XEntry *target;
+	GSList *paths;
 	GSList *files;
-	XArchive *target;
-};
+	struct timespec mtime;
+	XArchive *archive;
+} XAClipboard;
+
+extern XAClipboard XA_Clipboard;
 
 gchar *xa_build_full_path_name_from_entry(XEntry *);
 void xa_clean_archive_structure(XArchive *);
 gchar *xa_create_containing_directory(XArchive *, const gchar *);
 gboolean xa_create_working_directory(XArchive *);
+gchar *xa_create_working_subdirectory(XArchive *);
 void xa_detect_encrypted_archive(XArchive *);
 void xa_fill_dir_sidebar(XArchive *, gboolean);
 void xa_fill_list_with_recursed_entries(XEntry *, GSList **);
@@ -232,7 +275,7 @@ gint xa_find_archive_index(gint);
 XEntry *xa_find_entry_from_dirpath(XArchive *, const gchar *);
 void xa_free_entry(XArchive *, XEntry *);
 gboolean xa_get_compressed_tar_type(XArchiveType *);
-gint xa_get_new_archive_idx();
+gint xa_get_new_archive_index();
 gboolean xa_has_containing_directory(XArchive *);
 XArchive *xa_init_archive_structure(ArchiveType);
 gboolean xa_run_command(XArchive *, const gchar *);

@@ -42,8 +42,11 @@
 
 /* GLib compatibility */
 
+#if !GLIB_CHECK_VERSION(2,16,0)
+static inline int g_strcmp0 (const char *str1, const char *str2) { if (!str1) return -(str1 != str2); if (!str2) return (str1 != str2); return strcmp(str1, str2); }
+#endif
+
 #if !GLIB_CHECK_VERSION(2,28,0)
-#define g_list_free_full(list, free_func) do { g_list_foreach(list, (GFunc) free_func, NULL); g_list_free(list); } while (0)
 #define g_slist_free_full(list, free_func) do { g_slist_foreach(list, (GFunc) free_func, NULL); g_slist_free(list); } while (0)
 #endif
 
@@ -74,6 +77,7 @@ static inline GtkWidget *gtk_dialog_get_content_area (GtkDialog *dialog)
 }
 #define gtk_selection_data_get_data(selection_data) selection_data->data
 #define gtk_selection_data_get_target(selection_data) selection_data->target
+#define gtk_widget_get_window(widget) widget->window
 #endif
 
 #if !GTK_CHECK_VERSION(2,16,0)
@@ -95,12 +99,18 @@ static inline void GTK_COMPAT_ENTRY_ICON (GtkWidget *entry, gpointer callback, g
 #endif
 
 #if !GTK_CHECK_VERSION(2,18,0)
+#define gtk_widget_get_sensitive(widget) GTK_WIDGET_SENSITIVE(widget)
 #define gtk_widget_get_visible(widget) GTK_WIDGET_VISIBLE(widget)
 #define gtk_widget_is_sensitive(widget) GTK_WIDGET_IS_SENSITIVE(widget)
 static inline void gtk_widget_set_can_default (GtkWidget *widget, gboolean can_default)
 {
 	if (can_default) GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_DEFAULT);
 	else GTK_WIDGET_UNSET_FLAGS(widget, GTK_CAN_DEFAULT);
+}
+static inline void gtk_widget_set_can_focus (GtkWidget *widget, gboolean can_focus)
+{
+	if (can_focus) GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_FOCUS);
+	else GTK_WIDGET_UNSET_FLAGS(widget, GTK_CAN_FOCUS);
 }
 #endif
 
@@ -120,6 +130,10 @@ static inline void gtk_widget_set_can_default (GtkWidget *widget, gboolean can_d
 #define GDK_KEY_x GDK_x
 #define GDK_KEY_Delete GDK_Delete
 #define GDK_KEY_F1 GDK_F1
+#define GDK_KEY_Home GDK_Home
+#define GDK_KEY_Left GDK_Left
+#define GDK_KEY_Right GDK_Right
+#define GDK_KEY_Up GDK_Up
 #define GTK_COMPAT_SWITCH_PAGE_TYPE GtkNotebookPage *
 #define gdk_drag_context_get_source_window(context) context->source_window
 #define gdk_drag_context_get_suggested_action(context) context->suggested_action

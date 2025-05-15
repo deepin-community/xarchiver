@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2008 Giuseppe Torelli - <colossus73@gmail.com>
+ *  Copyright (C) 2016 Ingo Brückl
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,19 +25,19 @@
 #include "archive.h"
 #include "gzip_et_al.h"
 
-#define COPYRIGHT_YEAR "2005-2014"
+#define COPYRIGHT_YEAR "2005–2014"
 #define COPYRIGHT_HOLDER "Giuseppe Torelli"
 #define MAINTAINER "Ingo Brückl"
-#define MAINTAINER_YEAR "2015"
+#define MAINTAINER_YEAR "2015–2025"
 
 extern GtkWidget *xa_main_window;
 
 extern XArchiver archiver[];
 extern gchar *xdg_open;
 
-extern struct Add_dialog_data *add_window;
-extern struct Extract_dialog_data *extract_window;
-extern struct Multi_extract_data *multi_extract_window;
-extern struct Prefs_dialog_data *prefs_window;
+extern struct AddDialog *add_window;
+extern struct ExtractDialog *extract_window;
+extern struct MultiExtractDialog *multi_extract_window;
+extern struct PrefsDialog *prefs_window;
 
 #endif

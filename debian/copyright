@@ -5,7 +5,7 @@ Source: https://github.com/ib/xarchiver
 Files: *
 Copyright: 2005-2014, Giuseppe Torelli <colossus73@gmail.com>
            2013-2014, Frederick Guerin <fguerin01@gmail.com>
-           2016-2021, Ingo Brückl
+           2016-2025, Ingo Brückl
 License: GPL-2+
 
 Files: src/xdgmime/*
@@ -22,7 +22,7 @@ License: LGPL-3+
 
 Files: debian/*
 Copyright: 2006-2009, Daniel Baumann <daniel@debian.org>
-           2012-2021, Markus Koschany <apo@debian.org>
+           2012-2025, Markus Koschany <apo@debian.org>
 License: GPL-2+
 
 License: GPL-2+

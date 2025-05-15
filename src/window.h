@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2008 Giuseppe Torelli - <colossus73@gmail.com>
+ *  Copyright (C) 2016 Ingo Brückl
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,18 +26,20 @@
 
 extern gchar *current_open_directory;
 
-void drag_begin(GtkWidget *, GdkDragContext *, XArchive *);
-void drag_data_get(GtkWidget *, GdkDragContext *, GtkSelectionData *, guint, guint, XArchive *);
-void on_drag_data_received(GtkWidget *, GdkDragContext *, int, int, GtkSelectionData *, unsigned int, unsigned int, gpointer);
+void xa_treeview_drag_begin(GtkWidget *, GdkDragContext *, XArchive *);
+void xa_treeview_drag_data_get(GtkWidget *, GdkDragContext *, GtkSelectionData *, guint, guint, XArchive *);
+void xa_treeview_drag_end(GtkWidget *, GdkDragContext *, gpointer);
+void xa_page_drag_data_received(GtkWidget *, GdkDragContext *, gint, gint, GtkSelectionData *, guint, guint, gpointer);
 gboolean treeview_select_search(GtkTreeModel *, gint, const gchar *, GtkTreeIter *, gpointer);
 void xa_about(GtkMenuItem *, gpointer);
 void xa_add_files_archive(GtkMenuItem *, gpointer);
 void xa_archive_properties(GtkMenuItem *, gpointer);
 void xa_cancel_archive(GtkMenuItem *, gpointer);
 void xa_child_processed(XAChildProcess, guint8, XArchive *);
-void xa_clipboard_clear(GtkClipboard *, XArchive *);
+void xa_clipboard_clear();
 void xa_clipboard_copy(GtkMenuItem *, gpointer);
 void xa_clipboard_cut(GtkMenuItem *, gpointer);
+void xa_clipboard_edit(GtkMenuItem *, gpointer);
 void xa_clipboard_paste(GtkMenuItem *, gpointer);
 void xa_close_archive(GtkWidget *, gpointer);
 void xa_concat_selected_filenames(GtkTreeModel *, GtkTreePath *, GtkTreeIter *, GSList **);
@@ -51,7 +54,7 @@ gboolean xa_launch_external_program(const gchar *, const gchar *);
 void xa_list_archive(GtkMenuItem *, gpointer);
 void xa_location_entry_activated(GtkEntry *, gpointer);
 GtkWidget *xa_main_window_find_image(gchar *, GtkIconSize);
-gboolean xa_mouse_button_event(GtkWidget *, GdkEventButton *, XArchive *);
+gboolean xa_treeview_mouse_button_press(GtkWidget *, GdkEventButton *, XArchive *);
 void xa_new_archive(GtkMenuItem *, gpointer);
 void xa_open_archive(GtkWidget *, gchar *);
 void xa_open_with_from_popupmenu(GtkMenuItem *, gpointer);
@@ -65,6 +68,7 @@ void xa_set_statusbar_message_for_displayed_rows(XArchive *);
 void xa_set_xarchiver_icon(GtkWindow *);
 void xa_show_archive_comment(GtkMenuItem *, gpointer);
 void xa_show_archive_output(GtkMenuItem *, XArchive *);
+void xa_show_archive_status(XArchive *);
 void xa_show_help(GtkMenuItem *, gpointer);
 int xa_show_message_dialog(GtkWindow *, int, int, int, const gchar *, const gchar *);
 void xa_show_multi_extract_dialog(GtkMenuItem *, gpointer);

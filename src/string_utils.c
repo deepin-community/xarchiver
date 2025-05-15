@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2008 Giuseppe Torelli - <colossus73@gmail.com>
+ *  Copyright (C) 2016 Ingo Brückl
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -118,40 +119,63 @@ static int count_chars_to_escape (const char *str, const char *meta_chars)
 }
 /* End code from File-Roller */
 
-static char *xa_escape_common_chars (const char *str, const char *meta_chars, const char  prefix, const char postfix)
+static char *xa_escape_common_chars (const char *str, const char *meta_chars, const char prefix)
 {
-  int         meta_chars_n = strlen (meta_chars);
-  char       *escaped;
-  int         i, new_l, extra_chars = 0;
-  const char *s;
-  char       *t;
+	char *dest, *escaped;
+	int extra_chars = 0;
 
-  if (str == NULL)
-          return NULL;
+	if (!str)
+		return NULL;
 
-  if (prefix)
-          extra_chars++;
-  if (postfix)
-          extra_chars++;
+	if (prefix && meta_chars)
+		extra_chars = count_chars_to_escape(str, meta_chars);
 
-  new_l = strlen (str) + (count_chars_to_escape (str, meta_chars) * extra_chars);
-  escaped = g_malloc0 (new_l + 1);
+	dest = g_malloc0(strlen(str) + extra_chars + 1);
+	escaped = dest;
 
-  s = str;
-  t = escaped;
-  while (*s) {
-          gboolean is_bad = FALSE;
-          for (i = 0; (i < meta_chars_n) && !is_bad; i++)
-                  is_bad = (*s == meta_chars[i]);
-          if (is_bad && prefix)
-                  *t++ = prefix;
-          *t++ = *s++;
-          if (is_bad && postfix)
-                  *t++ = postfix;
-  }
-  *t = 0;
+	while (*str)
+	{
+		if (prefix && meta_chars && strchr(meta_chars, *str))
+			*dest++ = prefix;
 
-  return escaped;
+		*dest++ = *str++;
+	}
+
+	return escaped;
+}
+
+static char *xa_unescape_common_chars (const char *str, const char *meta_chars, const char prefix)
+{
+	char *dest, *unescaped;
+
+	if (!str)
+		return NULL;
+
+	dest = g_malloc0(strlen(str) + 1);
+	unescaped = dest;
+
+	while (*str)
+	{
+		if (*str == prefix)
+		{
+			str++;
+
+			if (!meta_chars || !strchr(meta_chars, *str))
+				*dest++ = prefix;
+
+			*dest = *str;
+
+			if (*str)
+			{
+				str++;
+				dest++;
+			}
+		}
+		else
+			*dest++ = *str++;
+	}
+
+	return unescaped;
 }
 
 static gchar *xa_strip_current_working_dir_from_path (gchar *working_dir, gchar *filename)
@@ -169,7 +193,7 @@ static gchar *xa_strip_current_working_dir_from_path (gchar *working_dir, gchar 
 	return filename+len;
 }
 
-static void xa_remove_slash_from_path (gchar *path)
+void xa_remove_slash_from_path (gchar *path)
 {
 	size_t len = strlen(path);
 
@@ -179,7 +203,12 @@ static void xa_remove_slash_from_path (gchar *path)
 
 gchar *xa_escape_bad_chars (const gchar *string, const gchar *pattern)
 {
-	return xa_escape_common_chars (string, pattern, '\\', 0);
+	return xa_escape_common_chars(string, pattern, '\\');
+}
+
+gchar *xa_unescape_bad_chars (const gchar *string, const gchar *pattern)
+{
+	return xa_unescape_common_chars(string, pattern, '\\');
 }
 
 gchar *xa_remove_level_from_path (const gchar *path)
@@ -198,26 +227,21 @@ gchar *xa_remove_level_from_path (const gchar *path)
     return local_path;
 }
 
-void xa_set_window_title (GtkWidget *window,gchar *title)
+void xa_set_window_title (GtkWidget *window, const gchar *pathname)
 {
-	gchar *x 	= NULL;
-	gchar *slash= NULL;
+	gchar *title, *basename;
 
-	if (title)
-	{
-		slash = g_strrstr (title , "/");
-		if (slash)
-			slash++;
-	}
-	if (!slash)
-		slash = title;
-
-	if (title == NULL)
-		x = g_strconcat(PACKAGE_NAME, " ", PACKAGE_VERSION, NULL);
+	if (!pathname)
+		title = g_strconcat(PACKAGE_NAME, " ", PACKAGE_VERSION, NULL);
 	else
-		x = g_strconcat(slash, " - ", PACKAGE_NAME, " ", PACKAGE_VERSION, NULL);
-	gtk_window_set_title (GTK_WINDOW (window),x);
-	g_free (x);
+	{
+		basename = g_filename_display_basename(pathname);
+		title = g_strconcat(basename, " - ", PACKAGE_NAME, " ", PACKAGE_VERSION, NULL);
+		g_free(basename);
+	}
+
+	gtk_window_set_title(GTK_WINDOW(window), title);
+	g_free(title);
 }
 
 gboolean match_patterns (char **patterns,const char *string,int flags)
@@ -292,7 +316,7 @@ GSList *xa_slist_copy(GSList *list)
 	return g_slist_reverse(y);
 }
 
-void xa_recurse_local_directory (gchar *path, GSList **list, gboolean full_path, gboolean recurse)
+void xa_recurse_local_directory (gchar *path, GSList **list, gboolean full_path, gboolean recurse, gboolean files)
 {
 	DIR *dir;
 	struct dirent *dirlist;
@@ -300,7 +324,7 @@ void xa_recurse_local_directory (gchar *path, GSList **list, gboolean full_path,
 
 	if (g_file_test(path, G_FILE_TEST_IS_DIR))
 	{
-		*list = g_slist_prepend(*list, g_strdup(path));
+		*list = g_slist_prepend(*list, g_strconcat(path, "/", NULL));
 
 		dir = opendir(path);
 
@@ -316,11 +340,11 @@ void xa_recurse_local_directory (gchar *path, GSList **list, gboolean full_path,
 				if (g_file_test(fullname, G_FILE_TEST_IS_DIR))
 				{
 					if (recurse)
-						xa_recurse_local_directory(fullname, list, full_path, recurse);
+						xa_recurse_local_directory(fullname, list, full_path, recurse, files);
 
 					g_free(fullname);
 				}
-				else
+				else if (files)
 					*list = g_slist_prepend(*list, fullname);
 			}
 
@@ -336,32 +360,82 @@ void xa_recurse_local_directory (gchar *path, GSList **list, gboolean full_path,
 	}
 }
 
-GString *xa_quote_filenames (GSList *file_list, const gchar *escape, gboolean slash)
+void xa_local_directory_uris (const gchar *path, GSList **list)
+{
+	DIR *dir;
+	struct dirent *dirlist;
+	gchar *fullname, *uri;
+
+	dir = opendir(path);
+
+	if (dir)
+	{
+		while ((dirlist = readdir(dir)))
+		{
+			if (strcmp(dirlist->d_name, ".") == 0 || strcmp(dirlist->d_name, "..") == 0)
+				continue;
+
+			fullname = g_strconcat(path, "/", dirlist->d_name, NULL);
+			uri = g_filename_to_uri(fullname, NULL, NULL);
+			*list = g_slist_prepend(*list, uri);
+
+			g_free(fullname);
+		}
+
+		closedir(dir);
+	}
+}
+
+GString *xa_quote_filenames (GSList *file_list, const gchar *escape, gint dir_pattern)
 {
 	GString *files;
 	GSList *list;
+	gboolean hyphen;
 
 	files = g_string_new("");
 	list= file_list;
+	hyphen = (g_strcmp0(escape, "-") == 0);
 
 	while (list)
 	{
-		gchar *shellname, *escaped = NULL;
+		gchar *shellname, *escaped = NULL, *fname;
+		size_t len;
 
-		if (!slash)
+		if (dir_pattern == DIR_WITHOUT_SLASH)
 			xa_remove_slash_from_path(list->data);
 
 		if (escape)
-			escaped = xa_escape_bad_chars(list->data, "\\");
+		{
+			if (hyphen)
+			{
+				if (*(char *) list->data == '-')
+					escaped = g_strdup_printf("./%s", (char *) list->data);
+			}
+			else
+				escaped = xa_escape_bad_chars(list->data, "\\");
+		}
 
 		shellname = g_shell_quote(escaped ? escaped : list->data);
 
 		g_free(escaped);
+		escaped = NULL;
 
-		if (escape)
+		if (escape && !hyphen)
 			escaped = xa_escape_bad_chars(shellname, escape);
 
-		g_string_prepend(files, escaped ? escaped : shellname);
+		fname = (escaped ? escaped : shellname);
+		len = strlen(fname);
+
+		if (dir_pattern == DIR_WITH_ASTERISK && len > 1 && strcmp(fname + len - 2, "/'") == 0)
+		{
+			fname = g_strndup(fname, len + 1);
+			strcpy(fname + len - 1, "*'");
+			g_string_prepend(files, fname);
+			g_free(fname);
+		}
+		else
+			g_string_prepend(files, fname);
+
 		g_string_prepend_c(files, ' ');
 
 		g_free(escaped);
@@ -392,6 +466,32 @@ gchar *xa_quote_shell_command (const gchar *string, gboolean unescaped)
 	return escaped;
 }
 
+GString *xa_quote_dir_contents (const gchar *directory)
+{
+	GDir *dir;
+	const gchar *name;
+	GString *files = g_string_new("");
+
+	dir = g_dir_open(directory, 0, NULL);
+
+	if (dir)
+	{
+		while ((name = g_dir_read_name(dir)))
+		{
+			gchar *quoted = g_shell_quote(name);
+
+			files = g_string_append_c(files, ' ');
+			files = g_string_append(files, quoted);
+
+			g_free(quoted);
+		}
+
+		g_dir_close(dir);
+	}
+
+	return files;
+}
+
 GString *xa_collect_files_in_dir (const gchar *directory)
 {
 	size_t offset;
@@ -408,7 +508,8 @@ GString *xa_collect_files_in_dir (const gchar *directory)
 		file = stack->data;
 		stack = g_slist_delete_link(stack, stack);
 
-		if (g_file_test(file, G_FILE_TEST_IS_DIR))
+		if (g_file_test(file, G_FILE_TEST_IS_DIR) &&
+		   !g_file_test(file, G_FILE_TEST_IS_SYMLINK))
 		{
 			GDir *dir;
 			const gchar *name;
@@ -488,4 +589,20 @@ gchar *xa_set_max_width_chars_ellipsize (const gchar *string, gint n, PangoEllip
 	}
 
 	return ellipsized;
+}
+
+gchar *xa_make_full_path (const char *filename)
+{
+	gchar *cur_dir, *path;
+
+	if (*filename != '/')
+	{
+		cur_dir = g_get_current_dir();
+		path = g_strconcat(cur_dir, "/", filename, NULL);
+		g_free(cur_dir);
+	}
+	else
+		path = g_strdup(filename);
+
+	return path;
 }

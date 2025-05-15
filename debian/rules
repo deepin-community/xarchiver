@@ -2,14 +2,10 @@
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
 %:
-	dh $@
-
-override_dh_autoreconf:
-	echo > NEWS
-	echo > AUTHORS
-	dh_autoreconf
+	dh $@ --without autoreconf
 
 override_dh_auto_configure:
+	./autogen.sh
 	dh_auto_configure -- --libexecdir=/usr/lib
 
 override_dh_auto_install:

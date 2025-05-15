@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2008 Giuseppe Torelli - <colossus73@gmail.com>
+ *  Copyright (C) 2016 Ingo Brückl
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,7 +26,7 @@
 
 extern int rar_version;
 
-void xa_rar_add(XArchive *, GSList *, gchar *);
+void xa_rar_add(XArchive *, GSList *);
 void xa_rar_ask(XArchive *);
 void xa_rar_check_version(gchar *);
 void xa_rar_delete(XArchive *, GSList *);

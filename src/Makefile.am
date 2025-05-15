@@ -7,6 +7,8 @@ xarchiver_SOURCES = \
 	7zip.h \
 	add_dialog.c \
 	add_dialog.h \
+	appimage.c \
+	appimage.h \
 	ar.c \
 	ar.h \
 	archive.c \
@@ -25,6 +27,8 @@ xarchiver_SOURCES = \
 	gzip_et_al.h \
 	interface.c \
 	interface.h \
+	iso.c \
+	iso.h \
 	lha.c \
 	lha.h \
 	main.c \
@@ -43,6 +47,8 @@ xarchiver_SOURCES = \
 	rpm.h \
 	socket.c \
 	socket.h \
+	squashfs.c \
+	squashfs.h \
 	string_utils.c \
 	string_utils.h \
 	support.h \
@@ -55,7 +61,9 @@ xarchiver_SOURCES = \
 	window.c \
 	window.h \
 	zip.c \
-	zip.h
+	zip.h \
+	zpaq.c \
+	zpaq.h
 
 if GTK_V2_16
 else
@@ -71,9 +79,7 @@ xarchiver_CFLAGS = \
 	-DLOCALEDIR=\"$(localedir)\" \
 	-DPIXMAPSDIR=\"$(PIXMAPDIR)\"
 
-if GTK_V3_0
 xarchiver_CFLAGS += -Wno-deprecated-declarations
-endif
 
 xarchiver_LDADD = \
 	xdgmime/libxdgmime.la \

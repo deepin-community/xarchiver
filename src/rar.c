@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2008 Giuseppe Torelli - <colossus73@gmail.com>
+ *  Copyright (C) 2015 Ingo Brückl
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,6 +23,7 @@
 #include "date_utils.h"
 #include "interface.h"
 #include "main.h"
+#include "parser.h"
 #include "string_utils.h"
 #include "support.h"
 #include "window.h"
@@ -32,15 +34,18 @@ static gboolean header_line, data_line, fname_line, last_line;
 
 void xa_rar_check_version (gchar *path)
 {
-	gchar *output, *id;
+	gchar *output = NULL, *id = NULL;
 	gchar version;
 
 	g_spawn_command_line_sync(path, &output, NULL, NULL, NULL);
 
-	id = strstr(output, "\nRAR ");
+	if (output)
+	{
+		id = strstr(output, "\nRAR ");
 
-	if (!id)
-		id = strstr(output, "\nUNRAR ");
+		if (!id)
+			id = strstr(output, "\nUNRAR ");
+	}
 
 	if (id)
 	{
@@ -55,10 +60,15 @@ void xa_rar_check_version (gchar *path)
 
 void xa_rar_ask (XArchive *archive)
 {
+	gboolean read_only;
+	compressor_t rar_compressor = {TRUE, 1, 3, 5, 1};
+
+	read_only = (archive->tag == 'x');   // exe
+
 	archive->can_test = TRUE;
 	archive->can_extract = TRUE;
-	archive->can_add = archiver[archive->type].is_compressor;
-	archive->can_delete = archiver[archive->type].is_compressor;
+	archive->can_add = (archiver[archive->type].is_compressor && !read_only);
+	archive->can_delete = (archiver[archive->type].is_compressor && !read_only);
 	archive->can_sfx = archiver[archive->type].is_compressor;
 	archive->can_password = archiver[archive->type].is_compressor;
 	archive->can_full_path[0] = TRUE;
@@ -69,27 +79,41 @@ void xa_rar_ask (XArchive *archive)
 	archive->can_update[1] = archiver[archive->type].is_compressor;
 	archive->can_freshen[0] = TRUE;
 	archive->can_freshen[1] = archiver[archive->type].is_compressor;
-	archive->can_move = archiver[archive->type].is_compressor;
+	archive->can_recurse[0] = TRUE;
+	archive->can_recurse[1] = archiver[archive->type].is_compressor;
+	archive->can_remove = archiver[archive->type].is_compressor;
 	archive->can_solid = archiver[archive->type].is_compressor;
+	archive->can_compress = archiver[archive->type].is_compressor;
+	archive->compressor = rar_compressor;
+	archive->compression = archive->compressor.preset;
 }
 
 static gchar *xa_rar_password_str (XArchive *archive)
 {
+	gchar *escaped, *password_str;
+
 	if (archive->password)
-		return g_strconcat(" -p", archive->password, NULL);
+	{
+		escaped = xa_escape_bad_chars(archive->password, ESCAPES);
+		password_str = g_strconcat(" -p", escaped, NULL);
+		g_free(escaped);
+
+		return password_str;
+	}
 	else
 		return g_strdup("");
 }
 
-static void xa_rar_parse_output (gchar *line, XArchive *archive)
+static void xa_rar_v4_parse_output (gchar *line, XArchive *archive)
 {
+	static gchar *filename;
+	static gboolean encrypted;
 	XEntry *entry;
 	gpointer item[9];
-	unsigned short int i = 0;
-	unsigned int linesize,n,a;
-	gboolean dir = FALSE;
-	static gboolean encrypted;
-	static gchar *filename;
+	size_t len;
+	gboolean dir;
+
+	USE_PARSER;
 
 	if (last_line)
 		return;
@@ -126,120 +150,73 @@ static void xa_rar_parse_output (gchar *line, XArchive *archive)
 
 				archive->comment = g_string_append(archive->comment, line);
 			}
+
 			return;
 		}
+
 		if (line[0] == '-')
 		{
 			data_line = TRUE;
 			return;
 		}
+
 		return;
 	}
 
 	if (!fname_line)
 	{
-		encrypted = FALSE;
-		linesize = strlen(line);
-		if(line[0] == '*')
-		{
-			archive->has_password = TRUE;
-			encrypted = TRUE;
-		}
-		else if (line[0] == '-')
+		if (line[0] == '-')
 		{
 			last_line = TRUE;
 			return;
 		}
-		else if (line[0] != ' ')
-			return;
-		line[linesize - 1] = '\0';
-		filename = g_strdup(line+1);
+
 		fname_line = TRUE;
+
+		encrypted = (line[0] == '*');
+
+		if (encrypted)
+			archive->has_password = TRUE;
+
+		if (line[0])
+			line++;
+
+		LAST_ITEM(filename);
+		filename = g_strdup(filename);
 	}
 	else
 	{
-		linesize = strlen(line);
-		/* Size */
-		for(n=0; n < linesize && line[n] == ' '; n++);
-		a = n;
-		for(; n < linesize && line[n] != ' '; n++);
-		line[n]='\0';
-		item[i] = line + a;
-		i++;
-		n++;
+		/* size */
+		NEXT_ITEM(item[0]);
 
-		/* Compressed */
-		for(; n < linesize && line[n] == ' '; n++);
-		a = n;
-		for(; n < linesize && line[n] != ' '; n++);
-		line[n]='\0';
-		item[i] = line + a;
-		i++;
-		n++;
+		/* packed */
+		NEXT_ITEM(item[1]);
 
-		/* Ratio */
-		for(; n < linesize && line[n] == ' '; n++);
-		a = n;
-		for(; n < linesize && line[n] != ' '; n++);
-		line[n] = '\0';
-		item[i] = line + a;
-		i++;
-		n++;
+		/* ratio */
+		NEXT_ITEM(item[2]);
 
-		/* Date */
-		for(; n < linesize && line[n] == ' '; n++);
-		a = n;
-		for(; n < linesize && line[n] != ' '; n++);
-		line[n] = '\0';
-		item[i] = date_DD_MM_YY(line + a);
-		i++;
-		n++;
+		/* date */
+		NEXT_ITEM(item[3]);
+		item[3] = date_DD_MM_YY(item[3]);
 
-		/* Time */
-		for(; n < linesize && line[n] == ' '; n++);
-		a = n;
-		for(; n < linesize && line[n] != ' '; n++);
-		line[n] = '\0';
-		item[i] = line + a;
-		i++;
-		n++;
+		/* time */
+		NEXT_ITEM(item[4]);
 
-		/* Permissions */
-		for(; n < linesize && line[n] == ' '; n++);
-		a = n;
-		for(; n < linesize && line[n] != ' '; n++);
-		line[n] = '\0';
+		/* attributes */
+		NEXT_ITEM(item[5]);
+		len = strlen(item[5]);
+
 		/* archive may originate from Unix or Windows type OS */
-		if (*(line + a) == 'd' || *(line + a + 1) == 'D')
-			dir = TRUE;
-		item[i] = line + a;
-		i++;
-		n++;
+		dir = (*(char *) item[5] == 'd' || (len > 1 && ((char *) item[5])[1] == 'D'));
 
 		/* CRC */
-		for(; n < linesize && line[n] == ' '; n++);
-		a = n;
-		for(; n < linesize && line[n] != ' '; n++);
-		line[n] = '\0';
-		item[i] = line + a;
-		i++;
-		n++;
+		NEXT_ITEM(item[6]);
 
-		/* Method */
-		for(; n < linesize && line[n] == ' '; n++);
-		a = n;
-		for(; n < linesize && line[n] != ' '; n++);
-		line[n] = '\0';
-		item[i] = line + a;
-		i++;
-		n++;
+		/* method */
+		NEXT_ITEM(item[7]);
 
 		/* version */
-		for(; n < linesize && line[n] == ' '; n++);
-		a = n;
-		for(; n < linesize && line[n] != ' ' && line[n] != '\n'; n++);
-		line[n] = '\0';
-		item[i] = line + a;
+		NEXT_ITEM(item[8]);
 
 		entry = xa_set_archive_entries_for_each_row(archive, filename, item);
 
@@ -261,14 +238,15 @@ static void xa_rar_parse_output (gchar *line, XArchive *archive)
 	}
 }
 
-static void xa_rar5_parse_output (gchar *line, XArchive *archive)
+static void xa_rar_parse_output (gchar *line, XArchive *archive)
 {
 	XEntry *entry;
 	gpointer item[7];
-	unsigned short int i = 0;
-	unsigned int linesize, n, a;
-	gboolean encrypted = FALSE, dir = FALSE;
-	static gchar *filename, *end;
+	gchar *filename;
+	size_t len;
+	gboolean encrypted, dir, legacy;
+
+	USE_PARSER;
 
 	if (last_line)
 		return;
@@ -303,105 +281,80 @@ static void xa_rar5_parse_output (gchar *line, XArchive *archive)
 
 				archive->comment = g_string_append(archive->comment, line);
 			}
+
 			return;
 		}
+
 		if (line[0] == '-')
 		{
 			data_line = TRUE;
 			return;
 		}
+
 		return;
 	}
 
-	linesize = strlen(line);
-	line[linesize - 1] = '\0';
-
-	if(line[0] == '*')
-	{
-		archive->has_password = TRUE;
-		encrypted = TRUE;
-	}
-	else if (line[0] == '-')
+	if (line[0] == '-')
 	{
 		last_line = TRUE;
 		return;
 	}
 
-	/* Permissions */
-	for (n = encrypted ? 1 : 0; n < linesize && line[n] == ' '; n++);
-	a = n;
-	for(; n < linesize && line[n] != ' '; n++);
-	line[n] = '\0';
+	encrypted = (line[0] == '*');
+
+	if (encrypted)
+	{
+		line++;
+		archive->has_password = TRUE;
+	}
+
+	/* attributes */
+	NEXT_ITEM(item[5]);
+	len = strlen(item[5]);
+
 	/* archive may originate from Unix or Windows type OS */
-	if (*(line + a) == 'd' || *(line + a + 3) == 'D')
-		dir = TRUE;
-	item[5] = line + a;
-	n++;
+	dir = (*(char *) item[5] == 'd' || (len > 3 && ((char *) item[5])[3] == 'D'));
 
-	/* Size */
-	for(; n < linesize && line[n] == ' '; n++);
-	a = n;
-	for(; n < linesize && line[n] != ' '; n++);
-	line[n]='\0';
-	item[i] = line + a;
-	i++;
-	n++;
+	/* size */
+	NEXT_ITEM(item[0]);
 
-	/* Compressed */
-	for(; n < linesize && line[n] == ' '; n++);
-	a = n;
-	for(; n < linesize && line[n] != ' '; n++);
-	line[n]='\0';
-	item[i] = line + a;
-	i++;
-	n++;
+	/* packed */
+	NEXT_ITEM(item[1]);
 
-	/* Ratio */
-	for(; n < linesize && line[n] == ' '; n++);
-	a = n;
-	for(; n < linesize && line[n] != ' '; n++);
-	line[n] = '\0';
-	item[i] = line + a;
-	i++;
-	n++;
+	/* ratio */
+	NEXT_ITEM(item[2]);
 
-	/* Date */
-	for(; n < linesize && line[n] == ' '; n++);
-	a = n;
-	for(; n < linesize && line[n] != ' '; n++);
-	line[n] = '\0';
-	item[i] = line + a;          // date is YYYY-MM-DD since v5.30
-	if (strlen(item[i]) != 10)   // and was DD-MM-YY before
-		item[i] = date_DD_MM_YY(item[i]);
-	i++;
-	n++;
+	/* date */
+	NEXT_ITEM(item[3]);
 
-	/* Time */
-	for(; n < linesize && line[n] == ' '; n++);
-	a = n;
-	for(; n < linesize && line[n] != ' '; n++);
-	line[n] = '\0';
-	item[i] = line + a;
-	i+=2;
-	n++;
+	legacy = (strlen(item[3]) != 10);   // date is YYYY-MM-DD since v5.30
 
-	/* CRC */
-	for(; n < linesize && line[n] == ' '; n++);
-	a = n;
-	for(; n < linesize && line[n] != ' '; n++);
-	line[n] = '\0';
-	item[i] = line + a;
+	if (legacy)                         // and was DD-MM-YY before
+		item[3] = date_DD_MM_YY(item[3]);
 
-	/* FileName */
-	line[linesize - 1] = '\0';
-	filename = g_strdup(line + n + 2);
+	/* time */
+	NEXT_ITEM(item[4]);
 
-	/* Strip trailing whitespace */
-	end = filename + strlen(filename) - 1;
-	while(end >= filename && *end == ' ') end--;
-	*(end + 1) = '\0';
+	/* checksum */
+	NEXT_ITEM(item[6]);
 
-	entry = xa_set_archive_entries_for_each_row (archive,filename,item);
+	/* name (follows with two characters spacing instead of one) */
+	LAST_ITEM(filename);
+	filename++;            // skip the additional spacing character
+
+	/* fix filename by stripping trailing whitespace */
+	if (legacy && ((len = strlen(filename)) == 12))
+	{
+		while (len--)
+		{
+			if (filename[len] == ' ')
+				filename[len] = 0;
+			else
+				break;
+		}
+	}
+
+	entry = xa_set_archive_entries_for_each_row(archive, filename, item);
 
 	if (entry)
 	{
@@ -415,8 +368,6 @@ static void xa_rar5_parse_output (gchar *line, XArchive *archive)
 
 		archive->files_size += g_ascii_strtoull(item[0], NULL, 0);
 	}
-
-	g_free(filename);
 }
 
 void xa_rar_list (XArchive *archive)
@@ -471,9 +422,8 @@ void xa_rar_list (XArchive *archive)
 
 		g_io_channel_shutdown(file, FALSE, NULL);
 
-		if (archive->has_password)
-			if (!xa_check_password(archive))
-				return;
+		if (archive->has_password && !xa_check_password(archive))
+			return;
 	}
 
 	header_line = FALSE;
@@ -494,7 +444,7 @@ void xa_rar_list (XArchive *archive)
 		const GType types[] = {GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_UINT64, G_TYPE_UINT64, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER};
 		const gchar *titles[] = {_("Original Size"), _("Compressed"), _("Occupancy"), _("Date"), _("Time"), _("Attributes"), _("Checksum")};
 
-		archive->parse_output = xa_rar5_parse_output;
+		archive->parse_output = xa_rar_parse_output;
 		xa_spawn_async_process (archive,command);
 		g_free ( command );
 
@@ -512,7 +462,7 @@ void xa_rar_list (XArchive *archive)
 		const GType types[] = {GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_UINT64, G_TYPE_UINT64, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER};
 		const gchar *titles[] = {_("Original Size"), _("Compressed"), _("Occupancy"), _("Date"), _("Time"), _("Attributes"), _("Checksum"), _("Method"), _("Version")};
 
-		archive->parse_output = xa_rar_parse_output;
+		archive->parse_output = xa_rar_v4_parse_output;
 		xa_spawn_async_process (archive,command);
 		g_free ( command );
 
@@ -549,14 +499,14 @@ gboolean xa_rar_extract (XArchive *archive, GSList *file_list)
 	gchar *password_str, *command;
 	gboolean result;
 
-	files = xa_quote_filenames(file_list, NULL, FALSE);
+	files = xa_quote_filenames(file_list, NULL, DIR_WITHOUT_SLASH);
 	password_str = xa_rar_password_str(archive);
 	command = g_strconcat(archiver[archive->type].program[0],
 	                      archive->do_full_path ? " x" : " e",
 	                      archive->do_touch ? " -tsm-" : "",
 	                      archive->do_overwrite ? " -o+" : (archive->do_update ? " -u" : (archive->do_freshen ? " -f" : " -o-")),
 	                      password_str, " -idp -y ",
-	                      archive->path[1], files->str,
+	                      archive->path[1], " --", files->str,
 	                      " ", archive->extraction_dir, NULL);
 	g_free(password_str);
 	g_string_free(files,TRUE);
@@ -567,40 +517,37 @@ gboolean xa_rar_extract (XArchive *archive, GSList *file_list)
 	return result;
 }
 
-void xa_rar_add (XArchive *archive, GSList *file_list, gchar *compression)
+void xa_rar_add (XArchive *archive, GSList *file_list)
 {
 	GString *files;
-	gchar *password_str, *command, *version_switch;
+	gchar *compression, *password_str, *command, *version_switch;
 
-
-	if (archive->location_path != NULL)
-		archive->child_dir = g_strdup(archive->working_dir);
-
-	if (rar_version >= 5)
+	if (rar_version == 5 || rar_version == 6)
 	{
-		if (archive->tag == 5)
-			version_switch = " -ma5";
-		else
+		if (TAGTYPE(archive->tag) == 4)
 			version_switch = " -ma4";
+		else
+			version_switch = " -ma5";
 	}
 	else
 		version_switch = "";
 
-	if (!compression)
-		compression = "3";
+	compression = g_strdup_printf("%hu", archive->compression);
 
-	files = xa_quote_filenames(file_list, NULL, FALSE);
+	files = xa_quote_filenames(file_list, NULL, DIR_WITHOUT_SLASH);
 	password_str = xa_rar_password_str(archive);
 	command = g_strconcat(archiver[archive->type].program[0],
-	                      archive->do_update ? " u" : " a", version_switch,
-	                      archive->do_freshen ? " -f" : "",
-	                      archive->do_move ? " -df" : "",
+	                      version_switch,
+	                      archive->do_update ? " u" : (archive->do_freshen ? " u -f" : " a"),
+	                      archive->do_recurse ? "" : " -r-",
+	                      archive->do_remove ? " -df" : "",
 	                      archive->do_solid ? " -s" : "",
 	                      " -m", compression,
 	                      password_str, " -idp -y ",
-	                      archive->path[1], files->str, NULL);
+	                      archive->path[1], " --", files->str, NULL);
 	g_free(password_str);
 	g_string_free(files,TRUE);
+	g_free(compression);
 
 	xa_run_command(archive, command);
 	g_free(command);
@@ -611,8 +558,8 @@ void xa_rar_delete (XArchive *archive, GSList *file_list)
 	GString *files;
 	gchar *command;
 
-	files = xa_quote_filenames(file_list, NULL, FALSE);
-	command = g_strconcat(archiver[archive->type].program[0], " d -idp -y ", archive->path[1], files->str, NULL);
+	files = xa_quote_filenames(file_list, NULL, DIR_WITHOUT_SLASH);
+	command = g_strconcat(archiver[archive->type].program[0], " d -idp -y ", archive->path[1], " --", files->str, NULL);
 	g_string_free(files,TRUE);
 
 	xa_run_command(archive, command);

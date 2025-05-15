@@ -7,7 +7,7 @@ Build-Depends:
  intltool,
  libgtk-3-dev,
  xsltproc
-Standards-Version: 4.6.0
+Standards-Version: 4.7.2
 Homepage: https://github.com/ib/xarchiver
 Vcs-Git: https://salsa.debian.org/debian/xarchiver.git
 Vcs-Browser: https://salsa.debian.org/debian/xarchiver
@@ -18,8 +18,8 @@ Depends:
  ${misc:Depends},
  ${shlibs:Depends}
 Recommends:
+ 7zip,
  bzip2,
- p7zip-full,
  unzip,
  xdg-utils,
  xz-utils
@@ -42,13 +42,16 @@ Suggests:
  zip,
  zstd
 Description: GTK+ frontend for most used compression formats
- Xarchiver is a lightweight desktop independent GTK+ frontend for manipulating
- xz, 7z, lzma, arj, bzip2, gzip, rar, tar, zip, rpm, lz4, compress, zstd, lzip,
- lrzip, lzop, lha, ar files including the deb format and self-extracting
- exe files, if they were internally compressed with either 7zip, arj, lha, rar
- or zip. Multi-threading tools such as lbzip2, pbzip2, pigz and plzip can be
- used as replacements for their respective counterparts.
+ Xarchiver is a lightweight, desktop independent GTK+ frontend for handling
+ 7z, apk, AppImage, arj, bzip, bzip2, bzip3, cab, cb7, cbr, cbt, cbz, chm,
+ compress, cpio, docx, epub, fbz, gzip, iso, jar, jsonlz4, lha, lrzip, lz4,
+ lzip, lzma, lzop, mozlz4, odt, oxt, rar, rpm, rzip, snap, squashfs, tar,
+ xpi, xz, zip, zpaq, zstd and ar files, including the deb format, and
+ self-extracting exe files if they are internally compressed with either
+ 7zip, arj, lha, rar, or zip. Multi-threading tools such as lbzip2, pbzip2,
+ pigz and plzip can be used to replace their respective counterparts.
  .
- Xarchiver allows you to create archives and add, extract, and delete files
- from them. Password protected archives in the arj, 7z, rar, zip and lrzip
- formats are supported.
+ Xarchiver allows you to list, test and create archives, add and copy files
+ to them, extract, delete, cut and drag files from them, edit files in them,
+ and paste and drop files into them. Password protected 7z, arj, lrzip, rar
+ and zip archives are supported.

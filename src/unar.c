@@ -27,8 +27,6 @@
 #include "support.h"
 #include "window.h"
 
-#define MAXWIDTH(item, width) (strlen(item) > width ? strlen(item) - width : 0)
-
 static gboolean data_line, last_line;
 
 void xa_unar_ask (XArchive *archive)
@@ -37,12 +35,21 @@ void xa_unar_ask (XArchive *archive)
 	archive->can_extract = (archiver[archive->type].program[1] != NULL);
 	archive->can_full_path[0] = (archiver[archive->type].program[1] != NULL);
 	archive->can_overwrite = (archiver[archive->type].program[1] != NULL);
+	archive->can_recurse[0] = TRUE;
 }
 
 static gchar *xa_unar_password_str (XArchive *archive)
 {
+	gchar *escaped, *password_str;
+
 	if (archive->password)
-		return g_strconcat(" -p ", archive->password, NULL);
+	{
+		escaped = xa_escape_bad_chars(archive->password, ESCAPES);
+		password_str = g_strconcat(" -p ", escaped, NULL);
+		g_free(escaped);
+
+		return password_str;
+	}
 	else
 		return g_strdup("");
 }
@@ -51,9 +58,9 @@ static void xa_unar_parse_output (gchar *line, XArchive *archive)
 {
 	XEntry *entry;
 	gpointer item[6];
-	gchar *index, *flags, *filename;
-	gboolean dir, encrypted, link;
-	guint shift;
+	gchar *filename, *flags;
+	size_t len;
+	gboolean dir, link, encrypted;
 
 	USE_PARSER;
 
@@ -82,22 +89,22 @@ static void xa_unar_parse_output (gchar *line, XArchive *archive)
 		return;
 	}
 
-	if (*line == '(')
+	if (line[0] == '(')
 	{
 		last_line = TRUE;
 		return;
 	}
 
-	/* index (may exceed column width) */
-	NEXT_ITEM(index);
-	shift = MAXWIDTH(index, 4);
+	/* index */
+	SKIP_ITEM;
 
 	/* flags */
 	NEXT_ITEM(flags);
+	len = strlen(flags);
 
 	dir = (flags[0] == 'D');
-	link = (flags[2] == 'L');
-	encrypted = (flags[3] == 'E');
+	link = (len > 2 && flags[2] == 'L');
+	encrypted = (len > 3 && flags[3] == 'E');
 
 	if (encrypted)
 		archive->has_password = TRUE;
@@ -105,9 +112,8 @@ static void xa_unar_parse_output (gchar *line, XArchive *archive)
 	/* file size */
 	NEXT_ITEM(item[1]);
 
-	/* ratio (may exceed column width) */
+	/* ratio */
 	NEXT_ITEM(item[2]);
-	shift += MAXWIDTH(item[2], 6);
 
 	/* mode */
 	NEXT_ITEM(item[5]);
@@ -126,20 +132,20 @@ static void xa_unar_parse_output (gchar *line, XArchive *archive)
 	else
 		NEXT_ITEM(item[4]);
 
-	/* name */
+	/* name (follows with two characters spacing instead of one) */
 	LAST_ITEM(filename);
-	filename += shift;
+	filename++;            // skip the additional spacing character
 
 	item[0] = NULL;
 
 	if (link)
 	{
-		char *l = strstr(filename, " -> ");
+		gchar *lnk = g_strrstr(filename, " -> ");
 
-		if (l)
+		if (lnk)
 		{
-			item[0] = l + 4;
-			*l = 0;
+			item[0] = lnk + 4;
+			*lnk = 0;
 		}
 	}
 
@@ -171,9 +177,8 @@ void xa_unar_list (XArchive *archive)
 		if (!archive->has_password)
 			archive->has_password = is7zip_mhe(archive->path[0]);
 
-		if (archive->has_password)
-			if (!xa_check_password(archive))
-				return;
+		if (archive->has_password && !xa_check_password(archive))
+			return;
 	}
 
 	data_line = FALSE;
@@ -221,24 +226,19 @@ gboolean xa_unar_extract (XArchive *archive, GSList *file_list)
 		extract_to = g_strdup(archive->extraction_dir);
 	else
 	{
-		if (!xa_create_working_directory(archive))
-			return FALSE;
+		extract_to = xa_create_working_subdirectory(archive);
 
-		extract_to = g_strconcat(archive->working_dir, "/xa-tmp.XXXXXX", NULL);
-
-		if (!g_mkdtemp(extract_to))
-		{
-			g_free(extract_to);
+		if (!extract_to)
 			return FALSE;
-		}
 	}
 
-	files = xa_quote_filenames(file_list, "*?[]\"", TRUE);
+	files = xa_quote_filenames(file_list, "*?[]\"", DIR_WITH_ASTERISK);
 	password_str = xa_unar_password_str(archive);
-	command = g_strconcat(archiver[archive->type].program[1], " ",
-	                      archive->path[1], password_str, " -D -q",
+	command = g_strconcat(archiver[archive->type].program[1],
+	                      password_str, " -D -q",
 	                      archive->do_overwrite ? " -f" : "",
-	                      " -o ", extract_to, files->str, NULL);
+	                      " -o ", extract_to,
+	                      " ", archive->path[1], " --", files->str, NULL);
 
 	result = xa_run_command(archive, command);
 	g_free(command);
@@ -251,9 +251,10 @@ gboolean xa_unar_extract (XArchive *archive, GSList *file_list)
 		archive->child_dir = g_strdup(extract_to);
 		command = g_strconcat("mv",
 		                      archive->do_overwrite ? " -f" : " -n",
-		                      all_files->str, " ", archive->extraction_dir, NULL);
+		                      " --", all_files->str, " ", archive->extraction_dir, NULL);
 		g_string_free(all_files, TRUE);
 
+		archive->status = XARCHIVESTATUS_EXTRACT;   // restore status
 		result = xa_run_command(archive, command);
 		g_free(command);
 

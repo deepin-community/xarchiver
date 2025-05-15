@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2008 Giuseppe Torelli - <colossus73@gmail.com>
+ *  Copyright (C) 2016 Ingo Brückl
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,11 +24,13 @@
 #include "gzip_et_al.h"
 #include "interface.h"
 #include "main.h"
+#include "parser.h"
 #include "string_utils.h"
 #include "support.h"
 #include "window.h"
 
-#define INDEX (archive->type == XARCHIVETYPE_RAR ? (archive->tag == 5 ? 1 : 0) : 0)
+#define INDEX (archive->type == XARCHIVETYPE_RAR ? (TAGTYPE(archive->tag) == 4 ? 0 : 1) : 0)
+#define READ_ONLY (TAGTYPE(archive->tag) == 'x')   // exe
 
 static gboolean data_line, encrypted, last_line;
 
@@ -44,7 +47,7 @@ static void xa_7zip_seek_position (const gchar *filename, GIOChannel **file, gin
 	else /* find the volume the offset is pointing to */
 	{
 		guint64 position, volsizes = 0;
-		gchar *fvname;
+		gchar *fvname, fvext[4];
 		size_t ext;
 		guint i;
 		GStatBuf st;
@@ -56,13 +59,14 @@ static void xa_7zip_seek_position (const gchar *filename, GIOChannel **file, gin
 		position = 12 + 8 + (guint64) offset;   // absolute position
 
 		fvname = g_strdup(filename);
-		ext = strlen(fvname) - 4;
+		ext = strlen(fvname) - 3;
 
 		/* check volumes ... */
 		for (i = 1; i < 1000; i++)
 		{
 			fvname[ext] = 0;
-			sprintf(fvname, "%s.%03u", fvname, i);
+			sprintf(fvext, "%03u", i);
+			strcat(fvname, fvext);
 
 			if (!g_file_test(fvname, G_FILE_TEST_EXISTS) || (g_stat(fvname, &st) != 0))
 				break;
@@ -111,13 +115,13 @@ static void xa_7zip_uint64_skip (GIOChannel *file)
 
 static gboolean is_encrypted (XArchive *archive)
 {
-	gchar *command, *output;
+	gchar *command, *output = NULL;
 	gboolean result;
 
-	command = g_strconcat(archiver[archive->type].program[INDEX], " l -slt ", archive->path[0], NULL);
+	command = g_strconcat(archiver[archive->type].program[INDEX], " l -slt ", archive->path[1], NULL);
 	g_spawn_command_line_sync(command, &output, NULL, NULL, NULL);
 
-	result = (strstr(output, "\nEncrypted = +\n") != NULL);
+	result = (output && strstr(output, "\nEncrypted = +\n"));
 
 	g_free(output);
 	g_free(command);
@@ -238,24 +242,40 @@ gboolean is7zip_mhe (const gchar *filename)
 /* it can handle other archive types as well */
 void xa_7zip_ask (XArchive *archive)
 {
+	compressor_t sevenz_compressor = {TRUE, 1, 5, 9, 2};
+	compressor_t sevenz_gzip_et_al_compressor = {FALSE, 1, 5, 9, 2};
+
 	archive->can_test = TRUE;
 	archive->can_extract = TRUE;
-	archive->can_add = archiver[archive->type].is_compressor;
-	archive->can_delete = (archiver[archive->type].is_compressor && !SINGLE_FILE_COMPRESSOR(archive));
+	archive->can_add = (archiver[archive->type].is_compressor && !READ_ONLY);
+	archive->can_delete = (archiver[archive->type].is_compressor && !SINGLE_FILE_COMPRESSOR(archive) && !READ_ONLY);
 	archive->can_sfx = (archive->type == XARCHIVETYPE_7ZIP);
 	archive->can_password = (archive->type == XARCHIVETYPE_7ZIP);
 	archive->can_full_path[0] = TRUE;
 	archive->can_overwrite = TRUE;
 	archive->can_update[1] = archiver[archive->type].is_compressor;
 	archive->can_freshen[1] = (archiver[archive->type].is_compressor && !SINGLE_FILE_COMPRESSOR(archive));
-	archive->can_move = archiver[archive->type].is_compressor;
+	archive->can_recurse[0] = TRUE;
+	archive->can_recurse[1] = (archiver[archive->type].is_compressor ? FORCED : FALSE);
+	archive->can_remove = archiver[archive->type].is_compressor;
 	archive->can_solid = (archive->type == XARCHIVETYPE_7ZIP);
+	archive->can_compress = archiver[archive->type].is_compressor;
+	archive->compressor = (archive->type == XARCHIVETYPE_7ZIP || archive->type == XARCHIVETYPE_ZIP ? sevenz_compressor : sevenz_gzip_et_al_compressor);
+	archive->compression = archive->compressor.preset;
 }
 
 static gchar *xa_7zip_password_str (XArchive *archive)
 {
+	gchar *escaped, *password_str;
+
 	if (archive->password)
-		return g_strconcat(" -p", archive->password, NULL);
+	{
+		escaped = xa_escape_bad_chars(archive->password, ESCAPES);
+		password_str = g_strconcat(" -p", escaped, NULL);
+		g_free(escaped);
+
+		return password_str;
+	}
 	else
 		return g_strdup("");
 }
@@ -263,10 +283,11 @@ static gchar *xa_7zip_password_str (XArchive *archive)
 static void xa_7zip_parse_output (gchar *line, XArchive *archive)
 {
 	XEntry *entry;
-	gchar *filename;
 	gpointer item[5];
-	gint linesize = 0,a = 0;
+	gchar *filename;
 	gboolean dir;
+
+	USE_PARSER;
 
 	if (last_line)
 		return;
@@ -279,61 +300,75 @@ static void xa_7zip_parse_output (gchar *line, XArchive *archive)
 			archive->has_password = TRUE;
 		}
 
-		if (strncmp(line, "-----", 5) == 0)
+		if (strncmp(line, "------------------- ", 20) == 0)
 		{
 			data_line = TRUE;
 			return;
 		}
+
 		return;
 	}
+
 	if (line[0] == '-')
 	{
 		last_line = TRUE;
 		return;
 	}
 
-	linesize = strlen(line);
+	if (line[0] != ' ')
+	{
+		/* date */
+		NEXT_ITEM(item[2]);
+		/* time */
+		NEXT_ITEM(item[3]);
+	}
+	else /* invalid date/time */
+	{
+		item[2] = NULL;
+		item[3] = NULL;
+	}
 
-	/* Date */
-	line[10] = '\0';
-	item[2] = line;
-
-	/* Time */
-	line[19] = '\0';
-	item[3] = line + 11;
-
-	/* Permissions */
-	line[25] = '\0';
-	item[4] = line + 20;
+	/* attributes */
+	NEXT_ITEM(item[4]);
 
 	dir = (*(char *) item[4] == 'D');
 
-	/* Size */
-	for(a=26; a < linesize; ++a)
-		if(line[a] >= '0' && line[a] <= '9')
-			break;
+	/* size */
 
-	line[38] = '\0';
-	item[0] = line + a;
+	LINE_PEEK(11);
 
-	/* Compressed */
-	/* Is this item solid? */
-	if (line[50] == ' ')
+	if (line[peek] == ' ')
 	{
-		line[linesize-1] = '\0';
+		line += peek + 1;
+
+		if (*line)
+			*line++ = 0;
+
+		item[0] = "0";
+	}
+	else
+		NEXT_ITEM(item[0]);
+
+	/* compressed */
+
+	LINE_PEEK(11);
+
+	if (line[peek] == ' ')
+	{
+		line += peek + 1;
+
+		if (*line)
+			*line++ = 0;
+
 		item[1] = "0";
 	}
 	else
-	{
-		for(a=39; a < linesize; ++a)
-			if(line[a] >= '0' && line[a] <= '9')
-				break;
-		line[51] = '\0';
-		item[1] = line + a;
-		line[linesize-1] = '\0';
-	}
+		NEXT_ITEM(item[1]);
 
-	filename = g_strdup(line + 53);
+	/* name (follows with two characters spacing instead of one) */
+	LAST_ITEM(filename);
+	filename++;            // skip the additional spacing character
+
 	entry = xa_set_archive_entries_for_each_row(archive, filename, item);
 
 	if (entry)
@@ -348,8 +383,6 @@ static void xa_7zip_parse_output (gchar *line, XArchive *archive)
 
 		archive->files_size += g_ascii_strtoull(item[0], NULL, 0);
 	}
-
-	g_free(filename);
 }
 
 void xa_7zip_list (XArchive *archive)
@@ -372,7 +405,7 @@ void xa_7zip_list (XArchive *archive)
 			return;
 
 	/* a single file compressor archive is no longer new and empty now */
-	archive->can_add = (archiver[archive->type].is_compressor && !SINGLE_FILE_COMPRESSOR(archive));
+	archive->can_add = (archiver[archive->type].is_compressor && !SINGLE_FILE_COMPRESSOR(archive) && !READ_ONLY);
 
 	data_line = FALSE;
 	last_line = FALSE;
@@ -431,14 +464,14 @@ gboolean xa_7zip_extract (XArchive *archive, GSList *file_list)
 	gchar *password_str, *command;
 	gboolean result;
 
-	files = xa_quote_filenames(file_list, NULL, TRUE);
+	files = xa_quote_filenames(file_list, NULL, DIR_WITH_SLASH);
 	password_str = xa_7zip_password_str(archive);
 	command = g_strconcat(archiver[archive->type].program[INDEX],
 	                      archive->do_full_path ? " x" : " e",
 	                      archive->do_overwrite ? " -aoa" : " -aos",
-	                      password_str, " -bd -spd -y ",
-	                      archive->path[1], files->str,
-	                      " -o", archive->extraction_dir, NULL);
+	                      password_str, " -bd -spd -y",
+	                      " -o", archive->extraction_dir,
+	                      " ", archive->path[1], " --", files->str, NULL);
 	g_free(password_str);
 	g_string_free(files,TRUE);
 
@@ -448,31 +481,27 @@ gboolean xa_7zip_extract (XArchive *archive, GSList *file_list)
 	return result;
 }
 
-void xa_7zip_add (XArchive *archive, GSList *file_list, gchar *compression)
+void xa_7zip_add (XArchive *archive, GSList *file_list)
 {
 	GString *files;
-	gchar *password_str, *solid, *command;
+	gchar *compression, *password_str, *solid, *command;
 
-	if (archive->location_path != NULL)
-		archive->child_dir = g_strdup(archive->working_dir);
+	compression = g_strdup_printf("%hu", archive->compression);
 
-	if (!compression)
-		compression = "5";
-
-	files = xa_quote_filenames(file_list, NULL, TRUE);
+	files = xa_quote_filenames(file_list, NULL, DIR_WITH_SLASH);
 	password_str = xa_7zip_password_str(archive);
 	solid = g_strconcat(" -ms=", archive->do_solid ? "on" : "off", NULL);
 	command = g_strconcat(archiver[archive->type].program[0],
-	                      archive->do_update ? " u" : " a",
-	                      archive->do_freshen ? " -ur0w0x1z1" : "",
-	                      archive->do_move ? " -sdel" : "",
+	                      archive->do_update ? " u" : (archive->do_freshen ? " u -ur0" : " a"),
+	                      archive->do_remove ? " -sdel" : "",
 	                      archive->type == XARCHIVETYPE_7ZIP ? solid : "",
 	                      " -mx=", compression,
 	                      password_str, " -bd -spd -y ",
-	                      archive->path[1], files->str, NULL);
+	                      archive->path[1], " --", files->str, NULL);
 	g_free(solid);
 	g_free(password_str);
 	g_string_free(files,TRUE);
+	g_free(compression);
 
 	xa_run_command(archive, command);
 	g_free(command);
@@ -483,9 +512,9 @@ void xa_7zip_delete (XArchive *archive, GSList *file_list)
 	GString *files;
 	gchar *password_str, *command;
 
-	files = xa_quote_filenames(file_list, NULL, TRUE);
+	files = xa_quote_filenames(file_list, NULL, DIR_WITH_SLASH);
 	password_str = xa_7zip_password_str(archive);
-	command = g_strconcat(archiver[archive->type].program[0], " d", password_str, " -bd -spd -y ", archive->path[1], files->str, NULL);
+	command = g_strconcat(archiver[archive->type].program[0], " d", password_str, " -bd -spd -y ", archive->path[1], " --", files->str, NULL);
 	g_free(password_str);
 	g_string_free(files,TRUE);
 

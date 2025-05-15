@@ -1,5 +1,6 @@
 /*
  *  Copyright (c) 2008 Giuseppe Torelli <colossus73@gmail.com>
+ *  Copyright (C) 2015 Ingo Brückl
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -72,20 +73,31 @@ const char *xa_get_stock_mime_icon(const char *filename)
 	         strcmp(mime,"application/vnd.oasis.opendocument.presentation") == 0)
 		return "x-office-presentation";
 	else if (strcmp(mime,"application/gzip") == 0 ||
+	         strcmp(mime,"application/java-archive") == 0 || /* legacy */ strcmp(mime,"application/x-java-archive") == 0 ||
 	         strcmp(mime,"application/vnd.android.package-archive") == 0 ||
+	         strcmp(mime,"application/vnd.appimage") == 0 ||
 	         strcmp(mime,"application/vnd.debian.binary-package") == 0 ||
+	         strcmp(mime,"application/vnd.efi.iso") == 0 ||
+	         strcmp(mime,"application/vnd.ms-cab-compressed") == 0 ||
+	         strcmp(mime,"application/vnd.ms-htmlhelp") == 0 ||
 	         strcmp(mime,"application/vnd.openofficeorg.extension") == 0 ||
 	         strcmp(mime,"application/vnd.rar") == 0 || /* legacy */ strcmp(mime,"application/x-rar") == 0 ||
+	         strcmp(mime,"application/vnd.snap") == 0 ||
+	         strcmp(mime,"application/vnd.squashfs") == 0 ||
 	         strcmp(mime,"application/x-7z-compressed") == 0 ||
 	         strcmp(mime,"application/x-archive") == 0 ||
 	         strcmp(mime,"application/x-arj") == 0 ||
-	         strcmp(mime,"application/x-bzip") == 0 ||
-	         strcmp(mime,"application/x-bzip-compressed-tar") == 0 ||
+	         strcmp(mime,"application/x-bzip1") == 0 ||
+	         strcmp(mime,"application/x-bzip1-compressed-tar") == 0 ||
+	         strcmp(mime,"application/x-bzip2") == 0 || /* legacy */ strcmp(mime,"application/x-bzip") == 0 ||
+	         strcmp(mime,"application/x-bzip2-compressed-tar") == 0 || /* legacy */ strcmp(mime,"application/x-bzip-compressed-tar") == 0 ||
+	         strcmp(mime,"application/x-bzip3") == 0 ||
+	         strcmp(mime,"application/x-bzip3-compressed-tar") == 0 ||
+	         strcmp(mime,"application/x-cd-image") == 0 ||
 	         strcmp(mime,"application/x-compress") == 0 ||
 	         strcmp(mime,"application/x-compressed-tar") == 0 ||
 	         strcmp(mime,"application/x-cpio") == 0 ||
 	         strcmp(mime,"application/x-cpio-compressed") == 0 ||
-	         strcmp(mime,"application/x-java-archive") == 0 ||
 	         strcmp(mime,"application/x-lha") == 0 ||
 	         strcmp(mime,"application/x-lrzip") == 0 ||
 	         strcmp(mime,"application/x-lrzip-compressed-tar") == 0 ||
@@ -97,6 +109,8 @@ const char *xa_get_stock_mime_icon(const char *filename)
 	         strcmp(mime,"application/x-lzma-compressed-tar") == 0 ||
 	         strcmp(mime,"application/x-lzop") == 0 ||
 	         strcmp(mime,"application/x-rpm") == 0 ||
+	         strcmp(mime,"application/x-rzip") == 0 ||
+	         strcmp(mime,"application/x-rzip-compressed-tar") == 0 ||
 	         strcmp(mime,"application/x-source-rpm") == 0 ||
 	         strcmp(mime,"application/x-tar") == 0 ||
 	         strcmp(mime,"application/x-tarz") == 0 ||
@@ -104,6 +118,7 @@ const char *xa_get_stock_mime_icon(const char *filename)
 	         strcmp(mime,"application/x-xpinstall") == 0 ||
 	         strcmp(mime,"application/x-xz") == 0 ||
 	         strcmp(mime,"application/x-xz-compressed-tar") == 0 ||
+	         strcmp(mime,"application/x-zpaq") == 0 ||
 	         strcmp(mime,"application/x-zstd-compressed-tar") == 0 ||
 	         strcmp(mime,"application/zip") == 0 ||
 	         strcmp(mime,"application/zstd") == 0)

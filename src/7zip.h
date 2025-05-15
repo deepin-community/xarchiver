@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2005 Giuseppe Torelli - <colossus73@gmail.com>
+ *  Copyright (C) 2016 Ingo Brückl
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,7 +25,7 @@
 #include "archive.h"
 
 gboolean is7zip_mhe(const gchar *);
-void xa_7zip_add(XArchive *, GSList *, gchar *);
+void xa_7zip_add(XArchive *, GSList *);
 void xa_7zip_ask(XArchive *);
 void xa_7zip_delete(XArchive *, GSList *);
 gboolean xa_7zip_extract(XArchive *, GSList *);

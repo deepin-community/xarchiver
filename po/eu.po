@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xarchiver 0.5.4\n"
 "Report-Msgid-Bugs-To: https://github.com/ib/xarchiver/issues\n"
-"POT-Creation-Date: 2021-01-21 13:49+0100\n"
-"PO-Revision-Date: 2021-01-21 13:49+0100\n"
+"POT-Creation-Date: 2024-09-26 11:30+0200\n"
+"PO-Revision-Date: 2021-11-07 09:54+0000\n"
 "Last-Translator: Asier Iturralde Sarasola <asier.iturralde@gmail.com>\n"
 "Language-Team: Euskara <librezale@librezale.eus>\n"
 "Language: eu\n"
@@ -54,39 +54,20 @@ msgid_plural "%d files %s (%s)"
 msgstr[0] "fitxategi %d %s (%s)"
 msgstr[1] "%d fitxategi %s (%s)"
 
+#: ../src/add_dialog.c
+#, c-format
+msgid ""
+"%hu is least compression\n"
+"%hu is default compression\n"
+"%hu is best compression"
+msgstr ""
+"%hu da gutxieneko konpresioa\n"
+"%hu da konpresio lehenetsia\n"
+"%hu da konpresio onena"
+
 #: ../src/pref_dialog.c
 msgid "/tmp"
 msgstr "/tmp"
-
-#: ../src/add_dialog.c
-msgid "0 = no compression, 1 is default, 4 = fastest but least compression"
-msgstr ""
-"0 = konpresiorik ez, 1 lehenetsia, 4 = azkarren baina konpresio gutxiena"
-
-#: ../src/add_dialog.c
-msgid "0 = no compression, 3 is default, 5 = best compression but slowest"
-msgstr "0 = konpresiorik ez, 3 lehenetsia, 5 = konpresio onena baina mantsoena"
-
-#: ../src/add_dialog.c
-msgid "0 = no compression, 5 is default, 9 = best compression but slowest"
-msgstr "0 = konpresiorik ez, 5 lehenetsia, 9 = konpresio onena baina mantsoena"
-
-#: ../src/add_dialog.c
-msgid "0 = no compression, 6 is default, 9 = best compression but slowest"
-msgstr "0 = konpresiorik ez, 6 lehenetsia, 9 = konpresio onena baina mantsoena"
-
-#: ../src/add_dialog.c
-msgid "5 = default compression, 7 = max compression"
-msgstr "5 = konpresio lehenetsia, 7 = konpresio handiena"
-
-#: ../src/pref_dialog.c
-msgid ""
-"<span color='red' style='italic'>Please install xdg-utils package so that\n"
-"Xarchiver can recognize more file types.</span>"
-msgstr ""
-"<span color='red' style='italic'>Mesedez instalatu xdg-utils paketea "
-"Xarchiver\n"
-"fitxategi-mota gehiago ezagutzeko gai izateko.</span>"
 
 #: ../src/interface.c
 msgid "<span weight='bold' size='larger'>Enter password for:</span>"
@@ -107,10 +88,6 @@ msgstr "<th>Fitxategiak:</th>"
 msgid "<th>Size:</th>"
 msgstr "<th>Tamaina:</th>"
 
-#: ../xarchiver.desktop.in.h
-msgid "A GTK+ only archive manager"
-msgstr "GTK+-rako bakarrik artxibo-kudeatzailea"
-
 #: ../src/window.c
 msgid "A GTK+ only lightweight archive manager"
 msgstr "GTK+-rako bakarrik den artxibo-kudeatzaile arina"
@@ -124,8 +101,8 @@ msgid "A_dd"
 msgstr "Ge_hitu"
 
 #: ../src/add_dialog.c
-msgid "Actions: "
-msgstr "Ekintzak: "
+msgid "Actions"
+msgstr "Ekintzak"
 
 #: ../src/interface.c
 msgid "Add"
@@ -151,7 +128,7 @@ msgstr ""
 "Gehitu fitxategiak artxibora galdetuaz\n"
 "                                     eta irten"
 
-#: ../src/add_dialog.c
+#: ../src/window.c
 msgid "Adding files to archive, please wait..."
 msgstr "Fitxategiak artxibora gehitzen, itxaron mesedez..."
 
@@ -163,12 +140,20 @@ msgstr "Artxibora gehitzen:"
 msgid "Advanced"
 msgstr "Aurreratua"
 
+#: ../src/pref_dialog.c
+#, fuzzy
+#| msgid "Icons size (requires restart):"
+msgid "Advanced incremental search (requires restart)"
+msgstr "Ikonoen tamaina (berrabiaraztea beharrezkoa)"
+
 #: ../src/extract_dialog.c ../src/new_dialog.c ../src/window.c
 msgid "All files"
 msgstr "Fitxategi guztiak"
 
 #: ../src/pref_dialog.c
-msgid "Allow subdirs with drag and drop"
+#, fuzzy
+#| msgid "Allow subdirs with drag and drop"
+msgid "Allow subdirs with clipboard and drag-and-drop"
 msgstr "Onartu azpidirektorioak arrastatu eta jaregitearekin"
 
 #: ../src/window.c
@@ -179,13 +164,9 @@ msgstr "Errore bat gertatu da artxiboa atzitzerakoan:"
 msgid "An error occurred!"
 msgstr "Errore bat gertatu da!"
 
-#: ../src/pref_dialog.c
+#: ../src/extract_dialog.c ../src/pref_dialog.c
 msgid "Archive"
 msgstr "Artxiboa"
-
-#: ../src/extract_dialog.c
-msgid "Archive Name"
-msgstr "Artxiboaren izena"
 
 #: ../src/interface.c
 msgid "Archive Properties"
@@ -212,6 +193,12 @@ msgstr "Artxibo-kudeatzailea"
 msgid "Archive tree"
 msgstr "Artxibo-zuhaitza"
 
+#: ../src/pref_dialog.c
+msgid ""
+"Archive tree nodes already expand when the node name is selected by mouse "
+"click or keyboard shortcut."
+msgstr ""
+
 #: ../src/new_dialog.c
 msgid "Archive type:"
 msgstr "Artxibo-mota:"
@@ -231,6 +218,10 @@ msgstr "Ziur zaude hau egin nahi duzula?"
 #: ../src/7zip.c ../src/arj.c ../src/rar.c
 msgid "Attributes"
 msgstr "Atributuak"
+
+#: ../src/pref_dialog.c
+msgid "Automatically expand archive tree nodes on selection"
+msgstr ""
 
 #: ../src/interface.c
 msgid "Back"
@@ -268,7 +259,7 @@ msgstr "Ezin da direktorioa sortu!"
 msgid "Can't create temporary directory:"
 msgstr "Ezin da aldi baterako direktorioa sortu:"
 
-#: ../src/extract_dialog.c ../src/main.c
+#: ../src/extract_dialog.c ../src/main.c ../src/window.c
 msgid "Can't extract files from the archive:"
 msgstr "Ezin dira fitxategiak artxibotik erauzi:"
 
@@ -286,22 +277,17 @@ msgstr "Ezin dira artxibo anitz erauzi:"
 
 #: ../src/rpm.c
 #, c-format
-msgid "Can't open RPM file %s:"
-msgstr "Ezin da %s RPM fitxategia ireki:"
+msgid "Can't open RPM file \"%s\":"
+msgstr "Ezin da \"%s\" RPM fitxategia ireki:"
 
 #: ../src/window.c
 #, c-format
 msgid "Can't open file \"%s\":"
 msgstr "Ezin da \"%s\" fitxategia ireki:"
 
-#: ../src/window.c
-#, c-format
-msgid "Can't open file %s:"
-msgstr "Ezin da %s fitxategia ireki:"
-
 #: ../src/main.c
-msgid "Can't open the archive!\n"
-msgstr "Ezin da artxiboa ireki!\n"
+msgid "Can't open the archive!"
+msgstr "Ezin da artxiboa ireki!"
 
 #: ../src/extract_dialog.c ../src/window.c
 msgid "Can't perform extraction!"
@@ -320,8 +306,8 @@ msgid "Can't run the archiver executable:"
 msgstr "Ezin da konprimatzailearen exekutagarria exekutatu:"
 
 #: ../src/window.c
-msgid "Can't write the unzipsfx module to the archive:"
-msgstr "Ezin da unzipsfx modulua artxiboan idatzi:"
+msgid "Can't write the sfx module to the archive:"
+msgstr "Ezin da sfx modulua artxiboan idatzi:"
 
 #: ../src/interface.c
 msgid "Cancel current operation"
@@ -359,6 +345,12 @@ msgstr "Ko_mando-lerro irteera"
 msgid "Command"
 msgstr "Komandoa"
 
+#: ../src/pref_dialog.c
+msgid ""
+"Command-line output is captured and can be reviewed, but this consumes "
+"additional memory."
+msgstr ""
+
 #: ../src/window.c
 msgid "Comment"
 msgstr "Iruzkina"
@@ -376,14 +368,18 @@ msgstr "Iruzkina:\n"
 msgid "Compressed"
 msgstr "Konprimaturik"
 
-#: ../src/window.c
-#, c-format
-msgid "Compressed   size: "
-msgstr "Konprimaturiko   tamaina: "
-
 #: ../src/interface.c
 msgid "Compressed size:"
 msgstr "Konprimaturiko tamaina:"
+
+#: ../src/window.c
+#, c-format
+msgid "Compressed size: "
+msgstr "Konprimaturiko tamaina: "
+
+#: ../src/add_dialog.c
+msgid "Compression"
+msgstr "Konpresioa"
 
 #: ../src/gzip_et_al.c
 msgid "Compression ratio"
@@ -393,13 +389,15 @@ msgstr "Konpresio erlazioa"
 msgid "Compression ratio:"
 msgstr "Konpresio erlazioa:"
 
-#: ../src/add_dialog.c
-msgid "Compression: "
-msgstr "Konpresioa: "
-
 #: ../src/pref_dialog.c
 msgid "Confirm deletion of files"
 msgstr "Berretsi fitxategiak ezabatzea"
+
+#: ../src/window.c
+#, fuzzy
+#| msgid "Testing archive, please wait..."
+msgid "Converting archive, please wait..."
+msgstr "Artxiboa probatzen, itxaron mesedez..."
 
 #: ../src/interface.c
 msgid "Copy"
@@ -417,6 +415,12 @@ msgstr "Sortu artxibo berria"
 msgid "Create a solid archive"
 msgstr "Sortu artxibo sendoa"
 
+#: ../xarchiver.desktop.in.h
+#, fuzzy
+#| msgid "Create a solid archive"
+msgid "Create, extract and modify archives"
+msgstr "Sortu artxibo sendoa"
+
 #: ../src/interface.c
 msgid "Cut"
 msgstr "Ebaki"
@@ -426,8 +430,8 @@ msgid "Data Frames/Skippable Frames"
 msgstr "Datu-markoak/Saltatu daitezkeen markoak"
 
 #: ../src/7zip.c ../src/ar.c ../src/arj.c ../src/cpio.c ../src/gzip_et_al.c
-#: ../src/lha.c ../src/rar.c ../src/rpm.c ../src/tar.c ../src/unar.c
-#: ../src/zip.c
+#: ../src/lha.c ../src/rar.c ../src/rpm.c ../src/squashfs.c ../src/tar.c
+#: ../src/unar.c ../src/zip.c ../src/zpaq.c
 msgid "Date"
 msgstr "Data"
 
@@ -443,17 +447,21 @@ msgstr "Ezabatu"
 msgid "Delete files after adding"
 msgstr "Ezabatu fitxategiak gehitu ondoren"
 
+#: ../src/window.c
+#, fuzzy
+#| msgid "Extracting files from archive, please wait..."
+msgid "Deleting files from archive, please wait..."
+msgstr "Fitxategiak artxibotik erauzten, itxaron mesedez..."
+
 #: ../src/interface.c
 msgid "Dese_lect all"
 msgstr "_Desautatu dena"
 
 #: ../src/extract_dialog.c
-msgid "Destination dirs:"
-msgstr "Helburu direktorioak:"
-
-#: ../src/add_dialog.c
-msgid "Do not store paths"
-msgstr "Ez gorde bide-izenak"
+#, fuzzy
+#| msgid "destination"
+msgid "Destination"
+msgstr "helburua"
 
 #: ../src/window.c
 msgid "Do you really want to cancel?"
@@ -468,12 +476,16 @@ msgid "Doing so will probably corrupt your archive!"
 msgstr "Hau eginez ziurrenik paketea hondatuko duzu!"
 
 #: ../src/interface.c
+msgid "Edit"
+msgstr ""
+
+#: ../src/interface.c
 msgid "Encrypted:"
 msgstr "Enkriptatua:"
 
 #: ../src/add_dialog.c
-msgid "Encryption: "
-msgstr "Enkriptatzea: "
+msgid "Encryption"
+msgstr "Enkriptatzea"
 
 #: ../src/extract_dialog.c
 msgid "Ensure a containing directory"
@@ -482,14 +494,20 @@ msgstr "Segurtatu edukiontzi direktorioa"
 #: ../src/extract_dialog.c
 msgid ""
 "Ensure that the contents of the extracted archive is always in a containing "
-"directory"
+"directory."
 msgstr ""
 "Segurtatu erauzitako artxiboaren edukiek edukiontzi direktorio bat dutela "
-"beti"
+"beti."
 
 #: ../src/interface.c
 msgid "Enter passwo_rd"
 msgstr "Sartu _pasahitza"
+
+#: ../src/pref_dialog.c
+msgid ""
+"Even if other, perhaps more powerful programs are installed to handle zip "
+"archives, the traditional \"unzip\" and \"zip\" will still be used."
+msgstr ""
 
 #: ../src/interface.c
 msgid "Extract"
@@ -523,10 +541,6 @@ msgstr ""
 msgid "Extract files"
 msgstr "Erauzi fitxategiak"
 
-#: ../src/extract_dialog.c
-msgid "Extract files with full path"
-msgstr "Erauzi fitxategiak bide-izen osoarekin"
-
 #: ../src/main.c
 msgid ""
 "Extract multiple archives by asking the\n"
@@ -538,24 +552,33 @@ msgstr ""
 #: ../src/extract_dialog.c
 msgid ""
 "Extract only those files that already exist on disk and that are newer than "
-"the disk copies"
+"the disk copies."
 msgstr ""
 "Erauzi soilik dagoeneko diskoan dauden eta diskoko kopia baino berriagoak "
-"diren fitxategiak"
+"diren fitxategiak."
 
 #: ../src/extract_dialog.c
-msgid "Extract pathnames"
-msgstr "Erauzi bide-izenak"
-
-#: ../src/extract_dialog.c
-msgid "Extract to dir \"Archive Name\""
+#, fuzzy
+#| msgid "Extract to dir \"Archive Name\""
+msgid "Extract to directories with archive names"
 msgstr "Erauzi \"Artxibo izena\" direktoriora"
 
 #: ../src/extract_dialog.c
 msgid "Extract to:"
 msgstr "Erauzi hona:"
 
-#: ../src/extract_dialog.c ../src/window.c
+#: ../src/extract_dialog.c
+#, fuzzy
+#| msgid "Extract files with full path"
+msgid "Extract with full path"
+msgstr "Erauzi fitxategiak bide-izen osoarekin"
+
+#: ../src/interface.c
+#, c-format
+msgid "Extracting \"%s\"..."
+msgstr "\"%s\" erauzten..."
+
+#: ../src/window.c
 msgid "Extracting files from archive, please wait..."
 msgstr "Fitxategiak artxibotik erauzten, itxaron mesedez..."
 
@@ -567,78 +590,67 @@ msgstr "Artxibotik erauzten:"
 msgid "Failed to launch the application!"
 msgstr "Huts egin du aplikazioa abiaraztean!"
 
-#: ../src/add_dialog.c
-msgid "File Paths: "
-msgstr "Fitxategien bide-izenak: "
+#: ../src/add_dialog.c ../src/extract_dialog.c
+msgid "File Paths"
+msgstr "Fitxategien bide-izenak"
 
 #: ../src/window.c
 msgid "Filename"
 msgstr "Fitxategi-izena"
 
 #: ../src/extract_dialog.c
-msgid "Files "
-msgstr "Fitxategiak "
+msgid "Files"
+msgstr "Fitxategiak"
 
-#: ../src/extract_dialog.c
-msgid "Files: "
-msgstr "Fitxategiak: "
+#: ../src/zpaq.c
+msgid "Files with absolute pathnames cannot be deleted!"
+msgstr ""
 
-#: ../src/window.c
-#, c-format
-msgid "Files:%*s%s"
-msgstr "Fitxategiak:%*s%s"
+#: ../src/extract_dialog.c ../src/window.c
+msgid "Files:"
+msgstr "Fitxategiak:"
 
 #: ../src/interface.c
 msgid "Forward"
 msgstr "Aurrera"
 
-#: ../src/add_dialog.c
-msgid "Freshen and replace"
-msgstr "Freskatu eta ordeztu"
-
-#: ../src/extract_dialog.c
-msgid "Freshen existing files"
+#: ../src/add_dialog.c ../src/extract_dialog.c
+#, fuzzy
+#| msgid "Freshen existing files"
+msgid "Freshen existing files only"
 msgstr "Freskatu lehendik dauden fitxategiak"
 
 #: ../src/window.c
 msgid "From File"
 msgstr "Fitxategitik"
 
-# Only the keywords after GTK and before 7-zip need to be translated.
-#: ../xarchiver.desktop.in.h
-msgid ""
-"GTK;android;archiver;archiving;comic book;compression;front end;frontend;"
-"library;7-zip;7z;7za;7zip;7zr;apk;ar;arj;bunzip2;bz2;bzip2;cbz;compress;cpio;"
-"deb;epub;exe;gtar;gunzip;gz;gzip;jar;jsonlz4;lbzip2;lha;lrz;lrzip;lsar;lz;"
-"lz4;lzh;lzip;lzma;lzo;lzop;mozlz4;oxt;pbzip2;pigz;plzip;rar;rar4;rar5;rpm;"
-"tar;unar;unarchiver;unarj;unrar;unzip;xpi;xz;zip;zst;Zstandard;zstd;"
-msgstr ""
-"GTK;android;konprimatzailea;artxibatzea;komiki liburua;konpresioa;front end;"
-"frontend;liburutegia;7-zip;7z;7za;7zip;7zr;apk;ar;arj;bunzip2;bz2;bzip2;cbz;"
-"compress;cpio;deb;epub;exe;gtar;gunzip;gz;gzip;jar;jsonlz4;lbzip2;lha;lrz;lrzip;lsar;"
-"lz;lz4;lzh;lzip;lzma;lzo;lzop;mozlz4;oxt;pbzip2;pigz;plzip;rar;rar4;rar5;rpm;tar;"
-"unar;unarchiver;unarj;unrar;unzip;xpi;xz;zip;zst;Zstandard;zstd;"
-
 #: ../src/cpio.c ../src/rpm.c
 msgid "Group"
 msgstr "Taldea"
 
 #: ../src/pref_dialog.c
-msgid "Icons size (requires restart)"
-msgstr "Ikonoen tamaina (berrabiaraztea beharrezkoa)"
+msgid "Icons size (requires restart):"
+msgstr "Ikonoen tamaina (berrabiaraztea beharrezkoa):"
 
 #: ../src/pref_dialog.c
-msgid "If checked the archive comment is shown after the archive is loaded"
+msgid "If checked the archive comment is shown after the archive is loaded."
 msgstr ""
-"Hautaturik badago artxiboaren iruzkina erakutsiko da artxiboa kargatu ondoren"
+"Hautaturik badago artxiboaren iruzkina erakutsiko da artxiboa kargatu "
+"ondoren."
+
+#: ../src/pref_dialog.c
+msgid ""
+"If you install \"xdg-open\" from the \"xdg-utils\" package, each file will "
+"be opened with its default application."
+msgstr ""
 
 #: ../src/add_dialog.c
 msgid ""
 "In a solid archive the files are grouped together resulting in a better "
-"compression ratio"
+"compression ratio."
 msgstr ""
 "Artxibo sendo batean fitxategiak konpresio erlazio hobe bat lortzeko "
-"taldekatzen dira"
+"taldekatzen dira."
 
 #: ../src/add_dialog.c
 msgid "Include subdirectories"
@@ -681,6 +693,10 @@ msgstr "Berria"
 msgid "No"
 msgstr "Ez"
 
+#: ../src/add_dialog.c
+msgid "No compression"
+msgstr "Konpresiorik ez"
+
 #: ../src/main.c
 msgid "Nullsoft Installer"
 msgstr "Nullsoft instalatzailea"
@@ -715,7 +731,7 @@ msgstr "Ireki"
 msgid "Open <i>%s</i> with:"
 msgstr "Ireki <i>%s</i> honekin:"
 
-#: ../src/interface.c ../src/open-with-dlg.c
+#: ../src/interface.c
 msgid "Open With"
 msgstr "Ireki honekin"
 
@@ -731,6 +747,12 @@ msgstr "Ireki artxibo bat"
 msgid "Open archive files with:"
 msgstr "Ireki artxibo-fitxategiak honekin:"
 
+#: ../src/open-with-dlg.c
+#, fuzzy
+#| msgid "Open a text file"
+msgid "Open file"
+msgstr "Ireki testu fitxategi bat"
+
 #: ../src/pref_dialog.c
 msgid "Open image files with:"
 msgstr "Ireki irudi-fitxategiak honekin:"
@@ -740,7 +762,9 @@ msgid "Open text files with:"
 msgstr "Ireki testu-fitxategiak honekin:"
 
 #: ../src/open-with-dlg.c
-msgid "Open the selected files with"
+#, fuzzy
+#| msgid "Open the selected files with"
+msgid "Open the selected files"
 msgstr "Ireki hautatutako fitxategiak honekin:"
 
 #: ../src/window.c
@@ -755,21 +779,13 @@ msgstr "Artxiboa irekitzen:"
 msgid "Operation aborted!"
 msgstr "Ekintza abortatua!"
 
-#: ../src/add_dialog.c
+#: ../src/add_dialog.c ../src/extract_dialog.c
 msgid "Options"
 msgstr "Aukerak"
 
-#: ../src/extract_dialog.c
-msgid "Options "
-msgstr "Aukerak "
-
-#: ../src/extract_dialog.c
-msgid "Options:"
-msgstr "Aukerak:"
-
 #: ../src/7zip.c ../src/ar.c ../src/arj.c ../src/cpio.c ../src/gzip_et_al.c
-#: ../src/lha.c ../src/rar.c ../src/rpm.c ../src/tar.c ../src/unar.c
-#: ../src/zip.c
+#: ../src/lha.c ../src/rar.c ../src/rpm.c ../src/squashfs.c ../src/tar.c
+#: ../src/unar.c ../src/zip.c ../src/zpaq.c
 msgid "Original Size"
 msgstr "Jatorrizko tamaina"
 
@@ -781,7 +797,7 @@ msgstr "Gainidatzi dauden fitxategiak"
 msgid "Owner"
 msgstr "Jabea"
 
-#: ../src/tar.c
+#: ../src/squashfs.c ../src/tar.c
 msgid "Owner/Group"
 msgstr "Jabea/Taldea"
 
@@ -806,7 +822,7 @@ msgid "Pattern:"
 msgstr "Eredua:"
 
 #: ../src/ar.c ../src/arj.c ../src/cpio.c ../src/lha.c ../src/rpm.c
-#: ../src/tar.c ../src/zip.c
+#: ../src/squashfs.c ../src/tar.c ../src/zip.c ../src/zpaq.c
 msgid "Permissions"
 msgstr "Baimenak"
 
@@ -851,7 +867,14 @@ msgstr "Mesedez hautatu erauzi nahi dituzun artxiboak"
 msgid "Please select the destination directory"
 msgstr "Mesedez hautatu helburuko direktorioa"
 
-#: ../src/cpio.c ../src/lha.c ../src/rpm.c ../src/tar.c ../src/unar.c
+#: ../src/window.c
+#, fuzzy
+#| msgid "Please enter it!"
+msgid "Please wait..."
+msgstr "Mesedez sartu ezazu!"
+
+#: ../src/cpio.c ../src/lha.c ../src/rpm.c ../src/squashfs.c ../src/tar.c
+#: ../src/unar.c
 msgid "Points to"
 msgstr "Hona seinalatzen du: "
 
@@ -864,8 +887,8 @@ msgid "Preferences"
 msgstr "Hobespenak"
 
 #: ../src/pref_dialog.c
-msgid "Preferred archive format"
-msgstr "Hobetsiriko artxibo formatua"
+msgid "Preferred archive format:"
+msgstr "Hobetsiriko artxibo formatua:"
 
 #: ../src/pref_dialog.c
 msgid "Preferred extraction directory:"
@@ -898,6 +921,10 @@ msgstr "Artxiboa berriz kargatzen, itxaron mesedez..."
 #: ../src/interface.c
 msgid "Rename"
 msgstr "Berrizendatu"
+
+#: ../src/interface.c
+msgid "Replace"
+msgstr ""
 
 #: ../src/interface.c
 msgid "Root"
@@ -965,7 +992,7 @@ msgstr "Erakutsi komandoa"
 
 #: ../src/main.c
 msgid ""
-"Show found command line programs to be\n"
+"Show found command-line programs to be\n"
 "                                     used and exit"
 msgstr ""
 "Erakutsi erabiltzeko aurkitutako komando-\n"
@@ -982,6 +1009,10 @@ msgstr "Erakutsi bertsioa eta irten\n"
 #: ../src/extract_dialog.c
 msgid "Size"
 msgstr "Tamaina"
+
+#: ../src/window.c
+msgid "Size:"
+msgstr "Tamaina:"
 
 #: ../src/extract_dialog.c
 msgid "Some errors occurred:"
@@ -1007,10 +1038,6 @@ msgstr "Gelditu"
 msgid "Store archiver output"
 msgstr "Gorde konprimatzailearen irteera"
 
-#: ../src/add_dialog.c
-msgid "Store full paths"
-msgstr "Gorde bide-izen osoak"
-
 #: ../src/gzip_et_al.c
 msgid "Streams/Blocks/Padding"
 msgstr "Jarioak/Blokeak/Betegarria"
@@ -1033,14 +1060,38 @@ msgid "The archive is okay."
 msgstr "Artxiboa ondo dago."
 
 #: ../src/extract_dialog.c
+#, fuzzy
+#| msgid ""
+#| "The archive's directory structure is recreated in the extraction directory"
 msgid ""
-"The archive's directory structure is recreated in the extraction directory"
+"The archive's complete directory structure is recreated in the extraction "
+"directory."
+msgstr "Artxiboaren direktorio egitura erauzketa direktorioan birsortzen da"
+
+#: ../src/extract_dialog.c
+#, fuzzy
+#| msgid ""
+#| "The archive's directory structure is recreated in the extraction directory"
+msgid ""
+"The archive's directory structure is not recreated; all files are placed in "
+"the extraction directory."
+msgstr "Artxiboaren direktorio egitura erauzketa direktorioan birsortzen da"
+
+#: ../src/extract_dialog.c
+#, fuzzy
+#| msgid ""
+#| "The archive's directory structure is recreated in the extraction directory"
+msgid ""
+"The archive's directory structure is recreated in the extraction directory, "
+"but with the parent directories of the selected files removed."
 msgstr "Artxiboaren direktorio egitura erauzketa direktorioan birsortzen da"
 
 #: ../src/add_dialog.c ../src/main.c
 msgid ""
 "The archiver doesn't support compression of directories or multiple files!"
-msgstr "Konprimatzaileak ez dauka direktorioak edo hainbat fitxategi konprimatzeko euskarririk!"
+msgstr ""
+"Konprimatzaileak ez dauka direktorioak edo hainbat fitxategi konprimatzeko "
+"euskarririk!"
 
 #: ../src/extract_dialog.c
 msgid "The archiver doesn't support this feature!"
@@ -1053,11 +1104,19 @@ msgstr ""
 "euskarririk!"
 
 #: ../src/pref_dialog.c
-msgid "The filename column is sorted after loading the archive"
-msgstr "Fitxategi izen zutabea artxiboa kargatu ondoren ordenatzen da"
+msgid "The filename column is sorted after loading the archive."
+msgstr "Fitxategi izen zutabea artxiboa kargatu ondoren ordenatzen da."
+
+#: ../src/pref_dialog.c
+msgid ""
+"The incremental search is also performed within filenames rather than just "
+"at the beginning of them."
+msgstr ""
 
 #: ../src/extract_dialog.c ../src/main.c ../src/window.c
-msgid "The proper archiver is not installed!"
+#, fuzzy, c-format
+#| msgid "The proper archiver is not installed!"
+msgid "The proper archiver for \"%s\" is not installed!"
 msgstr "Konprimatzaile egokia ez dago instalaturik!"
 
 #: ../src/extract_dialog.c
@@ -1070,19 +1129,13 @@ msgstr ""
 "Hau Xarchiver-en LED egoera da. Keinuka ari denean Xarchiver lanpeturik dago."
 
 #: ../src/pref_dialog.c
-msgid "This option consumes more memory with large archives"
-msgstr "Aukera honek memoria gehiago erabiltzen du artxibo handiekin"
-
-#: ../src/extract_dialog.c
+#, fuzzy
+#| msgid ""
+#| "This option includes the subdirectories when you add files with drag and "
+#| "drop"
 msgid ""
-"This option extracts archives in directories named with the archive names"
-msgstr ""
-"Aukera honek artxiboen izenarekin izendaturiko direktorioetan erauzten ditu "
-"artxiboak"
-
-#: ../src/pref_dialog.c
-msgid ""
-"This option includes the subdirectories when you add files with drag and drop"
+"This option includes the subdirectories when you add files from the "
+"clipboard or with drag-and-drop."
 msgstr ""
 "Aukera honek azpidirektorioak ere barne hartzen ditu fitxategiak arrastatu "
 "eta jareginez gehitzean"
@@ -1091,32 +1144,32 @@ msgstr ""
 msgid ""
 "This option performs the same function as the freshen one, extracting files "
 "that are newer than those with the same name on disk, and in addition it "
-"extracts those files that do not already exist on disk"
+"extracts those files that do not already exist on disk."
 msgstr ""
 "Aukera honek freskatzearen funtzio bera du, diskoko izen bereko fitxategiak "
 "baino berriagoak direnak erauzten ditu eta horretaz gain diskoan ez dauden "
-"fitxategiak ere erauzten ditu"
+"fitxategiak ere erauzten ditu."
 
 #: ../src/add_dialog.c
 msgid ""
 "This option will add any new files and update any files which are already in "
-"the archive but older there"
+"the archive but older there."
 msgstr ""
 "Aukera honek fitxategi berriak gehitu eta artxiboan dauden fitxategiak "
-"eguneratzen ditu zaharragoak badira"
+"eguneratzen ditu zaharragoak badira."
 
 #: ../src/add_dialog.c
 msgid ""
 "This option will only add files which are already in the archive but older "
-"there; unlike the update option it will not add any new files"
+"there; unlike the update option it will not add any new files."
 msgstr ""
 "Aukera honek dagoeneko artxiboan dauden baina zaharragoak diren fitxategiak "
 "bakarrik gehituko ditu; eguneratze aukerak ez bezala ez ditu fitxategi "
-"berriak gehituko"
+"berriak gehituko."
 
 #: ../src/7zip.c ../src/ar.c ../src/arj.c ../src/cpio.c ../src/gzip_et_al.c
-#: ../src/lha.c ../src/rar.c ../src/rpm.c ../src/tar.c ../src/unar.c
-#: ../src/zip.c
+#: ../src/lha.c ../src/rar.c ../src/rpm.c ../src/squashfs.c ../src/tar.c
+#: ../src/unar.c ../src/zip.c ../src/zpaq.c
 msgid "Time"
 msgstr "Ordua"
 
@@ -1161,12 +1214,14 @@ msgstr "Euskarririk gabeko formatu bitarra!"
 msgid "Up"
 msgstr "Gora"
 
-#: ../src/add_dialog.c
-msgid "Update and add"
-msgstr "Eguneratu eta gehitu"
-
 #: ../src/extract_dialog.c
 msgid "Update existing files"
+msgstr "Eguneratu dauden fitxategiak"
+
+#: ../src/add_dialog.c
+#, fuzzy
+#| msgid "Update existing files"
+msgid "Update existing files and add new ones"
 msgstr "Eguneratu dauden fitxategiak"
 
 #: ../src/open-with-dlg.c
@@ -1188,14 +1243,32 @@ msgstr "Erabiliko den web nabigatzailea:"
 #: ../src/extract_dialog.c
 msgid ""
 "When this option is used, the modification times of the files will be the "
-"times of extraction instead of the times recorded in the archive"
+"times of extraction instead of the times recorded in the archive."
 msgstr ""
 "Aukera hau erabiltzean fitxategien aldatze-denborak erauzketa-denborak "
-"izango dira artxiboan gordetako denboren ordez"
+"izango dira artxiboan gordetako denboren ordez."
+
+#: ../src/zpaq.c
+msgid "Will not handle files with wildcard characters!"
+msgstr ""
 
 #: ../src/pref_dialog.c
 msgid "Window"
 msgstr "Leihoa"
+
+#: ../src/add_dialog.c ../src/extract_dialog.c
+#, fuzzy
+#| msgid "Store full paths"
+msgid "With full path"
+msgstr "Gorde bide-izen osoak"
+
+#: ../src/extract_dialog.c
+msgid "Without any path"
+msgstr ""
+
+#: ../src/add_dialog.c ../src/extract_dialog.c
+msgid "Without parent path"
+msgstr ""
 
 #: ../src/window.c
 msgid "Yes"
@@ -1204,6 +1277,12 @@ msgstr "Bai"
 #: ../src/window.c
 msgid "You are about to delete entries from the archive."
 msgstr "Artxibotik sarrerak ezabatzera zoaz."
+
+#: ../src/window.c
+msgid ""
+"You can drop either archives to open or files to add. It is not possible to "
+"do both at the same time."
+msgstr ""
 
 #: ../src/interface.c ../src/window.c
 msgid "You can't add content to this archive type!"
@@ -1233,8 +1312,8 @@ msgid "You haven't selected any files to add!"
 msgstr "Ez duzu gehitzeko fitxategirik hautatu!"
 
 #: ../src/main.c
-msgid "You missed the archive name!\n"
-msgstr "Artxibo izena falta da!\n"
+msgid "You missed the archive name!"
+msgstr "Artxibo izena falta da!"
 
 #: ../src/add_dialog.c ../src/extract_dialog.c ../src/interface.c
 msgid "You missed the password!"
@@ -1308,6 +1387,14 @@ msgstr "_Testu-fitxategia"
 msgid "and"
 msgstr "eta"
 
+#: ../xarchiver.desktop.in.h
+msgid "archive;compress;decompress;extract;pack;uncompress;unpack;"
+msgstr ""
+
+#: ../src/add_dialog.c
+msgid "best"
+msgstr "onena"
+
 #: ../src/pref_dialog.c
 msgid "choose..."
 msgstr "aukeratu..."
@@ -1328,6 +1415,10 @@ msgstr "fitx1 ... fitxN"
 msgid "large"
 msgstr "handia"
 
+#: ../src/add_dialog.c
+msgid "least"
+msgstr "gutxienekoa"
+
 #: ../src/pref_dialog.c
 msgid "medium"
 msgstr "ertaina"
@@ -1344,6 +1435,9 @@ msgstr "txikia"
 msgid "small/medium"
 msgstr "txikia/ertaina"
 
+#. Do not translate this string.
+#. Instead, add your name here if you like.
+#. One translator per line!
 #: ../src/window.c
 msgid "translator-credits"
 msgstr ""
@@ -1358,14 +1452,80 @@ msgstr "oso handia"
 #, c-format
 msgid ""
 "xarchiver: %s\n"
-"Try xarchiver --help to see a full list of available command line options.\n"
+"Try xarchiver --help to see a full list of available command-line options.\n"
 msgstr ""
 "xarchiver: %s\n"
 "Erabili xarchiver --help komando lerroko aukera guztien zerrenda ikusteko.\n"
 
-#: ../src/window.c
-msgid "|Size\n"
-msgstr "|Tamaina\n"
+#, c-format
+#~ msgid "Files:%*s%s"
+#~ msgstr "Fitxategiak:%*s%s"
+
+#~ msgid ""
+#~ "\n"
+#~ "<span color='red' style='italic'>Please install xdg-utils package so "
+#~ "that\n"
+#~ "Xarchiver can recognize more file types.</span>"
+#~ msgstr ""
+#~ "\n"
+#~ "<span color='red' style='italic'>Mesedez instalatu xdg-utils paketea "
+#~ "Xarchiver\n"
+#~ "fitxategi-mota gehiago ezagutzeko gai izateko.</span>"
+
+#~ msgid "A GTK+ only archive manager"
+#~ msgstr "GTK+-rako bakarrik artxibo-kudeatzailea"
+
+#~ msgid "This option consumes more memory with large archives"
+#~ msgstr "Aukera honek memoria gehiago erabiltzen du artxibo handiekin"
+
+#~ msgid "0 = no compression, 3 is default, 5 = best compression but slowest"
+#~ msgstr ""
+#~ "0 = konpresiorik ez, 3 lehenetsia, 5 = konpresio onena baina mantsoena"
+
+#~ msgid "0 = no compression, 5 is default, 9 = best compression but slowest"
+#~ msgstr ""
+#~ "0 = konpresiorik ez, 5 lehenetsia, 9 = konpresio onena baina mantsoena"
+
+#~ msgid "0 = no compression, 6 is default, 9 = best compression but slowest"
+#~ msgstr ""
+#~ "0 = konpresiorik ez, 6 lehenetsia, 9 = konpresio onena baina mantsoena"
+
+#~ msgid "5 = default compression, 7 = max compression"
+#~ msgstr "5 = konpresio lehenetsia, 7 = konpresio handiena"
+
+#~ msgid "Archive Name"
+#~ msgstr "Artxiboaren izena"
+
+#, c-format
+#~ msgid "Can't open file %s:"
+#~ msgstr "Ezin da %s fitxategia ireki:"
+
+#~ msgid "Destination dirs"
+#~ msgstr "Helburu direktorioak"
+
+#~ msgid "Do not store paths"
+#~ msgstr "Ez gorde bide-izenak"
+
+#~ msgid "Extract pathnames"
+#~ msgstr "Erauzi bide-izenak"
+
+#~ msgid "Freshen and replace"
+#~ msgstr "Freskatu eta ordeztu"
+
+#~ msgid "Options "
+#~ msgstr "Aukerak "
+
+#~ msgid "Options:"
+#~ msgstr "Aukerak:"
+
+#~ msgid ""
+#~ "This option extracts archives in directories named with the archive names"
+#~ msgstr ""
+#~ "Aukera honek artxiboen izenarekin izendaturiko direktorioetan erauzten "
+#~ "ditu artxiboak"
+
+#~ msgid "Update and add"
+#~ msgstr "Eguneratu eta gehitu"
 
 #~ msgid "Date and Time"
 #~ msgstr "Data eta ordua"

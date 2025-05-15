@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: xarchivr\n"
 "Report-Msgid-Bugs-To: https://github.com/ib/xarchiver/issues\n"
-"POT-Creation-Date: 2021-01-21 13:49+0100\n"
+"POT-Creation-Date: 2024-09-26 11:30+0200\n"
 "PO-Revision-Date: 2006-11-23 12:28+0530\n"
 "Last-Translator: sonam pelden <sonaa_peldn@yahoo.com>\n"
 "Language-Team: dzongkha <pgeyleg@dit.gov.bt>\n"
@@ -53,36 +53,18 @@ msgid_plural "%d files %s (%s)"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../src/pref_dialog.c
-msgid "/tmp"
-msgstr ""
-
 #: ../src/add_dialog.c
-msgid "0 = no compression, 1 is default, 4 = fastest but least compression"
+#, fuzzy, c-format
+#| msgid "0 = no compression, 1 is default, 4 = fastest but least compression"
+msgid ""
+"%hu is least compression\n"
+"%hu is default compression\n"
+"%hu is best compression"
 msgstr ""
 "༠= ཨེབ་བཙུགས་མེད་, ༡་ འདི་སྔོན་སྒྲིག་ཨིན་, ༤ = མགྱོགས་དྲགས་  དེ་འབདཝ་ད་ ཨེབ་བཙུགས་ཉུང་ཤོས་ཨིན།"
 
-#: ../src/add_dialog.c
-msgid "0 = no compression, 3 is default, 5 = best compression but slowest"
-msgstr ""
-"༠ =ཨེབ་བཙུགས་མེད་, ༣་  འདི་སྔོན་སྒྲིག་ཨིན་, ༥ = ཨེབ་བཙུགས་ལེགས་ཤོམ་  དེ་འབདཝ་ད་  ལྷོད་མི་ཨིན།"
-
-#: ../src/add_dialog.c
-msgid "0 = no compression, 5 is default, 9 = best compression but slowest"
-msgstr "༠ = ཨེབ་བཙུགས་མེད་, ༥་ འདི་སྔོན་སྒྲིག་ཨིན་, ༩ = ཨེབ་བཙུགས་ལེགས་ཤོམ་དེ་འབདཝ་ད་ལྷོད་མི་ཨིན།"
-
-#: ../src/add_dialog.c
-msgid "0 = no compression, 6 is default, 9 = best compression but slowest"
-msgstr "༠ = ཨེབ་བཙུགས་མེད་, ༦ འདི་སྔོན་སྒྲིག་ཨིན་, ༩ = ཨེབ་བཙུགས་ལེགས་ཤོམ་དེ་འབདཝ་ད་ལྷོད་མི།"
-
-#: ../src/add_dialog.c
-msgid "5 = default compression, 7 = max compression"
-msgstr "༥ = སྔོན་སྒྲིག་ཨེབ་བཙུགས་, ༧ = ཨེབ་བཙུགས་མང་མཐའ།"
-
 #: ../src/pref_dialog.c
-msgid ""
-"<span color='red' style='italic'>Please install xdg-utils package so that\n"
-"Xarchiver can recognize more file types.</span>"
+msgid "/tmp"
 msgstr ""
 
 #: ../src/interface.c
@@ -103,10 +85,6 @@ msgstr ""
 msgid "<th>Size:</th>"
 msgstr "<th>ཚད།:</th>"
 
-#: ../xarchiver.desktop.in.h
-msgid "A GTK+ only archive manager"
-msgstr "ཇི་ཊི་ཀེ་+༢་ ཀྱིས་རྐྱངམ་ཅིག་ཡིག་མཛོད་འཛིན་སྐྱོང་པ།"
-
 #: ../src/window.c
 #, fuzzy
 msgid "A GTK+ only lightweight archive manager"
@@ -124,7 +102,7 @@ msgstr "ཁ་སྐོང་འབད།"
 
 #: ../src/add_dialog.c
 #, fuzzy
-msgid "Actions: "
+msgid "Actions"
 msgstr "བྱ་བ།(_A)"
 
 #: ../src/interface.c
@@ -151,7 +129,7 @@ msgid ""
 "                                     quit"
 msgstr "འགྲོ་ཡུལ་སྣོད་ཐོ་དང་སྤང་ཚུ་ལུ་འདྲི་ཐོག་ལས་  ཡིག་མཛོད་ཕྱིར་འདོན་འབད།"
 
-#: ../src/add_dialog.c
+#: ../src/window.c
 #, fuzzy
 msgid "Adding files to archive, please wait..."
 msgstr "ཡིག་མཛོད་ལུ་ཡིག་སྣོད་ཚུ་ཁ་སྐོང་བརྐྱབ་དོ་  བསྒུག་གནང་..."
@@ -165,12 +143,16 @@ msgstr "ཡིག་མཛོད་ལུ་ ཡིག་སྣོད་ཚུ�
 msgid "Advanced"
 msgstr ""
 
+#: ../src/pref_dialog.c
+msgid "Advanced incremental search (requires restart)"
+msgstr ""
+
 #: ../src/extract_dialog.c ../src/new_dialog.c ../src/window.c
 msgid "All files"
 msgstr "ཡིག་སྣོད་ཚུ་ཆ་མཉམ།"
 
 #: ../src/pref_dialog.c
-msgid "Allow subdirs with drag and drop"
+msgid "Allow subdirs with clipboard and drag-and-drop"
 msgstr ""
 
 #: ../src/window.c
@@ -182,15 +164,10 @@ msgstr "ཡིག་མཛོད་འཛུལ་སྤྱོད་འབདཝ
 msgid "An error occurred!"
 msgstr "འཛོལ་བ་འབྱུང་ནུག!"
 
-#: ../src/pref_dialog.c
+#: ../src/extract_dialog.c ../src/pref_dialog.c
 #, fuzzy
 msgid "Archive"
 msgstr "ཡིག་མཛོད།"
-
-#: ../src/extract_dialog.c
-#, fuzzy
-msgid "Archive Name"
-msgstr "[ཡིག་མཛོད་མིང་།]"
 
 #: ../src/interface.c
 #, fuzzy
@@ -220,6 +197,12 @@ msgstr "ཡིག་མཛོད་འཛིན་སྐྱོང་པ།"
 msgid "Archive tree"
 msgstr "ཡིག་མཛོད་ཡིག་དཔར་བརྐྱབ:"
 
+#: ../src/pref_dialog.c
+msgid ""
+"Archive tree nodes already expand when the node name is selected by mouse "
+"click or keyboard shortcut."
+msgstr ""
+
 #: ../src/new_dialog.c
 msgid "Archive type:"
 msgstr "ཡིག་མཛོད་ཡིག་དཔར་བརྐྱབ:"
@@ -242,6 +225,10 @@ msgstr "ཁྱོད་ཀྱིས་འདི་འབད་ནི་ངེས
 #: ../src/7zip.c ../src/arj.c ../src/rar.c
 msgid "Attributes"
 msgstr "ཁྱད་ཆོས་ཚུ།"
+
+#: ../src/pref_dialog.c
+msgid "Automatically expand archive tree nodes on selection"
+msgstr ""
 
 #: ../src/interface.c
 msgid "Back"
@@ -283,7 +270,7 @@ msgstr "སྣོད་ཐོ་གསར་བསྐྲུན་འབད་མ
 msgid "Can't create temporary directory:"
 msgstr "/tmpནང་གནས་སྐབས་ཀྱི་སྣོད་ཐོ་གསར་བསྐྲུན་འབད་མི་བཏུབ:"
 
-#: ../src/extract_dialog.c ../src/main.c
+#: ../src/extract_dialog.c ../src/main.c ../src/window.c
 msgid "Can't extract files from the archive:"
 msgstr "ཡིག་མཛོད་ལས་ཡིག་སྣོད་ཚུ་ཕྱིར་འདོན་འབད་མི་བཏུབ:"
 
@@ -302,23 +289,18 @@ msgstr "ཡིག་མཛོད་ལས་ཡིག་སྣོད་ཚུ་
 
 #: ../src/rpm.c
 #, c-format
-msgid "Can't open RPM file %s:"
-msgstr "ཨར་པི་ཨེམ་ཡིག་སྣོད་%sཁ་ཕྱེ་མི་བཏུབ:"
+msgid "Can't open RPM file \"%s\":"
+msgstr "ཨར་པི་ཨེམ་ཡིག་སྣོད་\"%s\"ཁ་ཕྱེ་མི་བཏུབ:"
 
 #: ../src/window.c
 #, c-format
 msgid "Can't open file \"%s\":"
 msgstr "ཡིག་སྣོད་ཁ་ཕྱེ་མི་བཏུབ \"%s\":"
 
-#: ../src/window.c
-#, fuzzy, c-format
-msgid "Can't open file %s:"
-msgstr "ཡིག་སྣོད་ཁ་ཕྱེ་མི་བཏུབ \"%s\":"
-
 #: ../src/main.c
 #, fuzzy
 #| msgid "Can't open archive \"%s\":"
-msgid "Can't open the archive!\n"
+msgid "Can't open the archive!"
 msgstr "ཡིག་མཛོད་ \"%s\"འདི་ཁ་ཕྱེ་མི་བཏུབ:"
 
 #: ../src/extract_dialog.c ../src/window.c
@@ -338,7 +320,7 @@ msgid "Can't run the archiver executable:"
 msgstr "ཡིག་མཛོད་ལག་ལེན་འཐབ་ནི་འདི་གཡོག་བཀལ་མི་བཏུབ་པས:"
 
 #: ../src/window.c
-msgid "Can't write the unzipsfx module to the archive:"
+msgid "Can't write the sfx module to the archive:"
 msgstr "ཨན་ཛིཔ་ཨེསི་ཨེཕ་ཨེགསི་ ཚད་གཞི་འདི་  ཡིག་མཛོད་ལུ་འབྲི་མི་བཏུབ:"
 
 #: ../src/interface.c
@@ -382,6 +364,12 @@ msgstr "གྲལ་ཐིག་ཨའུཊི་པུཊི་བརྡ་བ
 msgid "Command"
 msgstr "བསམ་བཀོད་འདུག:"
 
+#: ../src/pref_dialog.c
+msgid ""
+"Command-line output is captured and can be reviewed, but this consumes "
+"additional memory."
+msgstr ""
+
 #: ../src/window.c
 #, fuzzy
 msgid "Comment"
@@ -401,15 +389,20 @@ msgstr "བསམ་བཀོད་འདུག:"
 msgid "Compressed"
 msgstr "ཨེབ་བཙུགས་འབད་ཡོདཔ།"
 
-#: ../src/window.c
-#, fuzzy, c-format
-msgid "Compressed   size: "
-msgstr "ཨེབ་བཙུགས་འབད་ཡོདཔ།"
-
 #: ../src/interface.c
 #, fuzzy
 msgid "Compressed size:"
 msgstr "ཨེབ་བཙུགས་འབད་ཡོདཔ།"
+
+#: ../src/window.c
+#, fuzzy, c-format
+msgid "Compressed size: "
+msgstr "ཨེབ་བཙུགས་འབད་ཡོདཔ།"
+
+#: ../src/add_dialog.c
+#, fuzzy
+msgid "Compression"
+msgstr "ཨེབ་བཙུགས་ཀྱི་གནས་རིམ:"
 
 #: ../src/gzip_et_al.c
 msgid "Compression ratio"
@@ -419,15 +412,15 @@ msgstr "ཨེབ་བཙུགས་དཔྱ་ཚད"
 msgid "Compression ratio:"
 msgstr "ཨེབ་བཙུགས་དཔྱ་ཚད:"
 
-#: ../src/add_dialog.c
-#, fuzzy
-msgid "Compression: "
-msgstr "ཨེབ་བཙུགས་ཀྱི་གནས་རིམ:"
-
 #: ../src/pref_dialog.c
 #, fuzzy
 msgid "Confirm deletion of files"
 msgstr "ཡིག་མཛོད་ལུ་ཡིག་སྣོད་ཚུ་ཁ་སྐོང་བརྐྱབ་མི་བཏུབ:"
+
+#: ../src/window.c
+#, fuzzy
+msgid "Converting archive, please wait..."
+msgstr "ཡིག་མཛོད་ཆིག་སྒྲིལ་བརྟག་ཞིབ་འབད་དོ་  བསྒུག་གནང་..."
 
 #: ../src/interface.c
 msgid "Copy"
@@ -446,6 +439,11 @@ msgstr "ཡིག་མཛོད་གསརཔ་ཅིག་གསར་བས
 msgid "Create a solid archive"
 msgstr "ཡིག་མཛོད་རག་པ་ཅིག་བཟོ་བཏོན་འབད།"
 
+#: ../xarchiver.desktop.in.h
+#, fuzzy
+msgid "Create, extract and modify archives"
+msgstr "ཡིག་མཛོད་རག་པ་ཅིག་བཟོ་བཏོན་འབད།"
+
 #: ../src/interface.c
 msgid "Cut"
 msgstr ""
@@ -455,8 +453,8 @@ msgid "Data Frames/Skippable Frames"
 msgstr ""
 
 #: ../src/7zip.c ../src/ar.c ../src/arj.c ../src/cpio.c ../src/gzip_et_al.c
-#: ../src/lha.c ../src/rar.c ../src/rpm.c ../src/tar.c ../src/unar.c
-#: ../src/zip.c
+#: ../src/lha.c ../src/rar.c ../src/rpm.c ../src/squashfs.c ../src/tar.c
+#: ../src/unar.c ../src/zip.c ../src/zpaq.c
 msgid "Date"
 msgstr "ཚེས།"
 
@@ -473,6 +471,11 @@ msgstr "བཏོན་གཏང་།"
 msgid "Delete files after adding"
 msgstr "ཡིག་སྣོད་ཚུ་ཁ་སྐོང་འབད་ཚར་བའི་ཤེལ་ལུ་རྩ་བསྐྲད་གཏང་།"
 
+#: ../src/window.c
+#, fuzzy
+msgid "Deleting files from archive, please wait..."
+msgstr "ཡིག་མཛོད་ལས་ཡིག་སྣོད་ཚུ་བཏོན་གཏང་དོ་བསྒུག་གནང་..."
+
 #: ../src/interface.c
 #, fuzzy
 msgid "Dese_lect all"
@@ -480,13 +483,8 @@ msgstr "ཆ་ཚང་སེལ་འཐུ་འབད་བཤོལ།(_l)"
 
 #: ../src/extract_dialog.c
 #, fuzzy
-msgid "Destination dirs:"
+msgid "Destination"
 msgstr "འགྲོ་ཡུལ་འགྲུལ་ལམ་ཡིག་མཛོད།(_p)"
-
-#: ../src/add_dialog.c
-#, fuzzy
-msgid "Do not store paths"
-msgstr "ཡིག་སྣོད་འགྲུལ་ལམ་ཚུ་ཁ་སྐོང་མ་འབད།"
 
 #: ../src/window.c
 msgid "Do you really want to cancel?"
@@ -501,11 +499,15 @@ msgid "Doing so will probably corrupt your archive!"
 msgstr "ནི་བཟུམ་འབད་མི་འདི་གིས་  ཡང་ན་ཁྱོད་རའི་ཡིག་མཛོད་ལུ་ངན་ཅན་བཟོ་འོང་!"
 
 #: ../src/interface.c
+msgid "Edit"
+msgstr ""
+
+#: ../src/interface.c
 msgid "Encrypted:"
 msgstr ""
 
 #: ../src/add_dialog.c
-msgid "Encryption: "
+msgid "Encryption"
 msgstr ""
 
 #: ../src/extract_dialog.c
@@ -516,13 +518,19 @@ msgstr "སྣོད་ཐོ་གསར་བསྐྲུན་འབད་མ
 #: ../src/extract_dialog.c
 msgid ""
 "Ensure that the contents of the extracted archive is always in a containing "
-"directory"
+"directory."
 msgstr ""
 
 #: ../src/interface.c
 #, fuzzy
 msgid "Enter passwo_rd"
 msgstr "ཆོག་ཡིག་སླར་སྒྲིག(_r)"
+
+#: ../src/pref_dialog.c
+msgid ""
+"Even if other, perhaps more powerful programs are installed to handle zip "
+"archives, the traditional \"unzip\" and \"zip\" will still be used."
+msgstr ""
 
 #: ../src/interface.c
 msgid "Extract"
@@ -554,10 +562,6 @@ msgstr "འགྲོ་ཡུལ་སྣོད་ཐོ་དང་སྤང་
 msgid "Extract files"
 msgstr "ཡིག་སྣོད་ཚུ་  %s ལུ་ཕྱིར་འདོན་འབད་དོ།"
 
-#: ../src/extract_dialog.c
-msgid "Extract files with full path"
-msgstr "ཡིག་སྣོད་ཚུ་འགྲུལ་ལམ་ཆ་ཚང་དང་བཅས་ཕྱིར་འདོན་འབད།"
-
 #: ../src/main.c
 #, fuzzy
 msgid ""
@@ -569,26 +573,32 @@ msgstr "འགྲོ་ཡུལ་སྣོད་ཐོ་དང་སྤང་
 #, fuzzy
 msgid ""
 "Extract only those files that already exist on disk and that are newer than "
-"the disk copies"
+"the disk copies."
 msgstr ""
 "ཧེ་མ་ལས་ཌེཀསི་གུ་གནས་ཏེ་ཡོད་པའི་ཡིག་སྣོད་ཚུ་དང་  ཌིཀསི་འདྲ་བཤུས་ལས་གསརཔ་ཨིན་མི་ཚུ་རྐྱངམ་ཅིག་ཕྱིར་"
-"འདོན་འབད།"
+"འདོན་འབད།."
 
 #: ../src/extract_dialog.c
 #, fuzzy
-msgid "Extract pathnames"
-msgstr "ཡིག་སྣོད་ཚུ་  %s ལུ་ཕྱིར་འདོན་འབད་དོ།"
-
-#: ../src/extract_dialog.c
-#, fuzzy
-msgid "Extract to dir \"Archive Name\""
+msgid "Extract to directories with archive names"
 msgstr "ཡིག་སྣོད་ཚུ་ཡིག་མཛོད་ལས་ཕྱིར་འདོན་འབད།"
 
 #: ../src/extract_dialog.c
 msgid "Extract to:"
 msgstr "ཕྱིར་འདོན་འབད:"
 
-#: ../src/extract_dialog.c ../src/window.c
+#: ../src/extract_dialog.c
+#, fuzzy
+#| msgid "Extract files with full path"
+msgid "Extract with full path"
+msgstr "ཡིག་སྣོད་ཚུ་འགྲུལ་ལམ་ཆ་ཚང་དང་བཅས་ཕྱིར་འདོན་འབད།"
+
+#: ../src/interface.c
+#, fuzzy, c-format
+msgid "Extracting \"%s\"..."
+msgstr "ཕྱིར་འདོན་འབད།"
+
+#: ../src/window.c
 #, fuzzy
 msgid "Extracting files from archive, please wait..."
 msgstr "ཡིག་མཛོད་ལས་ཡིག་སྣོད་ཚུ་བཏོན་གཏང་དོ་བསྒུག་གནང་..."
@@ -602,8 +612,8 @@ msgstr "ཡིག་མཛོད་ཚུ་ %s ལུ་ཕྱིར་འད�
 msgid "Failed to launch the application!"
 msgstr ""
 
-#: ../src/add_dialog.c
-msgid "File Paths: "
+#: ../src/add_dialog.c ../src/extract_dialog.c
+msgid "File Paths"
 msgstr ""
 
 #: ../src/window.c
@@ -612,43 +622,30 @@ msgstr "ཡིག་སྣོད་མིང་།"
 
 #: ../src/extract_dialog.c
 #, fuzzy
-msgid "Files "
+msgid "Files"
 msgstr "ཡིག་སྣོད་ཚུ།"
 
-#: ../src/extract_dialog.c
+#: ../src/zpaq.c
+msgid "Files with absolute pathnames cannot be deleted!"
+msgstr ""
+
+#: ../src/extract_dialog.c ../src/window.c
 #, fuzzy
-msgid "Files: "
-msgstr "ཡིག་སྣོད་ཚུ།"
-
-#: ../src/window.c
-#, fuzzy, c-format
-msgid "Files:%*s%s"
+msgid "Files:"
 msgstr "ཡིག་སྣོད་ཚུ།"
 
 #: ../src/interface.c
 msgid "Forward"
 msgstr ""
 
-#: ../src/add_dialog.c
-msgid "Freshen and replace"
-msgstr ""
-
-#: ../src/extract_dialog.c
-msgid "Freshen existing files"
+#: ../src/add_dialog.c ../src/extract_dialog.c
+#, fuzzy
+#| msgid "Freshen existing files"
+msgid "Freshen existing files only"
 msgstr "གནས་ཏེ་ཡོད་པའི་ཡིག་སྣོད་ཚུ་གསརཔ་བཟོ།"
 
 #: ../src/window.c
 msgid "From File"
-msgstr ""
-
-# Only the keywords after GTK and before 7-zip need to be translated.
-#: ../xarchiver.desktop.in.h
-msgid ""
-"GTK;android;archiver;archiving;comic book;compression;front end;frontend;"
-"library;7-zip;7z;7za;7zip;7zr;apk;ar;arj;bunzip2;bz2;bzip2;cbz;compress;cpio;"
-"deb;epub;exe;gtar;gunzip;gz;gzip;jar;jsonlz4;lbzip2;lha;lrz;lrzip;lsar;lz;"
-"lz4;lzh;lzip;lzma;lzo;lzop;mozlz4;oxt;pbzip2;pigz;plzip;rar;rar4;rar5;rpm;"
-"tar;unar;unarchiver;unarj;unrar;unzip;xpi;xz;zip;zst;Zstandard;zstd;"
 msgstr ""
 
 #: ../src/cpio.c ../src/rpm.c
@@ -656,20 +653,27 @@ msgid "Group"
 msgstr "སྡེ་ཚན།"
 
 #: ../src/pref_dialog.c
-msgid "Icons size (requires restart)"
+msgid "Icons size (requires restart):"
 msgstr ""
 
 #: ../src/pref_dialog.c
-msgid "If checked the archive comment is shown after the archive is loaded"
+msgid "If checked the archive comment is shown after the archive is loaded."
+msgstr ""
+
+#: ../src/pref_dialog.c
+msgid ""
+"If you install \"xdg-open\" from the \"xdg-utils\" package, each file will "
+"be opened with its default application."
 msgstr ""
 
 #: ../src/add_dialog.c
 #, fuzzy
 msgid ""
 "In a solid archive the files are grouped together resulting in a better "
-"compression ratio"
+"compression ratio."
 msgstr ""
-"ཡིག་མཛོད་རགས་པའི་ནང་  ཨེབ་བཙུགས་དཔྱ་ཚད་ལེགས་ཤོམ་ཅིག་གི་རྣམ་པའི་ཐོག་ལས་  ཡིག་སྣོད་ཚུ་གཅིག་ཁར་ཡོད།"
+"ཡིག་མཛོད་རགས་པའི་ནང་  ཨེབ་བཙུགས་དཔྱ་ཚད་ལེགས་ཤོམ་ཅིག་གི་རྣམ་པའི་ཐོག་ལས་  ཡིག་སྣོད་ཚུ་གཅིག་ཁར་"
+"ཡོད།."
 
 #: ../src/add_dialog.c
 #, fuzzy
@@ -715,6 +719,11 @@ msgstr "གསརཔ།"
 msgid "No"
 msgstr "མེན་"
 
+#: ../src/add_dialog.c
+#, fuzzy
+msgid "No compression"
+msgstr "ཨེབ་བཙུགས་ཀྱི་གནས་རིམ:"
+
 #: ../src/main.c
 msgid "Nullsoft Installer"
 msgstr ""
@@ -749,7 +758,7 @@ msgstr "ཁ་ཕྱེ།"
 msgid "Open <i>%s</i> with:"
 msgstr ""
 
-#: ../src/interface.c ../src/open-with-dlg.c
+#: ../src/interface.c
 #, fuzzy
 msgid "Open With"
 msgstr "ཁ་ཕྱེ།"
@@ -768,6 +777,11 @@ msgstr "ཡིག་མཛོད་ཅིག་ཁ་ཕྱེ།"
 msgid "Open archive files with:"
 msgstr "ཡིག་མཛོད་ཆིག་སྒྲིལ་བརྟག་ཞིབ་འབད་དོ་  བསྒུག་གནང་..."
 
+#: ../src/open-with-dlg.c
+#, fuzzy
+msgid "Open file"
+msgstr "བཀོལ་སྤྱོད་འཐུས་ཤོར་འབྱུང་ཡོདཔ།"
+
 #: ../src/pref_dialog.c
 msgid "Open image files with:"
 msgstr ""
@@ -778,7 +792,7 @@ msgstr ""
 
 #: ../src/open-with-dlg.c
 #, fuzzy
-msgid "Open the selected files with"
+msgid "Open the selected files"
 msgstr "ཆ་མཉམ་སེལ་འཐུ་འབད།(_c)"
 
 #: ../src/window.c
@@ -797,24 +811,14 @@ msgstr "ཡིག་མཛོད་ཅིག་ཁ་ཕྱེ།"
 msgid "Operation aborted!"
 msgstr "བཀོལ་སྤྱོད་འཐུས་ཤོར་འབྱུང་ཡོདཔ།"
 
-#: ../src/add_dialog.c
+#: ../src/add_dialog.c ../src/extract_dialog.c
 #, fuzzy
 msgid "Options"
 msgstr "<b>གདམ་ཁ་ཚུ </b>"
 
-#: ../src/extract_dialog.c
-#, fuzzy
-msgid "Options "
-msgstr "<b>གདམ་ཁ་ཚུ </b>"
-
-#: ../src/extract_dialog.c
-#, fuzzy
-msgid "Options:"
-msgstr "<b>གདམ་ཁ་ཚུ </b>"
-
 #: ../src/7zip.c ../src/ar.c ../src/arj.c ../src/cpio.c ../src/gzip_et_al.c
-#: ../src/lha.c ../src/rar.c ../src/rpm.c ../src/tar.c ../src/unar.c
-#: ../src/zip.c
+#: ../src/lha.c ../src/rar.c ../src/rpm.c ../src/squashfs.c ../src/tar.c
+#: ../src/unar.c ../src/zip.c ../src/zpaq.c
 #, fuzzy
 #| msgid "Original"
 msgid "Original Size"
@@ -828,7 +832,7 @@ msgstr "གནས་ཏེ་ཡོད་པའི་ཡིག་སྣོད་
 msgid "Owner"
 msgstr "བདག་པོ།"
 
-#: ../src/tar.c
+#: ../src/squashfs.c ../src/tar.c
 msgid "Owner/Group"
 msgstr "བདག་པོ/སྡེ་ཚན།"
 
@@ -856,7 +860,7 @@ msgid "Pattern:"
 msgstr "འགྲུལ་ལམ:"
 
 #: ../src/ar.c ../src/arj.c ../src/cpio.c ../src/lha.c ../src/rpm.c
-#: ../src/tar.c ../src/zip.c
+#: ../src/squashfs.c ../src/tar.c ../src/zip.c ../src/zpaq.c
 msgid "Permissions"
 msgstr "གནང་བ་ཚུ།"
 
@@ -904,7 +908,14 @@ msgstr "ཁྱོད་ཀྱིས་ཁ་སྐོང་བརྐྱབ་ད
 msgid "Please select the destination directory"
 msgstr "སྣོད་ཐོ་མེན་པ་ཡིག་སྣོད་ཅིག་སེལ་འཐུ་འབད་གནང་!"
 
-#: ../src/cpio.c ../src/lha.c ../src/rpm.c ../src/tar.c ../src/unar.c
+#: ../src/window.c
+#, fuzzy
+#| msgid "Please enter it!"
+msgid "Please wait..."
+msgstr "བཙུགས་གནང་!"
+
+#: ../src/cpio.c ../src/lha.c ../src/rpm.c ../src/squashfs.c ../src/tar.c
+#: ../src/unar.c
 msgid "Points to"
 msgstr ""
 
@@ -917,7 +928,7 @@ msgid "Preferences"
 msgstr ""
 
 #: ../src/pref_dialog.c
-msgid "Preferred archive format"
+msgid "Preferred archive format:"
 msgstr ""
 
 #: ../src/pref_dialog.c
@@ -957,6 +968,10 @@ msgstr "ཡིག་མཛོད་ཆིག་སྒྲིལ་བརྟག་
 #, fuzzy
 msgid "Rename"
 msgstr "ཡིག་སྣོད་མིང་།"
+
+#: ../src/interface.c
+msgid "Replace"
+msgstr ""
 
 #: ../src/interface.c
 msgid "Root"
@@ -1036,7 +1051,7 @@ msgstr "བསམ་བཀོད་སྟོན།(_S)"
 #, fuzzy
 #| msgid "Add the given files by asking the name of the archive and quits."
 msgid ""
-"Show found command line programs to be\n"
+"Show found command-line programs to be\n"
 "                                     used and exit"
 msgstr "ཡིག་མཛོད་དང་སྤང་ཚུ་གི་མིང་འདྲི་འདི་གིས་  བྱིན་ཡོད་པའི་ཡིག་སྣོད་ཚུ་ཁ་སྐོང་བརྐྱབ།"
 
@@ -1051,6 +1066,10 @@ msgstr ""
 #: ../src/extract_dialog.c
 msgid "Size"
 msgstr "ཚད།"
+
+#: ../src/window.c
+msgid "Size:"
+msgstr "ཚད།:"
 
 #: ../src/extract_dialog.c
 #, fuzzy
@@ -1080,10 +1099,6 @@ msgstr "བཀག"
 msgid "Store archiver output"
 msgstr ""
 
-#: ../src/add_dialog.c
-msgid "Store full paths"
-msgstr ""
-
 #: ../src/gzip_et_al.c
 msgid "Streams/Blocks/Padding"
 msgstr ""
@@ -1111,7 +1126,22 @@ msgstr "ཡིག་མཛོད་འདི་གསང་བཟོས་འབ
 #: ../src/extract_dialog.c
 #, fuzzy
 msgid ""
-"The archive's directory structure is recreated in the extraction directory"
+"The archive's complete directory structure is recreated in the extraction "
+"directory."
+msgstr "ཡིག་མཛོད་ཀྱི་སྣོད་ཐོའི་གཞི་བཀོད་འདི་  ཕྱིར་འདོན་སྣོད་ཐོ་ནང་སླར་གསར་བསྐྲུན་འབད་ནུག"
+
+#: ../src/extract_dialog.c
+#, fuzzy
+msgid ""
+"The archive's directory structure is not recreated; all files are placed in "
+"the extraction directory."
+msgstr "ཡིག་མཛོད་ཀྱི་སྣོད་ཐོའི་གཞི་བཀོད་འདི་  ཕྱིར་འདོན་སྣོད་ཐོ་ནང་སླར་གསར་བསྐྲུན་འབད་ནུག"
+
+#: ../src/extract_dialog.c
+#, fuzzy
+msgid ""
+"The archive's directory structure is recreated in the extraction directory, "
+"but with the parent directories of the selected files removed."
 msgstr "ཡིག་མཛོད་ཀྱི་སྣོད་ཐོའི་གཞི་བཀོད་འདི་  ཕྱིར་འདོན་སྣོད་ཐོ་ནང་སླར་གསར་བསྐྲུན་འབད་ནུག"
 
 #: ../src/add_dialog.c ../src/main.c
@@ -1132,13 +1162,19 @@ msgid "The archiver lacks necessary support for password protected decryption!"
 msgstr "ཡིག་མཛོད་འདི་ལུ་ ཉེན་སྐྱོབས་འབད་ཡོད་པའི་ཆོག་ཡིག་ཡིག་སྣོད་ཚུ་ཡོདཔ་ཨིན།"
 
 #: ../src/pref_dialog.c
-msgid "The filename column is sorted after loading the archive"
+msgid "The filename column is sorted after loading the archive."
+msgstr ""
+
+#: ../src/pref_dialog.c
+msgid ""
+"The incremental search is also performed within filenames rather than just "
+"at the beginning of them."
 msgstr ""
 
 #: ../src/extract_dialog.c ../src/main.c ../src/window.c
-#, fuzzy
+#, fuzzy, c-format
 #| msgid "the proper archiver is not installed!"
-msgid "The proper archiver is not installed!"
+msgid "The proper archiver for \"%s\" is not installed!"
 msgstr "ཡིག་མཛོད་ཚུལ་ལྡན་འབད་མི་འདི་ གཞི་བཙུགས་མ་འབད་བས!"
 
 #: ../src/extract_dialog.c
@@ -1150,19 +1186,9 @@ msgid "This is Xarchiver's LED status. When it's flashing Xarchiver is busy."
 msgstr ""
 
 #: ../src/pref_dialog.c
-#, fuzzy
-msgid "This option consumes more memory with large archives"
-msgstr "ཡིག་མཛོད་ལུ་ཁ་སྐོང་བརྐྱབ་ནི་དོན་ལུ་  ཡིག་སྣོད་ཚུ་  ཡང་ན་ སྣོད་ཐོ་ཚུ་གདམ་ཁ་བརྐྱབ།"
-
-#: ../src/extract_dialog.c
-#, fuzzy
 msgid ""
-"This option extracts archives in directories named with the archive names"
-msgstr "ཡིག་མཛོད་ལུ་ཁ་སྐོང་བརྐྱབ་ནི་དོན་ལུ་  ཡིག་སྣོད་ཚུ་  ཡང་ན་ སྣོད་ཐོ་ཚུ་གདམ་ཁ་བརྐྱབ།"
-
-#: ../src/pref_dialog.c
-msgid ""
-"This option includes the subdirectories when you add files with drag and drop"
+"This option includes the subdirectories when you add files from the "
+"clipboard or with drag-and-drop."
 msgstr ""
 
 #: ../src/extract_dialog.c
@@ -1170,17 +1196,17 @@ msgstr ""
 msgid ""
 "This option performs the same function as the freshen one, extracting files "
 "that are newer than those with the same name on disk, and in addition it "
-"extracts those files that do not already exist on disk"
+"extracts those files that do not already exist on disk."
 msgstr ""
 "གདམ་ཁ་འདི་གིས་ གསརཔ་ཅིག་བཟུམ་འབད་ལཱ་འགན་གཅིག་པ་ལཱ་འགན་འགྲུབ་ཨིན་  དེ་ཡང་  ཌིཀསི་གུ་ཡོད་པའི་"
 "མིང་གཅིག་པ་དང་བཅས་མི་ལས་གསརཔ་ཨིན་པའི་  ཡིག་སྣོད་ཚུ་ཕྱིར་འདོན་འབད་ནི་དང་  ཁ་སྐོང་འབད་དེ་གིས་  "
-"ཌིཀསི་གུ་ཧེ་མ་ལས་གནས་ཏེ་མེད་པའི་ཡིག་སྣོད་ཚུ་ཕྱིར་འདོན་འབདཝ་ཨིན།"
+"ཌིཀསི་གུ་ཧེ་མ་ལས་གནས་ཏེ་མེད་པའི་ཡིག་སྣོད་ཚུ་ཕྱིར་འདོན་འབདཝ་ཨིན།."
 
 #: ../src/add_dialog.c
 #, fuzzy
 msgid ""
 "This option will add any new files and update any files which are already in "
-"the archive but older there"
+"the archive but older there."
 msgstr ""
 "གདམ་ཁ་འདི་གིས་  ཡིག་མཛོད་འདི་མཇུག་མམ་གསར་བསྐྲུན་འབད་དེ་/ལེགས་བཅོས་འབད་དེ་ཡོདཔ་ལས་  ལེགས་བཅོས་"
 "འབད་ཡོད་པའི་  ཡིག་སྣོད་གསརཔ་ཚུ་དང་དུས་མཐུན་ཡིག་སྣོད་གང་རུང་ཅིག་ཁ་སྐོང་བརྐྱབ་ཨིན།"
@@ -1189,15 +1215,15 @@ msgstr ""
 #, fuzzy
 msgid ""
 "This option will only add files which are already in the archive but older "
-"there; unlike the update option it will not add any new files"
+"there; unlike the update option it will not add any new files."
 msgstr ""
 "ཡིག་མཛོད་ནང་ཧེ་མ་ལས་ཡོད་པའི་འཐོན་རིམ་ལས་  འཕྲལ་སྐབས་ཅིག་ལུ་ལེགས་བཅོས་འབད་དེ་ཡོད་པ་ཅིན་རྐྱངམ་"
 "ཅིག་  གདམ་ཁ་འདི་གིས་ཡིག་མཛོད་ལུ་གནོདཔ་ཨིན་; དུས་མཐུན་གདམ་ཁ་མ་ཡིན་པ་གཞན་འབད་བ་ཅིན་  ཡིག་"
 "མཛོད་ནང་ཧེ་མ་ལས་ཡོད་པའི་ཡིག་སྣོད་ཚུ་ཁ་སྐོང་མི་བརྐྱབ།"
 
 #: ../src/7zip.c ../src/ar.c ../src/arj.c ../src/cpio.c ../src/gzip_et_al.c
-#: ../src/lha.c ../src/rar.c ../src/rpm.c ../src/tar.c ../src/unar.c
-#: ../src/zip.c
+#: ../src/lha.c ../src/rar.c ../src/rpm.c ../src/squashfs.c ../src/tar.c
+#: ../src/unar.c ../src/zip.c ../src/zpaq.c
 msgid "Time"
 msgstr "དུས་ཚོད།"
 
@@ -1243,12 +1269,14 @@ msgstr ""
 msgid "Up"
 msgstr ""
 
-#: ../src/add_dialog.c
-msgid "Update and add"
-msgstr ""
-
 #: ../src/extract_dialog.c
 msgid "Update existing files"
+msgstr "གནས་ཏེ་ཡོད་པའི་ཡིག་སྣོད་ཚུ་དུས་མཐུན་བཟོ།"
+
+#: ../src/add_dialog.c
+#, fuzzy
+#| msgid "Update existing files"
+msgid "Update existing files and add new ones"
 msgstr "གནས་ཏེ་ཡོད་པའི་ཡིག་སྣོད་ཚུ་དུས་མཐུན་བཟོ།"
 
 #: ../src/open-with-dlg.c
@@ -1271,14 +1299,32 @@ msgstr ""
 #, fuzzy
 msgid ""
 "When this option is used, the modification times of the files will be the "
-"times of extraction instead of the times recorded in the archive"
+"times of extraction instead of the times recorded in the archive."
 msgstr ""
 "གདམ་ཁ་འདི་ལག་ལེན་འཐབ་པའིཤུལ་ལས་  ཊར་འདི་གིས་ཡིག་སྣོད་ཀྱི་གནས་སྡུད་ལེགས་བཅོས་སྐབས་འདི་བཀོག་བཞག་"
 "ནི་དང་  ཡིག་མཛོད་ནང་དྲན་ཐོ་འབད་དེ་ཡོད་པའི་ཆུ་ཚོད་ལུ་སྒྲིག་སྟངས་མ་ཡིན་པར་  ཡིག་སྣོད་ཚུ་ཕྱིར་འདོན་"
 "འབདཝ་ད་  ཆུ་ཚོད་འབད་ཕྱིར་འདོན་འབདཝ་ཨིན།"
 
+#: ../src/zpaq.c
+msgid "Will not handle files with wildcard characters!"
+msgstr ""
+
 #: ../src/pref_dialog.c
 msgid "Window"
+msgstr ""
+
+#: ../src/add_dialog.c ../src/extract_dialog.c
+#, fuzzy
+#| msgid "Extract files with full path"
+msgid "With full path"
+msgstr "ཡིག་སྣོད་ཚུ་འགྲུལ་ལམ་ཆ་ཚང་དང་བཅས་ཕྱིར་འདོན་འབད།"
+
+#: ../src/extract_dialog.c
+msgid "Without any path"
+msgstr ""
+
+#: ../src/add_dialog.c ../src/extract_dialog.c
+msgid "Without parent path"
 msgstr ""
 
 #: ../src/window.c
@@ -1289,6 +1335,12 @@ msgstr "ཨིན་"
 #, fuzzy
 msgid "You are about to delete entries from the archive."
 msgstr "%dཡིག་སྣོད་(ཚུ་)ཡིག་མཛོད་ལས་  ཁྱོད་ཀྱིས་  བཏོན་གཏང་ནི་འབད་དོ།"
+
+#: ../src/window.c
+msgid ""
+"You can drop either archives to open or files to add. It is not possible to "
+"do both at the same time."
+msgstr ""
 
 #: ../src/interface.c ../src/window.c
 #, fuzzy
@@ -1321,8 +1373,8 @@ msgid "You haven't selected any files to add!"
 msgstr "ཁ་སྐོང་བརྐྱབ་ནི་དོན་ལུ་  ཁྱོད་ཀྱིས་ཡིག་སྣོད་ཚུ་ཅི་ཡང་སེལ་འཐུ་མ་འབད་བས!"
 
 #: ../src/main.c
-msgid "You missed the archive name!\n"
-msgstr "ཁྱོད་ཀྱིས་ཡིག་མཛོད་མིང་འདི་བྱིག་སོང་ནུག!\n"
+msgid "You missed the archive name!"
+msgstr "ཁྱོད་ཀྱིས་ཡིག་མཛོད་མིང་འདི་བྱིག་སོང་ནུག!"
 
 #: ../src/add_dialog.c ../src/extract_dialog.c ../src/interface.c
 msgid "You missed the password!"
@@ -1404,6 +1456,14 @@ msgstr "ཡིག་སྣོད་ཚུ་  %s ལུ་ཕྱིར་འད�
 msgid "and"
 msgstr ""
 
+#: ../xarchiver.desktop.in.h
+msgid "archive;compress;decompress;extract;pack;uncompress;unpack;"
+msgstr ""
+
+#: ../src/add_dialog.c
+msgid "best"
+msgstr ""
+
 #: ../src/pref_dialog.c
 msgid "choose..."
 msgstr ""
@@ -1427,6 +1487,10 @@ msgstr "ཡིག་སྣོད་༡ ཡིག་སྣོད་༢ ཡིག�
 msgid "large"
 msgstr ""
 
+#: ../src/add_dialog.c
+msgid "least"
+msgstr ""
+
 #: ../src/pref_dialog.c
 msgid "medium"
 msgstr ""
@@ -1444,7 +1508,11 @@ msgstr ""
 msgid "small/medium"
 msgstr ""
 
+#. Do not translate this string.
+#. Instead, add your name here if you like.
+#. One translator per line!
 #: ../src/window.c
+#, fuzzy
 msgid "translator-credits"
 msgstr "སྐད་བསྒྱུར་པའི་-ངོ་བསྟོད་ཚུ།"
 
@@ -1456,15 +1524,69 @@ msgstr ""
 #, c-format
 msgid ""
 "xarchiver: %s\n"
-"Try xarchiver --help to see a full list of available command line options.\n"
+"Try xarchiver --help to see a full list of available command-line options.\n"
 msgstr ""
 "ཨེགསི་ཡིག་མཛོད་: %s\n"
 "ཡིག་མཛོད་ འབད་རྩོལ་བསྐྱེད་--བརྡ་བཀོད་གྲལ་ཐིག་གདམ་ཁ་ཚུ་གི་  ཐོ་ཡིག་ཆ་ཚང་ཅིག་བལྟ་ནི་ལུ་  གྲོགས་རམ་"
 "འབད།\n"
 
-#: ../src/window.c
-msgid "|Size\n"
-msgstr "|ཚད།\n"
+#, fuzzy, c-format
+#~ msgid "Files:%*s%s"
+#~ msgstr "ཡིག་སྣོད་ཚུ།"
+
+#~ msgid "A GTK+ only archive manager"
+#~ msgstr "ཇི་ཊི་ཀེ་+༢་ ཀྱིས་རྐྱངམ་ཅིག་ཡིག་མཛོད་འཛིན་སྐྱོང་པ།"
+
+#, fuzzy
+#~ msgid "This option consumes more memory with large archives"
+#~ msgstr "ཡིག་མཛོད་ལུ་ཁ་སྐོང་བརྐྱབ་ནི་དོན་ལུ་  ཡིག་སྣོད་ཚུ་  ཡང་ན་ སྣོད་ཐོ་ཚུ་གདམ་ཁ་བརྐྱབ།"
+
+#~ msgid "0 = no compression, 3 is default, 5 = best compression but slowest"
+#~ msgstr ""
+#~ "༠ =ཨེབ་བཙུགས་མེད་, ༣་  འདི་སྔོན་སྒྲིག་ཨིན་, ༥ = ཨེབ་བཙུགས་ལེགས་ཤོམ་  དེ་འབདཝ་ད་  ལྷོད་མི་ཨིན།"
+
+#~ msgid "0 = no compression, 5 is default, 9 = best compression but slowest"
+#~ msgstr ""
+#~ "༠ = ཨེབ་བཙུགས་མེད་, ༥་ འདི་སྔོན་སྒྲིག་ཨིན་, ༩ = ཨེབ་བཙུགས་ལེགས་ཤོམ་དེ་འབདཝ་ད་ལྷོད་མི་ཨིན།"
+
+#~ msgid "0 = no compression, 6 is default, 9 = best compression but slowest"
+#~ msgstr "༠ = ཨེབ་བཙུགས་མེད་, ༦ འདི་སྔོན་སྒྲིག་ཨིན་, ༩ = ཨེབ་བཙུགས་ལེགས་ཤོམ་དེ་འབདཝ་ད་ལྷོད་མི།"
+
+#~ msgid "5 = default compression, 7 = max compression"
+#~ msgstr "༥ = སྔོན་སྒྲིག་ཨེབ་བཙུགས་, ༧ = ཨེབ་བཙུགས་མང་མཐའ།"
+
+#, fuzzy
+#~ msgid "Archive Name"
+#~ msgstr "[ཡིག་མཛོད་མིང་།]"
+
+#, fuzzy, c-format
+#~ msgid "Can't open file %s:"
+#~ msgstr "ཡིག་སྣོད་ཁ་ཕྱེ་མི་བཏུབ \"%s\":"
+
+#, fuzzy
+#~ msgid "Destination dirs"
+#~ msgstr "འགྲོ་ཡུལ་འགྲུལ་ལམ་ཡིག་མཛོད།(_p)"
+
+#, fuzzy
+#~ msgid "Do not store paths"
+#~ msgstr "ཡིག་སྣོད་འགྲུལ་ལམ་ཚུ་ཁ་སྐོང་མ་འབད།"
+
+#, fuzzy
+#~ msgid "Extract pathnames"
+#~ msgstr "ཡིག་སྣོད་ཚུ་  %s ལུ་ཕྱིར་འདོན་འབད་དོ།"
+
+#, fuzzy
+#~ msgid "Options "
+#~ msgstr "<b>གདམ་ཁ་ཚུ </b>"
+
+#, fuzzy
+#~ msgid "Options:"
+#~ msgstr "<b>གདམ་ཁ་ཚུ </b>"
+
+#, fuzzy
+#~ msgid ""
+#~ "This option extracts archives in directories named with the archive names"
+#~ msgstr "ཡིག་མཛོད་ལུ་ཁ་སྐོང་བརྐྱབ་ནི་དོན་ལུ་  ཡིག་སྣོད་ཚུ་  ཡང་ན་ སྣོད་ཐོ་ཚུ་གདམ་ཁ་བརྐྱབ།"
 
 #~ msgid "Can't perform another extraction:"
 #~ msgstr "ཕྱིར་འདོན་གཞན་  ལཱ་འགན་འགྲུབ་མི་བཏུབ:"
@@ -1544,7 +1666,7 @@ msgstr "|ཚད།\n"
 #~ msgid "Create New Dir"
 #~ msgstr "ཡིག་མཛོད་གསརཔ་ཅིག་གསར་བསྐྲུན་འབད།"
 
-#~ msgid "Do you want to view the command line output?"
+#~ msgid "Do you want to view the command-line output?"
 #~ msgstr "ཁྱོད་ཀྱིས་ བརྡ་བཀོད་གྲལ་ཐིག་ཨའུཊི་པུཊི་འདི་བལྟ་ནི་ཨིན་ན?"
 
 #~ msgid "Operation completed."
@@ -1568,7 +1690,7 @@ msgstr "|ཚད།\n"
 #~ msgid "Converting archive to self-extracting, please wait..."
 #~ msgstr "ཡིག་མཛོད་འདི་  རང་-ཕྱིར་འདོན་འབད་དོ་ལུ་གཞི་བསྒྱུར་འབད་དོ་  བསྒུག་གནང་..."
 
-#~ msgid "Command line output"
+#~ msgid "Command-line output"
 #~ msgstr "གྲལ་ཐིག་ཨའུཊི་པུཊི་བརྡ་བཀོད་འབད།"
 
 #~ msgid "Waiting for the process to abort..."
@@ -1588,10 +1710,6 @@ msgstr "|ཚད།\n"
 
 #~ msgid "Enter Archive Password"
 #~ msgstr "ཡིག་མཛོད་ཆོག་ཡིག་འདི་ཐོ་བཀོད་འབད།"
-
-#, fuzzy
-#~ msgid "Extract..."
-#~ msgstr "ཕྱིར་འདོན་འབད།"
 
 #~ msgid "Archive size:"
 #~ msgstr "ཡིག་མཛོད་ཀྱི་ཚད:"
@@ -1740,9 +1858,6 @@ msgstr "|ཚད།\n"
 
 #~ msgid "Filename:"
 #~ msgstr "ཡིག་སྣོད་མིང་:"
-
-#~ msgid "Size:"
-#~ msgstr "ཚད:"
 
 #~ msgid "Extension:"
 #~ msgstr "རྒྱ་བསྐྱེད:"

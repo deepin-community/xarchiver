@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2008 Giuseppe Torelli - <colossus73@gmail.com>
+ *  Copyright (C) 2016 Ingo Brückl
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +22,7 @@
 #include "tar.h"
 #include "gzip_et_al.h"
 #include "main.h"
+#include "parser.h"
 #include "string_utils.h"
 #include "support.h"
 #include "window.h"
@@ -60,8 +62,14 @@ static XArchiveType xa_tar_get_compressor_type (XArchive *archive)
 {
 	switch (archive->type)
 	{
+		case XARCHIVETYPE_TAR_BZIP:
+			return XARCHIVETYPE_BZIP;
+
 		case XARCHIVETYPE_TAR_BZIP2:
 			return XARCHIVETYPE_BZIP2;
+
+		case XARCHIVETYPE_TAR_BZIP3:
+			return XARCHIVETYPE_BZIP3;
 
 		case XARCHIVETYPE_TAR_COMPRESS:
 			return XARCHIVETYPE_COMPRESS;
@@ -83,6 +91,9 @@ static XArchiveType xa_tar_get_compressor_type (XArchive *archive)
 
 		case XARCHIVETYPE_TAR_LZOP:
 			return XARCHIVETYPE_LZOP;
+
+		case XARCHIVETYPE_TAR_RZIP:
+			return XARCHIVETYPE_RZIP;
 
 		case XARCHIVETYPE_TAR_XZ:
 			return XARCHIVETYPE_XZ;
@@ -106,7 +117,9 @@ void xa_tar_ask (XArchive *archive)
 	archive->can_overwrite = TRUE;
 	archive->can_update[0] = TRUE;
 	archive->can_update[1] = archiver[xa_tar_get_compressor_type(archive)].is_compressor;
-	archive->can_move = archiver[xa_tar_get_compressor_type(archive)].is_compressor;
+	archive->can_recurse[0] = TRUE;
+	archive->can_recurse[1] = TRUE;
+	archive->can_remove = archiver[xa_tar_get_compressor_type(archive)].is_compressor;
 
 	/* this is solely for display with the archive properties */
 	if (!archiver[archive->type].program[0])
@@ -119,93 +132,60 @@ void xa_tar_ask (XArchive *archive)
 static void xa_tar_parse_output (gchar *line, XArchive *archive)
 {
 	XEntry *entry;
-	gchar *filename;
 	gpointer item[6];
-	gint n = 0, a = 0 ,linesize = 0;
+	gchar *filename;
+	gboolean dir, link;
 
-	linesize = strlen(line);
+	USE_PARSER;
 
-	/* Permissions */
-	line[10] = '\0';
-	item[4] = line;
+	/* permissions */
+	NEXT_ITEM(item[4]);
 
-	/* Owner */
-	for(n=13; n < linesize; ++n)
-		if(line[n] == ' ')
-			break;
-	line[n] = '\0';
-	item[5] = line+11;
+	dir = (*(char *) item[4] == 'd');
+	link = (*(char *) item[4] == 'l');
 
-	/* Size */
-	for(++n; n < linesize; ++n)
-		if(line[n] >= '0' && line[n] <= '9')
-			break;
-	a = n;
+	/* owner/group */
+	NEXT_ITEM(item[5]);
 
-	for(; n < linesize; ++n)
-		if(line[n] == ' ')
-			break;
+	/* size */
+	NEXT_ITEM(item[1]);
 
-	line[n] = '\0';
-	item[1] = line + a;
-	a = ++n;
+	/* date */
+	NEXT_ITEM(item[2]);
 
-	/* Date */
-	for(; n < linesize; n++)
-		if(line[n] == ' ')
-			break;
+	/* time */
+	NEXT_ITEM(item[3]);
 
-	line[n] = '\0';
-	item[2] = line + a;
+	/* name */
+	LAST_ITEM(filename);
 
-	/* Time */
-	a = ++n;
-	for (; n < linesize; n++)
-		if (line[n] == ' ')
-			break;
+	item[0] = NULL;
 
-	line[n] = '\0';
-	item[3] = line + a;
-	n++;
-	line[linesize-1] = '\0';
-
-	filename = line + n;
-
-	/* Symbolic link */
-	gchar *temp = g_strrstr (filename,"->");
-	if (temp)
+	if (link)
 	{
-		gint len = strlen(filename) - strlen(temp);
-		item[0] = (filename +=3) + len;
-		filename[strlen(filename) - strlen(temp)-1] = '\0';
-	}
-	else
-		item[0] = NULL;
+		gchar *lnk = g_strrstr(filename, " -> ");
 
-	if(line[0] == 'd')
-	{
-		/* Work around for gtar, which does not output / with directories */
-		if(line[linesize-2] != '/')
-			filename = g_strconcat(line + n, "/", NULL);
-		else
-			filename = g_strdup(line + n);
+		if (lnk)
+		{
+			item[0] = lnk + 4;
+			*lnk = 0;
+		}
 	}
-	else
-		filename = g_strdup(line + n);
 
 	entry = xa_set_archive_entries_for_each_row(archive, filename, item);
 
 	if (entry)
 	{
-		entry->is_encrypted = (archive->password != NULL);
+		entry->is_encrypted = archive->has_password;
+
+		if (dir)
+			 entry->is_dir = TRUE;
 
 		if (!entry->is_dir)
 			archive->files++;
 
 		archive->files_size += g_ascii_strtoull(item[1], NULL, 0);
 	}
-
-	g_free(filename);
 }
 
 void xa_tar_list (XArchive *archive)
@@ -251,25 +231,19 @@ gboolean xa_tar_extract (XArchive *archive, GSList *file_list)
 		extract_to = g_strdup(archive->extraction_dir);
 	else
 	{
-		if (!xa_create_working_directory(archive))
-			return FALSE;
+		extract_to = xa_create_working_subdirectory(archive);
 
-		extract_to = g_strconcat(archive->working_dir, "/xa-tmp.XXXXXX", NULL);
-
-		if (!g_mkdtemp(extract_to))
-		{
-			g_free(extract_to);
+		if (!extract_to)
 			return FALSE;
-		}
 	}
 
-	files = xa_quote_filenames(file_list, NULL, TRUE);
+	files = xa_quote_filenames(file_list, NULL, DIR_WITH_SLASH);
 	command = g_strconcat(archiver[XARCHIVETYPE_TAR].program[0],
-	                      " -x --no-recursion --no-wildcards",
+	                      " -x --no-wildcards",
 	                      " -f ", archive->path[2],
 	                      archive->do_touch ? " -m" : "",
 	                      archive->do_overwrite ? "" : (archive->do_update ? " --keep-newer-files" : " -k"),
-	                      " -C ", extract_to, files->str, NULL);
+	                      " -C ", extract_to, " --", files->str, NULL);
 
 	result = xa_run_command(archive, command);
 	g_free(command);
@@ -281,11 +255,11 @@ gboolean xa_tar_extract (XArchive *archive, GSList *file_list)
 
 		archive->child_dir = g_strdup(extract_to);
 		command = g_strconcat("mv",
-		                      archive->do_overwrite ? " -f" : " -n",
-		                      archive->do_update ? " -fu" : "",
-		                      all_files->str, " ", archive->extraction_dir, NULL);
+		                      archive->do_overwrite ? " -f" : (archive->do_update ? " -fu" : " -n"),
+		                      " --", all_files->str, " ", archive->extraction_dir, NULL);
 		g_string_free(all_files, TRUE);
 
+		archive->status = XARCHIVESTATUS_EXTRACT;   // restore status
 		result = xa_run_command(archive, command);
 		g_free(command);
 
@@ -299,15 +273,13 @@ gboolean xa_tar_extract (XArchive *archive, GSList *file_list)
 	return result;
 }
 
-void xa_tar_add (XArchive *archive, GSList *file_list, gchar *compression)
+void xa_tar_add (XArchive *archive, GSList *file_list)
 {
 	GString *files;
 	gchar *command;
+	gboolean success;
 
-	if (archive->location_path != NULL)
-		archive->child_dir = g_strdup(archive->working_dir);
-
-	files = xa_quote_filenames(file_list, NULL, TRUE);
+	files = xa_quote_filenames(file_list, NULL, DIR_WITH_SLASH);
 
 	if (!g_file_test(archive->path[0], G_FILE_TEST_EXISTS))
 	{
@@ -323,35 +295,43 @@ void xa_tar_add (XArchive *archive, GSList *file_list, gchar *compression)
 				return;
 			}
 
-			workfile = g_strconcat(archive->working_dir, "/xa-tmp.tar", NULL);
+			workfile = g_strconcat(archive->working_dir, "/", "xa-tmp.tar", NULL);
 			archive->path[2] = g_shell_quote(workfile);
 			g_free(workfile);
 		}
 
 		command = g_strconcat(archiver[XARCHIVETYPE_TAR].program[0],
-		                      " -c --no-recursion --no-wildcards",
-		                      archive->do_move ? " --remove-files" : "",
-		                      " -f ", archive->path[2], files->str, NULL);
+		                      " -c --no-wildcards",
+		                      archive->do_recurse ? "" : " --no-recursion",
+		                      archive->do_remove ? " --remove-files" : "",
+		                      " -f ", archive->path[2], " --", files->str, NULL);
 	}
 	else
 		command = g_strconcat(archiver[XARCHIVETYPE_TAR].program[0],
 		                      archive->do_update ? " -u" : " -r",
-		                      " --no-recursion --no-wildcards",
-		                      archive->do_move ? " --remove-files" : "",
-		                      " -f ", archive->path[2], files->str, NULL);
+		                      " --no-wildcards",
+		                      archive->do_recurse ? "" : " --no-recursion",
+		                      archive->do_remove ? " --remove-files" : "",
+		                      " -f ", archive->path[2], " --", files->str, NULL);
 
 	if (archive->type != XARCHIVETYPE_TAR)
 	{
-		xa_run_command(archive, command);
+		success = xa_run_command(archive, command);
 		g_free(command);
+		command = NULL;
 
-		command = xa_gzip_et_al_get_command(archiver[xa_tar_get_compressor_type(archive)].program[0], archive->path[2], archive->path[0], archive->password, xa_tar_get_compressor_type(archive));
-		archive->status = XARCHIVESTATUS_ADD;
+		if (success)
+		{
+			command = xa_gzip_et_al_get_command(archiver[xa_tar_get_compressor_type(archive)].program[0], archive->path[2], archive->path[0], archive->password, xa_tar_get_compressor_type(archive));
+			archive->status = XARCHIVESTATUS_ADD;   // restore status
+		}
 	}
 
 	g_string_free(files, TRUE);
 
-	xa_run_command(archive, command);
+	if (command)
+		xa_run_command(archive, command);
+
 	g_free(command);
 }
 
@@ -359,21 +339,28 @@ void xa_tar_delete (XArchive *archive, GSList *file_list)
 {
 	GString *files;
 	gchar *command;
+	gboolean success;
 
-	files = xa_quote_filenames(file_list, NULL, TRUE);
-	command = g_strconcat(archiver[XARCHIVETYPE_TAR].program[0], " --delete --no-recursion --no-wildcards -f ", archive->path[2], files->str, NULL);
+	files = xa_quote_filenames(file_list, NULL, DIR_WITH_SLASH);
+	command = g_strconcat(archiver[XARCHIVETYPE_TAR].program[0], " --delete --no-wildcards -f ", archive->path[2], " --", files->str, NULL);
 
 	if (archive->type != XARCHIVETYPE_TAR)
 	{
-		xa_run_command(archive, command);
+		success = xa_run_command(archive, command);
 		g_free(command);
+		command = NULL;
 
-		command = xa_gzip_et_al_get_command(archiver[xa_tar_get_compressor_type(archive)].program[0], archive->path[2], archive->path[0], archive->password, xa_tar_get_compressor_type(archive));
-		archive->status = XARCHIVESTATUS_DELETE;
+		if (success)
+		{
+			command = xa_gzip_et_al_get_command(archiver[xa_tar_get_compressor_type(archive)].program[0], archive->path[2], archive->path[0], archive->password, xa_tar_get_compressor_type(archive));
+			archive->status = XARCHIVESTATUS_DELETE;   // restore status
+		}
 	}
 
 	g_string_free(files, TRUE);
 
-	xa_run_command(archive, command);
+	if (command)
+		xa_run_command(archive, command);
+
 	g_free(command);
 }

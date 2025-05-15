@@ -1,3 +1,83 @@
+xarchiver (1:0.5.4.25-2) unstable; urgency=medium
+
+  [ Ingo Brückl ]
+  * Add AppImage to the list of handled files
+  * Revise and reformat the description.
+    Improve readability.
+
+ -- Markus Koschany <apo@debian.org>  Thu, 03 Apr 2025 04:04:33 +0200
+
+xarchiver (1:0.5.4.25-1) unstable; urgency=medium
+
+  * New upstream version 0.5.4.25.
+    - Update Romanian translation. (Closes: #1081825)
+  * Declare compliance with Debian Policy 4.7.2.
+
+ -- Markus Koschany <apo@debian.org>  Mon, 31 Mar 2025 17:15:00 +0200
+
+xarchiver (1:0.5.4.23-1) unstable; urgency=medium
+
+  * New upstream version 0.5.4.23.
+  * Recommend 7zip instead of the obsolete p7zip-full package.
+    (Closes: #1063625)
+
+ -- Markus Koschany <apo@debian.org>  Sat, 06 Apr 2024 23:19:10 +0200
+
+xarchiver (1:0.5.4.22-1) unstable; urgency=medium
+
+  [ Ingo Brückl ]
+  * Run the autogen.sh script instead of building with autoreconf.
+  * Add missing files to the clean file. (Closes: #1045887)
+  * Update list of handled files.
+
+  [ Markus Koschany ]
+  * New upstream version 0.5.4.22.
+
+ -- Markus Koschany <apo@debian.org>  Wed, 03 Jan 2024 21:30:57 +0100
+
+xarchiver (1:0.5.4.21-2) unstable; urgency=medium
+
+  * Upload to unstable.
+
+ -- Markus Koschany <apo@debian.org>  Thu, 15 Jun 2023 20:54:50 +0200
+
+xarchiver (1:0.5.4.21-1) experimental; urgency=medium
+
+  * New upstream version 0.5.4.21.
+  * Drop fix-detection-of-zstd.patch. Fixed upstream.
+  * Update package description to reflect all supported features of xarchiver.
+  * Declare compliance with Debian Policy 4.6.2.
+
+ -- Markus Koschany <apo@debian.org>  Thu, 15 Jun 2023 20:54:39 +0200
+
+xarchiver (1:0.5.4.20-2) unstable; urgency=medium
+
+  * Fix detection of zstd version 1.5.4 and later. (Closes: #1032591)
+
+ -- Markus Koschany <apo@debian.org>  Sun, 12 Mar 2023 12:48:14 +0100
+
+xarchiver (1:0.5.4.20-1) unstable; urgency=medium
+
+  * New upstream version 0.5.4.20.
+
+ -- Markus Koschany <apo@debian.org>  Sat, 12 Nov 2022 14:36:12 +0100
+
+xarchiver (1:0.5.4.19-1) unstable; urgency=medium
+
+  * New upstream version 0.5.4.19.
+
+ -- Markus Koschany <apo@debian.org>  Sat, 27 Aug 2022 19:06:21 +0200
+
+xarchiver (1:0.5.4.18-1) unstable; urgency=medium
+
+  * New upstream version 0.5.4.18.
+    - Fix segfault depending on which compressor/decompressor is installed.
+      (Closes: #1010089)
+  * Drop debian-bug-990906.patch. Fixed upstream.
+  * Declare compliance with Debian Policy 4.6.1.
+
+ -- Markus Koschany <apo@debian.org>  Mon, 23 May 2022 21:00:46 +0200
+
 xarchiver (1:0.5.4.17-3) unstable; urgency=medium
 
   * Do not run autogen.sh script because it does not work with autoconf 2.70.

@@ -1,6 +1,7 @@
 /*
  *  Copyright (C) 2008 Giuseppe Torelli - <colossus73@gmail.com>
  *  Copyright (C) 2006 Lukasz 'Sil2100' Zemczak - <sil2100@vexillium.org>
+ *  Copyright (C) 2019 Ingo Brückl
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,10 +19,12 @@
  *  MA 02110-1301 USA.
  */
 
+#include <stddef.h>
 #include <string.h>
 #include "ar.h"
 #include "date_utils.h"
 #include "main.h"
+#include "parser.h"
 #include "string_utils.h"
 #include "support.h"
 #include "window.h"
@@ -35,66 +38,47 @@ void xa_ar_ask (XArchive *archive)
 static void xa_ar_parse_output (gchar *line, XArchive *archive)
 {
 	XEntry *entry;
-	gchar *filename, time[6];
 	gpointer item[5];
-	gint n = 0, a = 0 ,linesize = 0;
+	size_t len;
+	gchar *filename, time[6];
 
-	linesize = strlen(line);
+	USE_PARSER;
 
-	/* Permissions */
-	line[9] = '\0';
-	item[3] = line;
+	/* permissions */
+	NEXT_ITEM(item[3]);
 
-	/* Owner */
-	for(n=12; n < linesize; ++n)
-		if(line[n] == ' ')
-			break;
-	line[n] = '\0';
-	item[4] = line+10;
+	/* uid/gid */
+	NEXT_ITEM(item[4]);
 
-	/* Size */
-	for(++n; n < linesize; ++n)
-		if(line[n] >= '0' && line[n] <= '9')
-			break;
-	a = n;
+	/* size */
+	NEXT_ITEM(item[0]);
 
-	for(; n < linesize; ++n)
-		if(line[n] == ' ')
-			break;
+	/* date and time */
+	NEXT_ITEMS(4, item[1]);
 
-	line[n] = '\0';
-	item[0] = line + a;
-	a = ++n;
+	len = strlen(item[1]);
 
-	/* Date Modified */
-	for(; n < linesize; ++n)
+	/* time */
+	if (len >= 12)
 	{
-		if (n - a == 17)
-			break;
+		memcpy(time, item[1] + 7, 5);
+		time[5] = 0;
+		item[2] = time;
 	}
-	if (line[n] != ' ')
+	else
+		item[2] = "-----";
+
+	/* date */
+	if (len >= 17)
 	{
-		for(; n < linesize; ++n)
-		{
-			if(line[n] == ' ')
-			break;
-		}
+		memcpy(item[1] + 7, item[1] + 13, 4);
+		item[1] = date_MMM_dD_HourYear(item[1]);
 	}
-	line[n] = '\0';
+	else
+		item[1] = "----------";
 
-	/* Time */
-	memcpy(time, line + a + 7, 5);
-	time[5] = 0;
-	item[2] = time;
-
-	/* Date */
-	memcpy(line + a + 7, line + a + 13, 5);
-	item[1] = date_MMM_dD_HourYear(line + a);
-
-	n++;
-	line[linesize-1] = '\0';
-
-	filename = g_strdup(line + n);
+	/* name */
+	LAST_ITEM(filename);
 
 	entry = xa_set_archive_entries_for_each_row(archive, filename, item);
 
@@ -105,8 +89,6 @@ static void xa_ar_parse_output (gchar *line, XArchive *archive)
 
 		archive->files_size += g_ascii_strtoull(item[0], NULL, 0);
 	}
-
-	g_free(filename);
 }
 
 void xa_ar_list (XArchive *archive)
@@ -139,11 +121,11 @@ gboolean xa_ar_extract (XArchive *archive, GSList *file_list)
 	gchar *command;
 	gboolean result;
 
-	files = xa_quote_filenames(file_list, NULL, TRUE);
+	files = xa_quote_filenames(file_list, NULL, DIR_WITH_SLASH);
 	archive->child_dir = g_strdup(archive->extraction_dir);
 	command = g_strconcat(archiver[archive->type].program[0], " x",
 	                      archive->do_touch ? " " : "o ",
-	                      archive->path[1], files->str, NULL);
+	                      archive->path[1], " --", files->str, NULL);
 	g_string_free(files, TRUE);
 
 	result = xa_run_command(archive, command);
